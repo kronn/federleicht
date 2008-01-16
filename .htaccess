@@ -1,0 +1,23 @@
+Options +FollowSymLinks
+
+RewriteEngine On
+RewriteBase /
+
+# Spezielle Weiterleitungsregeln
+RewriteRule ^favicon.ico$ /public/img/favicon.ico [L]
+RewriteRule ^robots.txt$ /public/robots.txt [L]
+
+# Federleicht-Verzeichnisse sperren
+#   Wenn diese Namen als Modul verwendet werden, 
+#   hier loeschen und weiter unten eintragen.
+RewriteRule ^(app|cache|config|fl|log|script)(.*)$ / [L]
+
+# Daten auf oeffentliches Verzeichnis umleiten
+#   Wenn kein öffentliches test-Verzeichnis mehr benötigt wird, sollte 
+#   test in die Liste der Federleichtverzeichnisse aufgenommen werden.
+RewriteRule ^(ajax|css|img|js|php|pdf|swf|test)/(.*)$ /public/$1/$2 [L]
+
+# installierte Module von Federleicht verarbeiten lassen.
+#RewriteRule ^(account|basecontent|search|start|pages|register|user|)(.*)$ - [C] 
+RewriteRule !^(public|phpmyadmin|ajax|css|img|js|php|swf|test)/(.*)$ - [C]
+RewriteRule ^(.*)$ index.php [L]
