@@ -1,0 +1,12 @@
+TODO und Ideen
+==============
+
+* PHP4-faehigen Code taggen und dann auf PHP5 umsteigen
+
+* Ausgabe cachen und Cache vorrangig verwenden
+
+* Routen per ini-Datei konfigurierbar machen
+
+* "Compiler"-Skript erstellen, mit dem mehrere URLs hintereinander
+  aufgerufen werden koennen. Die Ausgabe sollte dann gecacht werden und 
+  der Cache als eigenstaendige Webseite nutzbar sein (ohne PHP!)
