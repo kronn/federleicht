@@ -37,12 +37,33 @@ class functions {
 	}
 
 	/**
+	 * Factory zurueckgeben
+	 *
+	 * @param data_access $data_access
+	 * @return factory
+	 * @todo intern gespeicherte Factory aufgeben, nur noch neue factory zurueckgeben.
+	 */
+	function get_factory() {
+		if ( is_a($this->factory, 'factory') ) {
+			$factory = $this->factory;
+		} else {
+			$factory = new factory();
+		}
+
+		$factory->set_data_access($this->data_access);
+
+		return $factory;
+	}
+
+	/**
 	 * Aufruf eines Helfermodul
 	 *
 	 * @param string $wanted Name des gewünschten Helfermoduls
 	 * @return boolean
+	 * @todo entfernen, wird von factory uebernommen
 	 */
 	function needs($wanted) {
+		trigger_error('veraltet. neu: factory->load_helper($arg)');
 		return $this->factory->load_helper($wanted);
 	}
 
@@ -53,6 +74,7 @@ class functions {
 	 * Weitere Parameter werden übernommen und an den Konstruktor weitergegeben.
 	 *
 	 * @return mixed
+	 * @todo entfernen, wird von factory uebernommen
 	 */
 	function get_helper($wanted_helper) {
 		if ( func_num_args() > 1 ) {
@@ -71,8 +93,10 @@ class functions {
 	 *
 	 * @param string $modul   Name des Moduls, aus dem das Model geholt wird.
 	 * @return model
+	 * @todo entfernen, wird von factory uebernommen
 	 */
 	function get_model($modul) {
+		trigger_error('veraltet. neu: factory->get_model($arg)');
 		return $this->factory->get_model($modul);
 	}
 
@@ -80,8 +104,10 @@ class functions {
 	 * Moduldatei einlesen
 	 *
 	 * @param string $modul
+	 * @todo entfernen, wird von factory uebernommen
 	 */
 	function load_module($modul) {
+		trigger_error('veraltet. neu: factory->load_module($arg)');
 		return $this->factory->load_module($modul);
 	}
 

@@ -27,7 +27,8 @@ class federleicht {
 	 *
 	 * Der Konstruktor lädt die Standardklassen von Federleicht
 	 * und sucht nach Modulen und Helfern. Wenn keine Module
-	 * gefunden wurden, bricht das Programm ab.
+	 * gefunden wurden, bricht das Programm ab. Andernfalls wird
+	 * Datenbankverbindung aufgebaut.
 	 *
 	 * @param string $url
 	 */
@@ -64,20 +65,6 @@ class federleicht {
 			$this->functions->stop('<h2>Fehler</h2><p>Keine Module installiert</p>');
 		}
 
-	}
-
-	/**
-	 * Federleicht starten
-	 *
-	 * Die Datenbankverbindung wird aufgebaut und der
-	 * Dispatcher geladen. Nach der URL-Analyse wird das
-	 * entsprechende Modul geladen und gestartet.
-	 */
-	function start() {
-		$this->start_session();
-
-		$this->functions->start_flash();
-
 		if ( NO_DATABASE ) {
 			$data = new data_access( null );
 		} else {
@@ -86,6 +73,19 @@ class federleicht {
 
 		$this->datamodel = $data->get_data_souce();
 		$this->functions->set_data_access($this->datamodel);
+
+	}
+
+	/**
+	 * Federleicht starten
+	 *
+	 * Der Dispatcher geladen. Nach der URL-Analyse wird das
+	 * entsprechende Modul geladen und gestartet.
+	 */
+	function start() {
+		$this->start_session();
+
+		$this->functions->start_flash();
 
 		if ( !defined('DEFAULTSECTION') ) {
 			$result = $this->datamodel->retrieve(

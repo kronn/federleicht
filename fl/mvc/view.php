@@ -36,7 +36,7 @@ class view {
 	/**
 	 * Kontruktor der Viewklasse
 	 *
-	 * @todo $data_access hier entfernen und statt dessen Referenz auf Model übergeben, das dann die einzige Schnittstelle bietet.
+	 * @todo $data_access hier entfernen (kein DB-Zugriff aus dem View heraus!)
 	 *
 	 * @param array        $data         Daten, die dargestellt werden sollen
 	 * @param data_access  $data_access  Datenzugriffsobjekt
@@ -48,6 +48,7 @@ class view {
 
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
+		$this->factory   = $functions->get_factory();
 
 		$registry =& registry::getInstance();
 		$this->cap = $registry->get('request', 'route');
@@ -58,7 +59,7 @@ class view {
 
 		$this->headers = $registry->get('config', 'headers');
 
-		$model = $this->functions->get_model($model_name);
+		$model = $this->factory->get_model($model_name);
 		$this->translator = $model->translator;
 	}
 
@@ -96,8 +97,10 @@ class view {
 	/**
 	 * Ein Seitenelement holen
 	 *
-	 * Es wird ein vordefinierter HTML-Baustein geholt. Er steht allen Seitenbereichen zu Verf&uuml;gung.
-	 * Variablen k&ouml;nnen als Assoziatives Array &uuml;bergeben werden. Sonstigen Variablen sind meist nicht
+	 * Es wird ein vordefinierter HTML-Baustein geholt. 
+	 * Er steht allen Seitenbereichen zu Verf&uuml;gung.
+	 * Variablen k&ouml;nnen als Assoziatives Array &uuml;bergeben werden. 
+	 * Sonstigen Variablen sind meist nicht
 	 * verf&uuml;gbar.
 	 *
 	 * @param string $name      Dateiname (ohne Endung) des Elements.
@@ -148,9 +151,9 @@ class view {
 	 */
 	function get_site_title() {
 		if ( !defined('SEITENTITEL') ) {
-			$result = $this->datamodel->retrieve(ADMINMODULE.'_options', '*', "optionname='SEITENTITEL'", '', '1');
+			$result = $this->datamodel->retrieve('optionen', '*', "optionname='seitentitel'", '', '1');
 			#define('SEITENTITEL', $result['value']);
-			$title = $result['value'];
+			$title = $result[0]['value'];
 		} else {
 			$title = SEITENTITEL;
 		}
@@ -165,6 +168,7 @@ class view {
 	 * Vor der Datenausgaben werden alle HTML-Sonderzeichen
 	 * maskiert, um Ausgabeprobleme zu vermeiden.
 	 *
+	 * @todo hier entfernen und in ein view_data-Objekt auslagern, das von data_structure abgeleitet wird
 	 * @param string $field       Name des Datenfeldes
 	 * @param string $type        Typehint für die Ausgabe, ggf. werden die 
 	 *                            Daten vor Ausgabe entsprechend umgewandelt.
@@ -235,7 +239,7 @@ class view {
 	 * Es wird ein Text zurückgegeben, der entweder eine Übersetzung 
 	 * des übergebenen Textes ist oder der übergebene Text selbst.
 	 *
-	 * @todo Achtung: Funktion ist auch in fl/model.php definiert
+	 * @todo Achtung: Funktion ist auch in fl/model.php definiert. Sollte besser nur dort sein. Entwurf verbessern!
 	 * @param string $text
 	 * @param string $lang
 	 * @return string
@@ -254,6 +258,10 @@ class view {
 	 * Usernamen des aktuell eingeloggten Users ausgeben
 	 */
 	function get_username() {
+		trigger_error(
+			'veraltet, Wert sollte als Variable uebergeben werden',
+			E_USER_NOTICE
+		);
 		if ( isset($_SESSION['username']) ) {
 			echo ucwords($_SESSION['username']);
 		}
@@ -263,6 +271,10 @@ class view {
 	 * Alter aus Geburtsdatum berechnen und zurückgeben
 	 */
 	function get_age($geburtsdatum) {
+		trigger_error(
+			'veraltet, Wert sollte als Variable uebergeben werden. siehe: datum_model::alter()',
+			E_USER_NOTICE
+		);
 		$date = explode('-', $geburtsdatum);
 
 		# Windows-Workaround
@@ -279,11 +291,13 @@ class view {
 
 	/**
 	 * URL zur aktuellen Seite ausgeben
+	 *
+	 * @todo Routen so erweitern, das die aktuelle URL ausgegeben werden kann.
 	 */
 	function current_url() {
 		$registry =& registry::getInstance();
 		$cap = $registry->get('request', 'route');
-		$url = 'http://'.$_SERVER['HTTP_HOST'].'/'.LANG.'/'.$cap['controller'].'/'.$cap['action'].'/'.$cap['param'];
+		$url = 'http://'.$_SERVER['HTTP_HOST'].'/'.$cap['controller'].'/'.$cap['action'].'/'.$cap['param'];
 		return $url;
 	}
 }

@@ -25,13 +25,14 @@ class inflector {
 			$this->plural = array(
 				'/^([a-z]*[^aoieukgh])$/i' =>'\1e',
 				'/^([a-z]*)(ung|heit|schaft)$/i'=>'\1\2en',
-				'/^([a-z]*)(probe)$/i'=>'\1\2en',
+				'/^([a-z]*)(prob|ion)$/i'=>'\1\2en',
 			);
 
 			$this->singular = array(
 				'/^([a-z]*)e/i' => '\1',
 				'/^([a-z]*)(ung|heit|schaft)en$/i'=>'\1\2',
 				'/^([a-z]*)(probe)n$/i'=>'\1\2',
+				'/^([a-z]*)(ion)en$/i'=>'\1\2',
 			);
 
 			$this->uncountable = array(

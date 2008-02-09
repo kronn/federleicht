@@ -24,6 +24,7 @@ class modul {
 	 */
 	var $datamodel;
 	var $functions;
+	var $factory;
 	var $registry;
 
 	var $modulepath;
@@ -36,8 +37,9 @@ class modul {
 	 * @param functions $functions
 	 */
 	function modul($data_access, $functions) {
-		$this->datamodel = $data_access;
-		$this->functions = $functions;
+		$this->datamodel = &$data_access;
+		$this->functions = &$functions;
+		$this->factory = $functions->get_factory();
 		$this->registry =& registry::getInstance();
 
 		$this->cap = $this->registry->get('request', 'route');
@@ -71,7 +73,7 @@ class modul {
 	 * @return object
 	 */
 	function create_model($name) {
-		return $this->functions->get_model($name);
+		return $this->factory->get_model($name);
 	}
 
 	/**

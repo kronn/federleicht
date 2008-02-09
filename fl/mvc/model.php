@@ -7,20 +7,18 @@
  * @package federleicht
  * @subpackage base
  */
-/**
- * Modelklasse
- */
 class model {
 	/**
 	 * Instanzvariablen
 	 */
-	var $modul;
+	var $modul = '';
+	var $error_messages = array();
 
 	/**
 	 * extern eingebundene Objekte und Variablen
 	 */
 	var $datamodel;
-	var $functions;
+	var $factory;
 	var $modulepath;
 	var $translator = NULL;
 
@@ -31,12 +29,12 @@ class model {
 	 * erfolgen durch den Controller.
 	 *
 	 * @param data_access  &$data_access  Datenzugriff
-	 * @param functions &$functions    Funktions-Objekte
-	 * @param string       &$path     Pfad zu Moduldateien
+	 * @param factory      &$factory      Objekterzeugungsobjekt
+	 * @param string       &$path         Pfad zu Moduldateien
 	 */
-	function model(&$data_access, &$functions, $path) {
+	function model(&$data_access, &$factory, $path) {
 		$this->datamodel = &$data_access;
-		$this->functions = &$functions;
+		$this->factory = &$factory;
 		$this->modulepath = $path;
 
 		$this->modul = array_shift(explode('_', get_class($this)));
@@ -69,37 +67,6 @@ class model {
 	}
 	
 	/**
-	 * Alter aus Geburtsdatum errechnen
-	 *
-	 * @param string $geburtsdatum Geburtsdatum im Format YYYY-MM-DD
-	 * @return int
-	 */
-	function get_age($geburtsdatum) {
-		$date = explode('-', $geburtsdatum);
-
-		# Windows-Workaround
-		$year_diff = 0;
-		if ( $date[0] < 1970 ) {
-			$year_diff = 1970 - $date[0];
-			$date[0] = 1970;
-		}
-
-		$birthday = mktime(0, 0, 0, $date[1], $date[2], $date[0]);
-
-		return date('Y') - (date('Y', $birthday) - $year_diff) - 1 + (int)((date('m', $birthday) <= date('m')) && (date('d', $birthday) <= date('d')) );
-	}
-
-	/**
-	 * Datum europäisch formatieren
-	 *
-	 * @param string $date  Datum im MySQL-"DATE"-Format
-	 * @return string
-	 */
-	function format_date($date) {
-		return preg_replace('/^([0-9]{4})-([0-9]{2})-([0-9]{2})/', '$3.$2.$1', $date);
-	}
-
-	/**
 	 * Daten holen
 	 *
 	 * Wrappperfunktion, die entweder direkt aus der Datenbank die Daten holt, 
@@ -112,7 +79,7 @@ class model {
 	 */
 	function get_data($modul, $id, $id_alternate_name='slug') {
 		$model = ( $modul != $this->modul )?
-			$this->functions->get_model($modul):
+			$this->factory->get_model($modul):
 			$this;
 
 		if ( is_numeric($id) ) $id_alternate_name = 'id';
@@ -184,20 +151,6 @@ class model {
 	}
 
 	/**
-	 * Anzahl der Datensätze mit bestimmter Bedingung zurückgeben
-	 *
-	 * Wrapper für data_SQL::count()
-	 *
-	 * @param string $table		Tabelle in der DB
-	 * @param string $condition Bedingung, die überprüft werden soll, optional
-	 * @return integer
-	 * @todo hier entfernen, ist im Datenbankobjekt vorhanden.
-	 */
-	function count($table, $condition='') {
-		return $this->datamodel->count($table, $condition);
-	}
-
-	/**
 	 * Checkboxen in Binärzahlen umwandeln
 	 *
 	 * Die Funktion verhält sich standardmäßig unauffälig und übergeht fehlende 
@@ -232,6 +185,15 @@ class model {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Fehlermeldungen holen
+	 *
+	 * @return string
+	 */
+	function get_error_messages() {
+		return implode('<br />', (array) $this->error_messages);
 	}
 
 	/**
@@ -277,6 +239,10 @@ class model {
 		}
 
 		return $array;
+	}
+
+	function count($table, $condition='') {
+		trigger_error('veraltet. neu: data_access->count()', E_USER_ERROR);
 	}
 }
 ?>

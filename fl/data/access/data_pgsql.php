@@ -93,6 +93,8 @@ class data_pgsql {
 			$sql .= ' LIMIT '.$sql_limit . ' OFFSET '. $offset;
 		}
 
+		$sql .= ';';
+
 		$result = $this->query($sql);
 		return $result;
 	}
@@ -157,12 +159,55 @@ class data_pgsql {
 	}
 
 	/**
+	 * Datenbank-Ergebnisse in richtige Typen umwandeln
+	 *
+	 * @param string table
+	 * @param array $result
+	 * @return array
+	 */
+	function convert_result($table, $result) {
+		$table = $this->table_prefix . $table;
+		$converted = $result;
+
+		$sql = <<<SQL
+SELECT column_name AS col, CASE
+	WHEN data_type = 'numeric' THEN 'float'
+	ELSE data_type
+END AS type
+FROM information_schema.columns
+WHERE table_name='{$table}'
+	AND data_type IN ('boolean', 'integer', 'numeric');
+SQL;
+		$types = $this->query($sql);
+
+		foreach ( $types as $type ) {
+			foreach ( $result as $row_num => $rows ) {
+				$col = $type['col'];
+				$new_type = $type['type'];
+
+				if ( $new_type == 'boolean' ) {
+					$converted[$row_num][$col] = ( $converted[$row_num][$col] == 't' )?
+						(boolean) true:
+						(boolean) false;
+				} else {
+					settype($converted[$row_num][$col], $new_type);
+				}
+			}
+		}
+
+		return $converted;
+	}
+
+	/**
 	 * Tabelle leeren
 	 *
 	 * @param string $table Tabellennname
 	 * @return boolean
+	 * @todo Funktion fuer PostgreSQL umarbeiten
 	 */
 	function clear_table($table) {
+		return false;
+
 		$sql = 'TRUNCATE TABLE '.$this->table_prefix.$table;
 
 		$result = (boolean) $this->query($sql);
@@ -174,8 +219,11 @@ class data_pgsql {
 	 *
 	 * @param string $table Tabellenname
 	 * @return boolean
+	 * @todo Funktion fuer PostgreSQL umarbeiten
 	 */
 	function optimize_table($table) {
+		return false;
+
 		$sql = 'OPTIMIZE TABLE ' . $this->table_prefix.$table;
 
 		$result = (boolean) $this->query($sql);
@@ -191,7 +239,7 @@ class data_pgsql {
 	 */
 	function count($table, $condition='') {
 		$result = $this->retrieve($table, 'COUNT(*) AS anzahl', $condition);
-		$anzahl = (integer) $result['anzahl'];
+		$anzahl = (integer) $result[0]['anzahl'];
 		return $anzahl;
 	}
 
@@ -215,8 +263,8 @@ class data_pgsql {
 	 * @return integer
 	 */
 	function last_insert_id($table) {
-		$id = $this->query('SELECT last_value FROM '.$table.'_id_seq');
-		return $id;
+		$result = $this->query('SELECT last_value FROM '.$this->_tableName($table).'_id_seq;');
+		return $result[0]['last_value'];
 	}
 
 	/**
@@ -272,6 +320,7 @@ class data_pgsql {
 			$abfrage = is_string($sql) ? trim($sql) :  $this->_error('Fehlerhafte Daten', $sql);
 			$abfragetyp = strtoupper(substr($abfrage,0,6));
 
+			/* Asynchrone Abfrage
 			if (!pg_connection_busy($this->connection)) {
 				pg_send_query($this->connection, $abfrage);
 			} else {
@@ -289,10 +338,21 @@ class data_pgsql {
 				$this->_error($error, $abfrage);
 			} else {
 				$this->query_count++;
+				$result_status = pg_result_status($result);
 			}
+			 */
+
+			/* Einzelne, synchrone Abfrage */
+			if ( ($result = pg_query($this->connection, $abfrage)) === false ) {
+				$this->_error(pg_last_error($this->connection), $abfrage);
+			} else {
+				$this->query_count++;
+				$result_status = pg_result_status($result);
+			}
+
 			
 			if ( $abfragetyp !== 'SELECT' ) {
-				$output = ( pg_result_status($this->connection, $result) === PGSQL_COMMAND_OK )?  
+				$output = ( $result_status === PGSQL_COMMAND_OK )?  
 					true:
 					false;
 			} else {
@@ -351,7 +411,9 @@ class data_pgsql {
 			( error_reporting() > 0 AND ini_get('display_errors') == 1 ) ) {
 			needs('var_analyze');
 			$err = new var_analyze('data-access', 'Fehler');
-			$err->sql($sql, 'Datenbankabfrage, die zu Fehler gefuehrt hat'); 
+			$err->sql($sql, 'Datenbankabfrage, die zu Fehler gefuehrt hat');
+
+			$database_object = $this;
 		}
 
 		trigger_error($error, E_USER_ERROR);

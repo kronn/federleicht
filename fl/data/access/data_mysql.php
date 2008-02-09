@@ -170,6 +170,42 @@ class data_mysql {
 	}
 
 	/**
+	 * Datenbank-Ergebnisse in richtige Typen umwandeln
+	 *
+	 * @param string table
+	 * @param array $result
+	 * @return array
+	 * @todo Funktion fuer MySQL umarbeiten
+	 */
+	function convert_result($table, $result) {
+		return $result;
+
+		$table = $this->table_prefix . $table;
+		$converted = $result;
+
+		$sql = <<<SQL
+SELECT column_name AS col, CASE
+	WHEN data_type = 'numeric' THEN 'float'
+	ELSE data_type
+END AS type
+FROM information_schema.columns
+WHERE table_name='{$table}'
+	AND data_type IN ('boolean', 'integer', 'numeric');
+SQL;
+		$types = $this->query($sql);
+
+		foreach ( $result as $row_num => $rows ) {
+			foreach ( $types as $type ) {
+				$col = $type['col'];
+				$new_type = $type['type'];
+				$converted[$row_num][$col] = settype($row[$col], $new_type);
+			}
+		}
+
+		return $converted;
+	}
+
+	/**
 	 * Tabelle leeren
 	 *
 	 * @param string $table Tabellennname

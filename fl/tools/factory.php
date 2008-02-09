@@ -66,27 +66,6 @@ class factory {
 	}
 
 	/**
-	 * Moduldatei einlesen
-	 *
-	 * @param string $modul
-	 */
-	function load_module($modul) {
-		$modul_path = $this->registry->get('path', 'module') . $modul . '/model.php';
-
-		if ( !in_array($modul, $this->registry->get('modules')) ) {
-			$common_path = $this->registry->get('path', 'module') . 'common/models/'.$modul.'.php';
-
-			if ( file_exists( $common_path ) ) {
-				$modul_path = $common_path;
-			} else {
-				return FALSE;
-			}
-		}
-
-		require_once $modul_path;
-	}
-
-	/**
 	 * Klasse holen
 	 *
 	 * @param string $class
@@ -104,11 +83,10 @@ class factory {
 
 		$instance = new $class_name();
 		if ( func_num_args() > 1 ) {
-			$options = array_values(
-				array_shift(
-					func_get_args()
-				)
-			);
+			$args = func_get_args();
+			array_shift($args);
+			$options = array_values($args);
+
 			$instance->set_options($options);
 		}
 
@@ -120,9 +98,10 @@ class factory {
 	 *
 	 * @param string $class
 	 * @param int $id
+	 * @param array $data
 	 * @return active_record
 	 */
-	function get_ar_class($class, $id = 0) {
+	function get_ar_class($class, $id = 0, $data = array()) {
 		if ( strpos($class, '/') === false) {
 			return false;
 		} else {
@@ -132,11 +111,22 @@ class factory {
 		$this->load_structure('active_record');
 		$this->load_class($modul, $class_name);
 
+		$data = (array) $data;
+
+		if ( !empty($data) ) {
+			$data_structure = $this->get_structure($modul.'/'.$class_name, $data);
+			$loaded = true;
+		} else {
+			$data_structure = $this->get_structure('data');
+			$loaded = false;
+		}
+
 		$instance = new $class_name(
 			$this->data_access, 
 			$this->inflector->plural($class_name),
 			$id, 
-			$this->get_structure('data')
+			$data_structure,
+			$loaded
 		);
 
 		return $instance;
@@ -151,30 +141,6 @@ class factory {
 	 */
 	function get_structure($wanted_structure, $data = null) {
 		return $this->structures->get($wanted_structure, $data);
-	}
-
-	/**
-	 * Datenstruktur einlesen
-	 *
-	 * @param string $wanted_structure
-	 */
-	function load_structure($wanted_structure) {
-		$this->structures->load($wanted_structure);
-	}
-	/**
-	 * Klassendatei einlesen
-	 *
-	 * @param string $modul
-	 * @param string $class
-	 */
-	function load_class($modul, $class) {
-		if ( $modul === 'common' ) {
-			$class_path = $this->registry->get('path', 'app') . 'classes/'. $class . '.php';
-		} else {
-			$class_path = $this->registry->get('path', 'module') . $modul . '/classes/'.$class.'.php';
-		}
-
-		require_once $class_path;
 	}
 
 	/**
@@ -208,6 +174,39 @@ class factory {
 		return $helper;
 	}
 
+
+	/**
+	 * ############# Funktionen zum Einlesen der entsprechenden Dateien ######
+	 */
+
+
+	/**
+	 * Datenstruktur einlesen
+	 *
+	 * @param string $wanted_structure
+	 */
+	function load_structure($wanted_structure) {
+		if ( strpos($wanted_structure, '/') === false ) {
+			$this->structures->load_structure($this->structures->built_in, $wanted_structure);
+		}
+	}
+
+	/**
+	 * Klassendatei einlesen
+	 *
+	 * @param string $modul
+	 * @param string $class
+	 */
+	function load_class($modul, $class) {
+		if ( $modul === 'common' ) {
+			$class_path = $this->registry->get('path', 'app') . 'classes/'. $class . '.php';
+		} else {
+			$class_path = $this->registry->get('path', 'module') . $modul . '/classes/'.$class.'.php';
+		}
+
+		require_once $class_path;
+	}
+
 	/**
 	 * Aufruf eines Helfermodul
 	 *
@@ -225,6 +224,27 @@ class factory {
 		include_once $this->registry->get('path', 'app') . 'helper/' . $wanted . '.php';
 
 		return TRUE;
+	}
+
+	/**
+	 * Moduldatei einlesen
+	 *
+	 * @param string $modul
+	 */
+	function load_module($modul) {
+		$modul_path = $this->registry->get('path', 'module') . $modul . '/model.php';
+
+		if ( !in_array($modul, $this->registry->get('modules')) ) {
+			$common_path = $this->registry->get('path', 'module') . 'common/models/'.$modul.'.php';
+
+			if ( file_exists( $common_path ) ) {
+				$modul_path = $common_path;
+			} else {
+				return FALSE;
+			}
+		}
+
+		require_once $modul_path;
 	}
 }
 ?>

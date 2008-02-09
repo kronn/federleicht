@@ -38,6 +38,15 @@ class data_structure {
 	}
 
 	/**
+	 * Daten in Datenstruktur loeschen
+	 *
+	 * @param string $key
+	 */
+	function remove($key) {
+		$this->_unset_field($key);
+	}
+
+	/**
 	 * Ein assoziatives Array als Daten übernehmen
 	 *
 	 * @param array $data
@@ -80,7 +89,7 @@ class data_structure {
 	 * @return mixed
 	 */
 	function _get_field($key) {
-		if ( !isset($this->key) ) {
+		if ( !isset($this->$key) ) {
 			$value = '';
 		} else {
 			$value = $this->$key;
@@ -99,5 +108,16 @@ class data_structure {
 	 */
 	function _set_field($key, $value) {
 		$this->$key = $value;
+	}
+
+	/**
+	 * Datenfeld aus Datenobjekt loeschen
+	 *
+	 * @param string $key
+	 */
+	function _unset_field($key) {
+		if ( isset($this->$key) ) {
+			unset($this->$key);
+		}
 	}
 }
