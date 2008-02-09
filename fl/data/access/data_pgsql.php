@@ -161,6 +161,10 @@ class data_pgsql {
 	/**
 	 * Datenbank-Ergebnisse in richtige Typen umwandeln
 	 *
+	 * Es werden die Datentypen boolean, integer und numeric ausgewertet. 
+	 * String-Datentypen muessen nicht ausgewertet werden, da PHP diesen
+	 * Datentype automatisch annimmt.
+	 *
 	 * @param string table
 	 * @param array $result
 	 * @return array
