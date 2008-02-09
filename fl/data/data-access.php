@@ -5,6 +5,7 @@
  * Die Daten können auf verschiedene Arten gespeichert werden.
  * - data_mysql: Speicherung in MySQL-Datenbank
  * - data_pgsql: Speicherung in PostgreSQL-Datenbank
+ * - data_null:  NULL-Objekt, dass wie data_mysql aussieht
  *
  * Die für den Betrieb notwendigen Daten, wie SQL-Zugangsdaten,
  * Speicherpfade oder FTP-Zugangsdaten werden bei der Objekterstellung
@@ -23,15 +24,16 @@ class data_access {
 	 */
 	function data_access($config = null ) {
 		if ( $config === null ) {
-			$type = 'data_null';
+			$type = 'null';
 		} else {
-			$type = 'data_' . strtolower($config['type']);
+			$type =  strtolower($config['type']);
 		}
+		$object_name = 'data_'.$type;
 
 		$registry = registry::getInstance();
 
 		require_once $registry->get('path', 'lib') . 'data/access/' . $type . '.php';
-		$this->data_source = new $type($config);
+		$this->data_source = new $object_name($config);
 	}
 
 	/**
