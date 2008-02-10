@@ -4,9 +4,40 @@ TODO und Ideen
 * PHP4-faehigen Code taggen und dann auf PHP5 umsteigen
 
 * Ausgabe cachen und Cache vorrangig verwenden
+  http://www.php.net/outcontrol
+	Die Dateinamen sollten dabei direkt mit der aufrufenden URL
+  zusammenhaengen. (siehe auch: Compiler-Idee)
 
 * Routen per ini-Datei konfigurierbar machen
+
+* Routen erweitern, so dass eine Route einen Link erzeugen kann.
+	Zuerst das einfache Problem, die aktuellen Route zu einem Link zu machen.
+	Danach sollte das fuer beliebige "modul-controller-action-*-params"-
+	Kombinationen funktionieren und dabei den bestmoeglichen Link erzeugen.  Da
+	Routen sortiert werden koennen, ist das Problem des Vorrangs leicht zu
+	loesen. Aufwendiger (und deswegen vielleicht fuer Produktivsystem gar nicht
+	sinnvoll) ist es, alle angegebenen Routen abzufragen.
 
 * "Compiler"-Skript erstellen, mit dem mehrere URLs hintereinander
   aufgerufen werden koennen. Die Ausgabe sollte dann gecacht werden und 
   der Cache als eigenstaendige Webseite nutzbar sein (ohne PHP!)
+
+* Converter-Klasse, die spezielle Typumwandlungen vornehmen kann.
+  Beispiel: 
+
+	(string) '0=null,1=eins,2=zwei' zu
+
+	(array) 
+		(array) 
+			id = 0
+			name = null
+		(array) 
+			id = 1
+			name = eins
+		(array) 
+			id = 2
+			name = zwei
+
+	umwandeln. Die Rueckrichtung natuerlich ebenfalls.
+	Vielleicht kann man auch die Kapselung in Datenstruktur-Objekte aufnehmen
+
