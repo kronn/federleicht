@@ -2,7 +2,7 @@
 /**
  * Datenstrukturen des Federleicht-Frameworks verwalten
  *
- * @version 0.2
+ * @version 0.3
  * @author Matthias Viehweger <kronn@kronn.de>
  * @package federleicht
  * @subpackage base
@@ -56,7 +56,7 @@ class structures {
 		if ( $modul === $this->built_in ) {
 			$file = $this->libpath . 'data/structures/'.$name.'.php';
 		} else {
-			$file = $this->modulepath . '/'.$modul.'/data/'.$name.'.php';
+			$file = $this->modulepath . $modul.'/data/'.$name.'.php';
 		}
 
 		require_once $file;
@@ -66,6 +66,7 @@ class structures {
 	 * Datenstrukturdatei einlesen
 	 *
 	 * @param string $wanted_structure
+	 * @deprecated
 	 */
 	function load($wanted_structure) {
 		trigger_error(
@@ -74,5 +75,20 @@ class structures {
 		);
 
 		return $this->load_structure($this->built_in, $wanted_structure);
+	}
+
+	/**
+	 * Pruefung, ob Datenstrukturdatei existiert
+	 *
+	 * @param string $modul
+	 * @param string $name
+	 * @return boolean
+	 */
+	function exists($modul, $name) {
+		$filename = ( $modul === $this->built_in )?
+			$this->libpath . 'data/structures/'.$name.'.php':
+			$this->modulepath.$modul.'/data/'.$name.'.php';
+
+		return file_exists($filename);
 	}
 }

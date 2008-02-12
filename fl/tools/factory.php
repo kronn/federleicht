@@ -113,7 +113,7 @@ class factory {
 
 		$data = (array) $data;
 
-		if ( !empty($data) ) {
+		if ( !empty($data) OR $this->is_structure($modul, $class_name) ) {
 			$data_structure = $this->get_structure($modul.'/'.$class_name, $data);
 			$loaded = true;
 		} else {
@@ -245,6 +245,24 @@ class factory {
 		}
 
 		require_once $modul_path;
+	}
+
+
+
+	/**
+	 * ########## Funktionen, die auf Existenz der entsprechenden Dateien ####
+	 */
+
+
+	/**
+	 * Pruefung, ob Datenstruktur existiert
+	 *
+	 * @param string $modul
+	 * @param string $class
+	 * @return boolean
+	 */
+	function is_structure($modul, $class) {
+		return $this->structures->exists($modul, $class);
 	}
 }
 ?>
