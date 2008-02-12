@@ -24,6 +24,9 @@ class data_pgsql {
 
 	var $show_errors = FALSE;
 
+	var $true_value = 't';
+	var $false_value = 'f';
+
 	function data_pgsql($config) {
 		$this->table_prefix = (string) $config['table_prefix'];
 		$this->schema = ( isset($config['schema']) )?

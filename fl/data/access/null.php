@@ -9,6 +9,9 @@
  * - del
  */
 class data_null {
+	var $true_value = true;
+	var $false_value = false;
+
 	function data_null() {
 	}
 

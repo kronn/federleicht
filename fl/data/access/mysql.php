@@ -26,6 +26,9 @@ class data_mysql {
 
 	var $show_errors = FALSE;
 
+	var $true_value = 1;
+	var $false_value = 0;
+
 	function data_mysql($config) {
 		$this->table_prefix = (string) $config['table_prefix'];
 		$this->_open_db($config['host'], $config['database'], $config['user'], $config['pass']);
