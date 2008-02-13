@@ -121,7 +121,13 @@ class active_record {
 			$data = array();
 		}
 
-		return $this->data->set_data($data);
+		$result = $this->data->set_data($data);
+
+		if ( $this->id > 0 ) {
+			$this->load_additional_data_parts();
+		}
+
+		return $result;
 	}
 
 	/**
@@ -177,4 +183,9 @@ class active_record {
 	 * Daten vorbereiten
 	 */
 	function prepare_data() {}
+
+	/**
+	 * zusätzliche Daten laden
+	 */
+	function load_additional_data_parts() {}
 }
