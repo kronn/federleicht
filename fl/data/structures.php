@@ -30,7 +30,7 @@ class structures {
 	 * @param array  $initial_data
 	 * @return data_structure
 	 */
-	function get($wanted_structure, $initial_data = null) {
+	function get($wanted_structure, $initial_data = array()) {
 		if ( strpos($wanted_structure, '/') === false) {
 			$modul = $this->built_in;
 			$name = $wanted_structure;
@@ -43,7 +43,7 @@ class structures {
 
 		$this->load_structure($modul, $name);
 
-		return new $structure_name($initial_data);
+		return new $structure_name((array) $initial_data);
 	}
 
 	/**

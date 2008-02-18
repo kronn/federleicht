@@ -74,11 +74,7 @@ class data_structure {
 	 * @param array $data
 	 */
 	function data_structure($data = null) {
-		if ( $data === null ) {
-			$data = array();
-		}
-
-		$this->set_data($data);
+		$this->set_data((array) $data);
 	}
 
 	/** ====== Zugriffsfunktionen auf die internen Daten ====== */
