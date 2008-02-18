@@ -112,13 +112,16 @@ class factory {
 		$this->load_class($modul, $class_name);
 
 		$data = (array) $data;
-
-		if ( !empty($data) OR $this->is_structure($modul, $class_name) ) {
-			$data_structure = $this->get_structure($modul.'/'.$class_name, $data);
+		if (!empty($data)) {
 			$loaded = true;
 		} else {
-			$data_structure = $this->get_structure('data');
 			$loaded = false;
+		}
+
+		if ( $this->is_structure($modul, $class_name) ) {
+			$data_structure = $this->get_structure($modul.'/'.$class_name, $data);
+		} else {
+			$data_structure = $this->get_structure('data', $data);
 		}
 
 		$instance = new $class_name(
