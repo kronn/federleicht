@@ -201,13 +201,7 @@ class factory {
 	 * @param string $class
 	 */
 	function load_class($modul, $class) {
-		if ( $modul === 'common' ) {
-			$class_path = $this->registry->get('path', 'app') . 'classes/'. $class . '.php';
-		} else {
-			$class_path = $this->registry->get('path', 'module') . $modul . '/classes/'.$class.'.php';
-		}
-
-		require_once $class_path;
+		require_once $this->registry->get('path', 'module') . $modul . '/classes/'.$class.'.php';
 	}
 
 	/**
