@@ -144,12 +144,13 @@ Zeile: {$line}
 </pre>
 <p>Weitere Informationen</p>
 <pre>
+Anfrage: {$_SERVER['REQUEST_URI']}
 Zieladresse: {$zieladresse}
-Anfrage: 
+</pre>
 HTML;
 				echo $html;
-				print_r($this->request);
-				echo '</pre>';
+
+				trigger_error('Header bereits gesandt', E_USER_WARNING);
 			}
 
 			$this->functions->stop(
@@ -157,7 +158,6 @@ HTML;
 			);
 		} else {
 			header('Location: '.$zieladresse);
-
 		}
 	}
 
