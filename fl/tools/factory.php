@@ -21,7 +21,7 @@ class factory {
 	 * Konstruktor
 	 */
 	function factory() {
-		$this->registry =& registry::getInstance();
+		$this->registry = &registry::getInstance();
 		$this->structures = new structures();
 
 		$lang = $this->registry->get('config', 'lang');
@@ -218,7 +218,7 @@ class factory {
 			return FALSE;
 		}
 
-		include_once $this->registry->get('path', 'app') . 'helper/' . $wanted . '.php';
+		include_once $this->registry->get('path', 'helper') . $wanted . '.php';
 
 		return TRUE;
 	}
@@ -260,6 +260,30 @@ class factory {
 	 */
 	function is_structure($modul, $class) {
 		return $this->structures->exists($modul, $class);
+	}
+
+	/**
+	 * ########## interne Funktionen #########################################
+	 */
+
+	/**
+	 * Klassenidentifikator parsen
+	 *
+	 * @param string $class
+	 * @return array
+	 * @access private
+	 */
+	function parse_class_name($class) {
+		$common = 'common';
+		$builtin = 'builtin';
+
+		if ( strpos($class, '/') === false) {
+			$result = array($common, $class);
+		} else {
+			$result = explode('/', $class, 2);
+		}
+
+		return $result;
 	}
 }
 ?>

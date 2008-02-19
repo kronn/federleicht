@@ -41,7 +41,10 @@ class federleicht {
 		$path = array(
 			'lib'=>ABSPATH . 'fl/',
 			'app'=>ABSPATH . 'app/',
-			'module'=>ABSPATH . 'app/modules/'
+			'module'=>ABSPATH . 'app/modules/',
+			'helper'=>ABSPATH . 'app/helper/',
+			'elements'=>ABSPATH . 'app/elements/',
+			'layouts'=>ABSPATH . 'app/layouts'
 		);
 
 		require_once $path['lib'] . 'tools/registry.php';
@@ -123,10 +126,13 @@ class federleicht {
 	 */
 	function start_session() {
 		// Einstellungen vornehmen
-		#ini_set('session.gc_maxlifetime', 2400); // Session gilt 40 Minuten lang
+		// 7 * 24 * 60 * 60 = 604800
+		//          40 * 60 =   2400
+		#ini_set('session.gc_maxlifetime', 2400);
 		#ini_set('session.use_only_cookies', '1');
 		
-		#$this->functions->needs('cookiesession'); // Session stored in Cookies
+		// Session stored in Cookies
+		#$this->functions->needs('cookiesession'); 
 
 		// Session starten
 		session_start();
@@ -195,6 +201,7 @@ class federleicht {
 	 * gegeben.
 	 *
 	 * @return array
+	 * @todo in Factory verschieben
 	 */
 	function search_modules() {
 		$modules = glob( $this->registry->get('path', 'module') . '*/modul.php');
@@ -218,15 +225,16 @@ class federleicht {
 	 * gegeben.
 	 *
 	 * @return array
+	 * @todo in Factory verschieben
 	 */
 	function search_helpers() {
-		$helpers = glob( $this->registry->get('path', 'app') . 'helper/*.php');
+		$helpers = glob( $this->registry->get('path', 'helper') . '*.php');
 		$installed_helpers = array();
 
 		if ( !is_array($helpers) ) return $installed_helpers;
 
 		foreach ($helpers as $helper) {
-			$installed_helpers[] = preg_replace('#'.addslashes($this->registry->get('path', 'app')).'helper/([-_a-z0-9]+)\.php#','$1',$helper);
+			$installed_helpers[] = preg_replace('#'.addslashes($this->registry->get('path', 'helper')).'([-_a-z0-9]+)\.php#','$1',$helper);
 		}
 
 		return $installed_helpers;

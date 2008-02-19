@@ -25,6 +25,8 @@ class view {
 
 	var $modulepath;
 	var $apppath;
+	var $elementpath;
+	var $layoutpath;
 
 	var $translator = NULL;
 
@@ -56,6 +58,8 @@ class view {
 
 		$this->modulepath = $registry->get('path', 'module');
 		$this->apppath = $registry->get('path', 'app');
+		$this->elementpath = $registry->get('path', 'elements');
+		$this->layoutpath = $registry->get('path', 'layouts');
 
 		$this->headers = $registry->get('config', 'headers');
 
@@ -66,14 +70,18 @@ class view {
 	/**
 	 * Ruft das Template auf
 	 *
-	 * @param array $data
+	 * @param string $layout
 	 */
 	function render_layout($layout) {
 		if ( strpos($layout, '/') === FALSE ) {
-			$path = $this->modulepath . $this->cap['controller'] . '/';
+			$path = $this->modulepath . $this->cap['controller'] . '/layouts/';
 		} else {
 			list($prefix, $layout) = explode('/', $layout, 2);
-			$path = $this->apppath;
+			if ( $prefix == 'comon' ) {
+				$path = $this->layoutpath;
+			} else {
+				$path = $this->modulepath . $prefix . '/layouts/';
+			}
 		}
 
 		/**
@@ -84,7 +92,7 @@ class view {
 				'; charset=' . $this->headers['charset'] );
 		}
 
-		require_once $path . 'layouts/'  . $layout . '.php';
+		require_once $path . $layout . '.php';
 	}
 
 	/**
@@ -104,17 +112,17 @@ class view {
 	 * verf&uuml;gbar.
 	 *
 	 * @param string $name      Dateiname (ohne Endung) des Elements.
-	 * @param array  $variablen Assoziatives Array mit Variablen f&uuml;r das Element.
+	 * @param array  $variablen Assoziatives Array mit Variablen fuer das Element.
 	 */
 	function get_element($name, $variablen='') {
 		$vars = ( !is_array($variablen) )? array($variablen): $variablen;
-		require_once $this->apppath . 'elements/' . $name . '.php';
+		require_once $this->elementpath . $name . '.php';
 	}
 
 	/**
 	 * Teilbereich eines Subview holen
 	 *
-	 * @oaram string $name  Name des Teilbereichs
+	 * @param string $name  Name des Teilbereichs
 	 */
 	function get_partial($name, $forgiving=FALSE) {
 		$file = $this->modulepath . $this->cap['controller'] . '/partials/' . $name . '.php';
