@@ -44,3 +44,7 @@ TODO und Ideen
 
 * Alle Modulverzeichnisse direkt in das Verzeichnis app/ schieben.
   Gemeinsame Dateien werden dem "Modul" common zugeordnet.
+
+* HTML-Templates fuer Fehlermeldungen erstellen
+  Diese sollten innerhalb des fl/-Verzeichnisses sein.
+  ? fl/error/*.php

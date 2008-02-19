@@ -120,6 +120,7 @@ class controller {
 	 * Ruft eine andere URL auf.
 	 *
 	 * @param string $target
+	 * @todo externes Template fuer Weiterleitungsfehler verwenden
 	 */
 	function redirect($target='') {
 		$target = ltrim($target, '/');
@@ -132,10 +133,32 @@ class controller {
 
 		$this->functions->flash->_flash();
 
-		header('Location: '.$zieladresse) OR
+		if ( headers_sent($file, $line) ) {
+			if ( error_reporting() > 0 ) {
+				$html = <<<HTML
+<h2>HTTP-Header wurden bereits gesandt</h2>
+<p>Die Ausgabe startete hier:</p>
+<pre>
+Datei: {$file}
+Zeile: {$line}
+</pre>
+<p>Weitere Informationen</p>
+<pre>
+Zieladresse: {$zieladresse}
+Anfrage: 
+HTML;
+				echo $html;
+				print_r($this->request);
+				echo '</pre>';
+			}
+
 			$this->functions->stop(
 				'<a href="'.$zieladresse.'">'.$zieladresse.'</a>'
 			);
+		} else {
+			header('Location: '.$zieladresse);
+
+		}
 	}
 
 	/**
@@ -221,6 +244,7 @@ class controller {
 	 * @param string $from
 	 * @param string $username
 	 * @param bool   $get_level_from_db
+	 * @todo hier entfernen und in Login-Klasse auslagern
 	 */
 	function check_login($from, $username = '', $get_level_from_db = 'auto') {
 		/**
