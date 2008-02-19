@@ -1,8 +1,8 @@
 TODO und Ideen
 ==============
 
-* Alle Klassen umbennen, um Verzeichnisstruktur bessser widerzuspiegeln und 
-  Namenskonflikte zu vermeiden. (PEAR-aehnlich)
+* Alle Klassen von Federleicht umbennen, um Verzeichnisstruktur bessser
+  widerzuspiegeln und Namenskonflikte zu vermeiden. (PEAR-aehnlich)
 
 * Ausgabe cachen und Cache vorrangig verwenden
   http://www.php.net/outcontrol
@@ -42,3 +42,5 @@ TODO und Ideen
   umwandeln. Die Rueckrichtung natuerlich ebenfalls.
   Vielleicht kann man auch die Kapselung in Datenstruktur-Objekte aufnehmen
 
+* Alle Modulverzeichnisse direkt in das Verzeichnis app/ schieben.
+  Gemeinsame Dateien werden dem "Modul" common zugeordnet.
