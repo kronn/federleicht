@@ -3,7 +3,7 @@
  * Allgemeines Datenstrukturobjekt
  *
  * @author Matthias Viehweger <kronn@kronn.de>
- * @version 0.2
+ * @version 0.3
  * @package federleicht
  * @subpackage base
  */
@@ -14,7 +14,7 @@ class data_structure {
 	 * @param string $key
 	 */
 	function say($key) {
-		echo $this->_get_field($key);
+		echo $this->get($key);
 	}
 
 	/**
@@ -85,10 +85,16 @@ class data_structure {
 	 * @return mixed
 	 */
 	function _get_field($key) {
-		if ( !isset($this->$key) ) {
-			$value = '';
-		} else {
+		if ( isset($this->$key) ) {
 			$value = $this->$key;
+		} else {
+			$fallback_method = 'get_'.$key;
+
+			if ( method_exists( $this, $fallback_method ) ) {
+				$value = $this->$fallback_method();
+			} else {
+				$value = '';
+			}
 		}
 
 		return $value;
