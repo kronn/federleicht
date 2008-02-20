@@ -3,7 +3,7 @@
  * Datenstruktur fuer Bilddateien
  *
  * @author Matthias Viehweger <kronn@kronn.de>
- * @version 0.1
+ * @version 0.2
  * @package federleicht
  * @subpackage base
  */
@@ -12,11 +12,14 @@ class image_structure extends data_structure {
 	 * Metadaten einer Bilddatei einlesen und speichern
 	 *
 	 * @param int $id
+	 * @return void
 	 */
 	protected function set_image_data($id) {
-		$file = glob(ABSPATH . self::IMAGEPATH . $id . '*');
+		$path = $this->_imagepath;
+
+		$file = glob(ABSPATH . $path . $id . '*');
 		if ( $file === false OR !isset($file[0]) ) {
-			$file = self::IMAGEPATH . 'dummy.jpg';
+			$file = $path . 'dummy.jpg';
 		} else {
 			$file = $file[0];
 		}
@@ -25,12 +28,17 @@ class image_structure extends data_structure {
 		list($width, $height) = getimagesize($file);
 
 		$this->set_data(array(
-			'src'=>self::IMAGEPATH . $id . $extension,
+			'src'=>$path . $id . $extension,
 			'height'=>$height,
 			'width'=>$width,
 		));
 	}
 
+	/**
+	 * HTML zu einem Bild ausgeben
+	 *
+	 * @return string
+	 */
 	public function get_image_html() {
 		$html = '<img src="/'.$this->get('src').'" width="'.$this->get('width').'" height="'.$this->get('height').'" alt="'.$this->get('alt').'" title="'.$this->get('title').'" />';
 		return $html;
