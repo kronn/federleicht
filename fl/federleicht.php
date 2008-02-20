@@ -151,7 +151,8 @@ class federleicht {
 	 *   Klassen zur URL-Analyse und Sprachauswertung
 	 *
 	 * - structures.php
-	 * - structures/data.php
+	 * - structures/data_structure.php
+	 * - structures/image_structure.php
 	 *   Klassen für besondere Datenstrukturen
 	 *
 	 * - data-access.php
@@ -180,6 +181,7 @@ class federleicht {
 
 		require_once $libpath . 'data/structures.php';
 		require_once $libpath . 'data/structures/data_structure.php';
+		require_once $libpath . 'data/structures/image_structure.php';
 		require_once $libpath . 'data/data-access.php';
 
 		require_once $libpath . 'tools/flash.php';
