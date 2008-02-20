@@ -2,7 +2,7 @@
 /**
  * Datenstrukturen des Federleicht-Frameworks verwalten
  *
- * @version 0.3
+ * @version 0.4
  * @author Matthias Viehweger <kronn@kronn.de>
  * @package federleicht
  * @subpackage base
@@ -42,6 +42,7 @@ class structures {
 		}
 
 		$this->load_structure($modul, $name);
+		$this->check_dependecies($structure_name, $modul, $name);
 
 		return new $structure_name((array) $initial_data);
 	}
@@ -90,5 +91,21 @@ class structures {
 			$this->modulepath.$modul.'/data/'.$name.'.php';
 
 		return file_exists($filename);
+	}
+
+
+	/**
+	 * Elternklassen einbinden, sofern intern vorhanden
+	 *
+	 * @param string $classname
+	 */
+	function check_dependecies($classname) {
+		$parent = get_parent_class($classname);
+		if ( $parent !== false AND !class_exists($parent) ) {
+			if ( $this->exists($this->built_in, $parent) ) {
+				$this->load_structure($this->built_in, $parent);
+				$this->check_dependecies($parent);
+			}
+		}
 	}
 }
