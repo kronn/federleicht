@@ -20,6 +20,7 @@ class image_structure extends data_structure {
 		$file = glob(ABSPATH . $path . $id . '*');
 		if ( $file === false OR !isset($file[0]) ) {
 			$file = $path . 'dummy.jpg';
+			$id = 'dummy';
 		} else {
 			$file = $file[0];
 		}
