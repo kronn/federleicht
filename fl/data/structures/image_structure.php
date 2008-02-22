@@ -17,12 +17,12 @@ class image_structure extends data_structure {
 	protected function set_image_data($id) {
 		$path = $this->_imagepath;
 
-		$file = glob(ABSPATH . $path . $id . '*');
-		if ( $file === false OR !isset($file[0]) ) {
+		$files = glob(ABSPATH . $path . $id . '*');
+		if ( $files === false OR !isset($files[0]) ) {
 			$file = $path . 'dummy.jpg';
 			$id = 'dummy';
 		} else {
-			$file = $file[0];
+			$file = $files[0];
 		}
 		$extension = substr($file, strrpos($file, '.'));
 

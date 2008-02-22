@@ -116,6 +116,7 @@ class factory {
 			$loaded = true;
 		} else {
 			$loaded = false;
+			$data += array('id'=>$id);
 		}
 
 		if ( $this->is_structure($modul, $class_name) ) {
