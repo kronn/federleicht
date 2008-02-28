@@ -3,7 +3,7 @@
  * Datenstruktur fuer Bilddateien
  *
  * @author Matthias Viehweger <kronn@kronn.de>
- * @version 0.2
+ * @version 0.3
  * @package federleicht
  * @subpackage base
  */
@@ -43,5 +43,12 @@ class image_structure extends data_structure {
 	public function get_image_html() {
 		$html = '<img src="/'.$this->get('src').'" width="'.$this->get('width').'" height="'.$this->get('height').'" alt="'.$this->get('alt').'" title="'.$this->get('title').'" />';
 		return $html;
+	}
+
+	/**
+	 * Object zu String umwandeln
+	 */
+	public function __toString() {
+		return $this->get_image_html();
 	}
 }
