@@ -155,7 +155,7 @@ class data_pgsql {
 		}
 
 		$sql = "DELETE FROM ".$this->table_prefix.$table."
-		 WHERE id='".$id."' LIMIT 1;";
+		 WHERE id=".$id.";";
 
 		$result = $this->query($sql);
 		return $result;
