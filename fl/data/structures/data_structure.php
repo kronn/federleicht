@@ -69,6 +69,16 @@ class data_structure {
 	}
 
 	/**
+	 * Pruefen, ob eine Datenfeld existiert
+	 * 
+	 * @param string $key
+	 * @return boolean
+	 */
+	function is_set($key) {
+		return $this->_isset_field($key);
+	}
+
+	/**
 	 * Konstruktor
 	 *
 	 * @param array $data
@@ -85,7 +95,7 @@ class data_structure {
 	 * @return mixed
 	 */
 	function _get_field($key) {
-		if ( isset($this->$key) ) {
+		if ( $this->_isset_field($key) ) {
 			$value = $this->$key;
 		} else {
 			$fallback_method = 'get_'.$key;
@@ -93,7 +103,7 @@ class data_structure {
 			if ( method_exists( $this, $fallback_method ) ) {
 				$value = $this->$fallback_method();
 			} else {
-				$value = '';
+				$value = ( isset($this->_default) )? $this->_default: '';
 			}
 		}
 
@@ -118,8 +128,18 @@ class data_structure {
 	 * @param string $key
 	 */
 	function _unset_field($key) {
-		if ( isset($this->$key) ) {
+		if ( $this->_isset_field($key) ) {
 			unset($this->$key);
 		}
+	}
+
+	/**
+	 * Pruefen, ob Datenfeld existiert
+	 *
+	 * @param string $key
+	 * @return boolean
+	 */
+	function _isset_field($key){
+		return isset($this->$key);
 	}
 }

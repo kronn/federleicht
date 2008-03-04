@@ -11,29 +11,29 @@ class view {
 	/**
 	 * Instanzvariablen
 	 */
-	var $layout = 'default';
-	var $subview = '';
+	protected $layout = 'default';
+	protected $subview = '';
 
 	/**
 	 * extern eingebundene Objekte und Variablen
 	 */
-	var $datamodel;
-	var $cap; // zu route umbennenen
-	var $functions;
+	protected $datamodel;
+	protected $cap; // zu route umbennenen
+	protected $functions;
 
-	var $headers;
+	protected $headers;
 
-	var $modulepath;
-	var $apppath;
-	var $elementpath;
-	var $layoutpath;
+	protected $modulepath;
+	protected $apppath;
+	protected $elementpath;
+	protected $layoutpath;
 
-	var $translator = NULL;
+	protected $translator = NULL;
 
 	/**
 	 * Daten
 	 */
-	var $data = array();
+	protected $data = null;
 
 	/**
 	 * Kontruktor der Viewklasse
@@ -45,12 +45,12 @@ class view {
 	 * @param functions $functions    Federleicht-Hilfsobjekt
 	 * @param string       $model_name   Name des in erster Linie verwendeten Models
 	 */
-	function view($data, $data_access, $functions, $model_name) {
-		$this->data = $data;
-
+	public function __construct($data, $data_access, $functions, $model_name) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
 		$this->factory   = $functions->get_factory();
+
+		$this->data = $this->factory->get_structure('view_data', $data);
 
 		$registry =& registry::getInstance();
 		$this->cap = $registry->get('request', 'route');
@@ -72,7 +72,7 @@ class view {
 	 *
 	 * @param string $layout
 	 */
-	function render_layout($layout) {
+	public function render_layout($layout) {
 		if ( strpos($layout, '/') === FALSE ) {
 			$path = $this->modulepath . $this->cap['controller'] . '/layouts/';
 		} else {
@@ -98,7 +98,7 @@ class view {
 	/**
 	 * Sucht den zur Action passenden Unterview heraus.
 	 */
-	function get_sub_view() {
+	public function get_sub_view() {
 		require_once($this->modulepath . $this->cap['controller'] . '/views/' . $this->subview . '.php');
 	}
 
@@ -114,7 +114,7 @@ class view {
 	 * @param string $name      Dateiname (ohne Endung) des Elements.
 	 * @param array  $variablen Assoziatives Array mit Variablen fuer das Element.
 	 */
-	function get_element($name, $variablen='') {
+	public function get_element($name, $variablen='') {
 		$vars = ( !is_array($variablen) )? array($variablen): $variablen;
 		require_once $this->elementpath . $name . '.php';
 	}
@@ -124,7 +124,7 @@ class view {
 	 *
 	 * @param string $name  Name des Teilbereichs
 	 */
-	function get_partial($name, $forgiving=FALSE) {
+	public function get_partial($name, $forgiving=FALSE) {
 		$file = $this->modulepath . $this->cap['controller'] . '/partials/' . $name . '.php';
 
 		if ( $forgiving AND !file_exists($file) ) {
@@ -140,7 +140,7 @@ class view {
 	 * @param string $namespace
 	 * @return string
 	 */
-	function render_flash($namespace='') {
+	public function render_flash($namespace='') {
 		$html = '';
 
 		$messages = $this->functions->flash->get_messages($namespace);
@@ -157,7 +157,7 @@ class view {
 	 *
 	 * @return string
 	 */
-	function get_site_title() {
+	public function get_site_title() {
 		if ( !defined('SEITENTITEL') ) {
 			$result = $this->datamodel->retrieve('optionen', '*', "optionname='seitentitel'", '', '1');
 			#define('SEITENTITEL', $result['value']);
@@ -171,74 +171,36 @@ class view {
 	}
 
 	/**
-	 * Datenfeld ausgeben
-	 *
-	 * Vor der Datenausgaben werden alle HTML-Sonderzeichen
-	 * maskiert, um Ausgabeprobleme zu vermeiden.
-	 *
-	 * @todo hier entfernen und in ein view_data-Objekt auslagern, das von data_structure abgeleitet wird
-	 * @param string $field       Name des Datenfeldes
-	 * @param string $type        Typehint für die Ausgabe, ggf. werden die 
-	 *                            Daten vor Ausgabe entsprechend umgewandelt.
-	 * @param array  $source      Quelldatenfeld, das untersucht werden soll
-	 * @param bool   $raw_output  Angabe, ob die Daten ohne HTML-Konvertierung 
-	 *                            ausgegeben werden sollen.
-	 * @param string $default     Text der ausgegeben werden soll, wenn keine Daten vorliegen
-	 * @return mixed [string, array oder object]
+	 * Wrapper fuer Datenobjekt
 	 */
-	function get_field($field, $type='', $source=NULL, $raw_output=FALSE, $default='') {
-		$daten = ( is_null($source) OR empty($source) )? 
-			$this->data: 
-			$source;
-
-		$data = ( isset($daten[$field]) )?
-			$daten[$field]:
-			(string) $default;
-		if ( is_array($data) OR is_object($data) ) return $data;
-
-		switch ($type) {
-		case 'int':
-		case 'integer':
-			$content = intval($data);
-			break;
-
-		case 'bool':
-		case 'boolean':
-			$content = (bool) $data;
-			break;
-
-		case 'double':
-		case 'float':
-			$content = (double) $data;
-			break;
-
-		case 'string':
-			$content = (string) $data;
-		default:
-			$content = ( isset($content) )? 
-				$content: 
-				$data;
-
-			if ( !$raw_output ) {
-				$content = htmlentities( html_entity_decode($content, ENT_QUOTES, 'UTF-8'), ENT_QUOTES, 'UTF-8');
-			}
+	public function get($field, $type='string', $source=NULL, $raw=FALSE, $default='') {
+		if ( $source instanceof data_structure) {
+			return $source->get($field, $type, $raw, $default);
 		}
 
-		return $content;
+		$this->data->set_raw_output($raw);
+		$former_default = $this->data->set_default($default);
+
+		$value = $this->data->get($field, $type);
+
+		$this->data->set_default($former_default);
+		return $value;
 	}
 
 	/**
-	 * Wrapper für "get_field();"
+	 * Wrapper fuer Datenobjekt
 	 */
-	function get($field, $type='', $source=NULL, $raw_output=FALSE, $default='') {
-		return $this->get_field($field, $type, $source, $raw_output, $default);
+	public function say($field, $type='string', $source=NULL, $raw_output=FALSE, $default='') {
+		echo $this->get($field, $type, $source, $raw_output, $default);
 	}
 
 	/**
-	 * Wrapper für "echo get_field();"
+	 * Datenobjekt zurueckgeben
+	 * 
+	 * @return view_data
 	 */
-	function say($field, $type='', $source=NULL, $raw_output=FALSE, $default='') {
-		echo $this->get_field($field, $type, $source, $raw_output, $default);
+	public function get_data_object() {
+		return $this->data;
 	}
 
 	/**
@@ -252,7 +214,7 @@ class view {
 	 * @param string $lang
 	 * @return string
 	 */
-	function translate($text, $lang=LANG) {
+	public function translate($text, $lang=LANG) {
 		if ( is_object($this->translator) ) { 
 			$translation = $this->translator->get($text, $lang);
 		} else {
@@ -265,7 +227,7 @@ class view {
 	/**
 	 * Usernamen des aktuell eingeloggten Users ausgeben
 	 */
-	function get_username() {
+	public function get_username() {
 		trigger_error(
 			'veraltet, Wert sollte als Variable uebergeben werden',
 			E_USER_NOTICE
@@ -278,7 +240,7 @@ class view {
 	/**
 	 * Alter aus Geburtsdatum berechnen und zurückgeben
 	 */
-	function get_age($geburtsdatum) {
+	public function get_age($geburtsdatum) {
 		trigger_error(
 			'veraltet, Wert sollte als Variable uebergeben werden. siehe: datum_model::alter()',
 			E_USER_NOTICE
@@ -302,7 +264,7 @@ class view {
 	 *
 	 * @todo Routen so erweitern, das die aktuelle URL ausgegeben werden kann.
 	 */
-	function current_url() {
+	public function current_url() {
 		$registry =& registry::getInstance();
 		$cap = $registry->get('request', 'route');
 		$url = 'http://'.$_SERVER['HTTP_HOST'].'/'.$cap['controller'].'/'.$cap['action'].'/'.$cap['param'];
