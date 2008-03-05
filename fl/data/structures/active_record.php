@@ -10,6 +10,7 @@
  * @todo $fields automatisch aus Datenbank auslesen
  * @todo validator in Basisklasse instanziieren
  * @todo validate_data als standardfunktion in Basisklasse uebernehmen
+ * @todo active_record als Datenzugriffsklasse (und nicht als Datenstruktur) im richtigen Verzeichnis ablegen und von dort laden lassen.
  */
 class active_record {
 	/**

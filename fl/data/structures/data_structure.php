@@ -6,6 +6,7 @@
  * @version 0.4
  * @package federleicht
  * @subpackage base
+ * @todo Datenstruktur "abschliessbar" machen, also hinzufuegen neuer Werte verhindern.
  */
 class data_structure {
 	/**
