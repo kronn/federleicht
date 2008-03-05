@@ -8,38 +8,38 @@
  * - update
  * - del
  */
-class data_null {
-	var $true_value = true;
-	var $false_value = false;
+class data_null implements data_accessor {
+	private $true_value = true;
+	private $false_value = false;
 
-	function data_null() {
+	public function __construct() {
 	}
 
-	function create() {
+	public function create() {
 		return true;
 	}
 
-	function retrieve($table, $field='*', $condition='', $order='', $limit='') {
+	public function retrieve($table, $field='*', $condition='', $order='', $limit='') {
 		return true;
 	}
 
-	function update($table, $data, $id, $id_field='id', $all=FALSE) {
+	public function update($table, $data, $id, $id_field='id', $all=FALSE) {
 		return true;
 	}
 
-	function del($table, $id) {
+	public function del($table, $id) {
 		return true;
 	}
 
-	function count($table, $condition='') {
+	public function count($table, $condition='') {
 		return 0;
 	}
 
-	function find_id($table, $condition) {
+	public function find_id($table, $condition) {
 		return 0;
 	}
 
-	function query($sql) {
+	public function query($sql) {
 		return true;
 	}
 }

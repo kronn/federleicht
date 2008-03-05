@@ -13,23 +13,23 @@
  * - optimize_table
  * - query
  *
- * @version 0.2.0
+ * @version 0.2.1
  */
-class data_mysql {
-	var $connection;
-	var $database;
+class data_mysql implements data_accessor {
+	protected $connection;
+	public $database;
 
-	var $lastSQL = '';
-	var $allSQL = array();
-	var $query_count = 0;
-	var $table_prefix = '';
+	public $lastSQL = '';
+	public $allSQL = array();
+	public $query_count = 0;
+	public $table_prefix = '';
 
-	var $show_errors = FALSE;
+	public $show_errors = FALSE;
 
-	var $true_value = 1;
-	var $false_value = 0;
+	protected $true_value = 1;
+	protected $false_value = 0;
 
-	function data_mysql($config) {
+	public function data_mysql($config) {
 		$this->table_prefix = (string) $config['table_prefix'];
 		$this->_open_db($config['host'], $config['database'], $config['user'], $config['pass']);
 	}
@@ -45,7 +45,7 @@ class data_mysql {
 	 * @param string $type  Art der Einfügeoperation (INSERT, INSERT IGNORE, REPLACE)
 	 * @return string Ergebnis der Datenbankoperation
 	 */
-	function create($table, $data, $type='INSERT') {
+	public function create($table, $data, $type='INSERT') {
 		$data_length = count($data);
 		$i = 0;
 
@@ -92,7 +92,7 @@ class data_mysql {
 	 * @param string $limit maximale Anzahl von Zeilen
 	 * @return array Assoziatives Array mit den Daten.
 	 */
-	function retrieve($table, $field='*', $condition='', $order='', $limit='') {
+	public function retrieve($table, $field='*', $condition='', $order='', $limit='') {
 		if ( $limit == '') {
 			$sql_limit = FALSE;
 		} elseif ( strpos($limit, ',') === FALSE ) {
@@ -128,7 +128,7 @@ class data_mysql {
 	 *
 	 * @return string Ergebnis der Datenbankoperation
 	 */
-	function update($table, $data, $id, $id_field='id', $all=FALSE) {
+	public function update($table, $data, $id, $id_field='id', $all=FALSE) {
 		$data_length = count($data);
 		$i = 0;
 
@@ -160,7 +160,7 @@ class data_mysql {
 	 * @param int	 $id	id des Datenbankeintrages
 	 * @return boolean Ergebnis der Datenbankoperation
 	 */
-	function del($table, $id) {
+	public function del($table, $id) {
 		if ( !is_numeric($id) ) {
 			return FALSE;
 		}
@@ -180,7 +180,7 @@ class data_mysql {
 	 * @return array
 	 * @todo Funktion fuer MySQL umarbeiten
 	 */
-	function convert_result($table, $result) {
+	public function convert_result($table, $result) {
 		return $result;
 
 		$table = $this->table_prefix . $table;
@@ -214,7 +214,7 @@ SQL;
 	 * @param string $table Tabellennname
 	 * @return boolean
 	 */
-	function clear_table($table) {
+	public function clear_table($table) {
 		$sql = 'TRUNCATE TABLE '.$this->table_prefix.$table;
 
 		$result = (boolean) $this->query($sql);
@@ -227,7 +227,7 @@ SQL;
 	 * @param string $table Tabellenname
 	 * @return boolean
 	 */
-	function optimize_table($table) {
+	public function optimize_table($table) {
 		$sql = 'OPTIMIZE TABLE ' . $this->table_prefix.$table;
 
 		$result = (boolean) $this->query($sql);
@@ -241,7 +241,7 @@ SQL;
 	 * @param string $condition Bedingung, die überprüft werden soll, optional
 	 * @return integer
 	 */
-	function count($table, $condition='') {
+	public function count($table, $condition='') {
 		$result = $this->retrieve($table, 'COUNT(*) AS anzahl', $condition);
 		$anzahl = (integer) $result['anzahl'];
 		return $anzahl;
@@ -254,7 +254,7 @@ SQL;
 	 * @param string $condition Bedingung, mit der gesucht werden
 	 * @return integer
 	 */
-	function find_id($table, $condition) {
+	public function find_id($table, $condition) {
 		$result = $this->retrieve($table, 'id', $condition);
 		$id = (integer) $result['id'];
 		return $id;
@@ -266,7 +266,7 @@ SQL;
 	 * @param string $sql
 	 * @return mixed
 	 */
-	function query($sql) {
+	public function query($sql) {
 		return $this->_query_db($sql);
 	}
 
@@ -279,7 +279,7 @@ SQL;
 	 * @param string $user
 	 * @param string $pass
 	 */
-	function _open_db($host, $db, $user, $pass) {
+	private function _open_db($host, $db, $user, $pass) {
 		if ( !extension_loaded('mysql') ) {
 		  die("PHP-Erweiterung 'mysql' nicht geladen");
 		}
@@ -296,7 +296,7 @@ SQL;
 	/**
 	 * Datenbank auswählen
 	 */
-	function _select_db() {
+	private function _select_db() {
 		mysql_select_db($this->database) 
 			OR die("Konnte Datenbank nicht benutzen, Fehlermeldung: ".mysql_error());
 	}
@@ -308,7 +308,7 @@ SQL;
 	 * @todo Funktion überarbeiten
 	 * @return mixed
 	 */
-	function _query_db($sql) {
+	private function _query_db($sql) {
 		$this->_select_db();
 
 		if ( is_array($sql) ) {
@@ -352,7 +352,7 @@ SQL;
 	 *
 	 * @param mixed &$var
 	 */
-	function _secureFieldContent(&$var){
+	private function _secureFieldContent(&$var){
 		if ( is_array($var) ) {
 			$varvalue = var_export($var, TRUE);
 			$this->_error('Array sollte gespeichert werden.', $varvalue );
@@ -363,7 +363,7 @@ SQL;
 	/**
 	 * Datenbankabfragen loggen
 	 */
-	function _logSQL($sql) {
+	private function _logSQL($sql) {
 		$this->lastSQL = $sql;
 		$this->allSQL[] = $sql;
 	}
@@ -373,7 +373,7 @@ SQL;
 	 *
 	 * @todo in Fehlerbehandlungsklasse auslagern
 	 */
-	function _error($error, $sql) {
+	private function _error($error, $sql) {
 		if ( $this->show_errors OR 
 			( error_reporting() > 0 AND ini_get('display_errors') == 1 ) ) {
 			require_once ABSPATH . 'app/helper/var_dump.php';

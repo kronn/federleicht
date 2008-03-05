@@ -11,23 +11,23 @@
  * Weiterhin gibt es:
  * - query
  *
- * @version 0.1
+ * @version 0.2
  */
-class data_pgsql {
-	var $connection;
+class data_pgsql implements data_accessor {
+	protected $connection;
 
-	var $lastSQL = '';
-	var $allSQL = array();
-	var $query_count = 0;
-	var $table_prefix = '';
-	var $schema = '';
+	public $lastSQL = '';
+	public $allSQL = array();
+	public $query_count = 0;
+	public $table_prefix = '';
+	public $schema = '';
 
-	var $show_errors = FALSE;
+	public $show_errors = FALSE;
 
-	var $true_value = 't';
-	var $false_value = 'f';
+	protected $true_value = 't';
+	protected $false_value = 'f';
 
-	function data_pgsql($config) {
+	public function __construct($config) {
 		$this->table_prefix = (string) $config['table_prefix'];
 		$this->schema = ( isset($config['schema']) )?
 			$config['schema']:
@@ -47,7 +47,7 @@ class data_pgsql {
 	 * @param string $type  Art der Einfügeoperation (INSERT, INSERT IGNORE, REPLACE)
 	 * @return string Ergebnis der Datenbankoperation
 	 */
-	function create($table, $data) {
+	public function create($table, $data) {
 		$rows = array_keys($data);
 
 		$values = array();
@@ -77,7 +77,7 @@ class data_pgsql {
 	 * @param string $limit maximale Anzahl von Zeilen
 	 * @return array Assoziatives Array mit den Daten.
 	 */
-	function retrieve($table, $field='*', $condition='', $order='', $limit='') {
+	public function retrieve($table, $field='*', $condition='', $order='', $limit='') {
 		if ( $limit == '') {
 			$sql_limit = false;
 		} elseif ( strpos($limit, ',') === false ) {
@@ -117,7 +117,7 @@ class data_pgsql {
 	 *
 	 * @return string Ergebnis der Datenbankoperation
 	 */
-	function update($table, $data, $id, $id_field='id', $all=FALSE) {
+	public function update($table, $data, $id, $id_field='id', $all=FALSE) {
 		$data_length = count($data);
 		$i = 0;
 
@@ -149,7 +149,7 @@ class data_pgsql {
 	 * @param int	 $id	id des Datenbankeintrages
 	 * @return boolean Ergebnis der Datenbankoperation
 	 */
-	function del($table, $id) {
+	public function del($table, $id) {
 		if ( !is_numeric($id) ) {
 			return FALSE;
 		}
@@ -172,7 +172,7 @@ class data_pgsql {
 	 * @param array $result
 	 * @return array
 	 */
-	function convert_result($table, $result) {
+	public function convert_result($table, $result) {
 		$table = $this->table_prefix . $table;
 		$converted = $result;
 
@@ -212,7 +212,7 @@ SQL;
 	 * @return boolean
 	 * @todo Funktion fuer PostgreSQL umarbeiten
 	 */
-	function clear_table($table) {
+	public function clear_table($table) {
 		return false;
 
 		$sql = 'TRUNCATE TABLE '.$this->table_prefix.$table;
@@ -228,7 +228,7 @@ SQL;
 	 * @return boolean
 	 * @todo Funktion fuer PostgreSQL umarbeiten
 	 */
-	function optimize_table($table) {
+	public function optimize_table($table) {
 		return false;
 
 		$sql = 'OPTIMIZE TABLE ' . $this->table_prefix.$table;
@@ -244,7 +244,7 @@ SQL;
 	 * @param string $condition Bedingung, die überprüft werden soll, optional
 	 * @return integer
 	 */
-	function count($table, $condition='') {
+	public function count($table, $condition='') {
 		$result = $this->retrieve($table, 'COUNT(*) AS anzahl', $condition);
 		$anzahl = (integer) $result[0]['anzahl'];
 		return $anzahl;
@@ -257,7 +257,7 @@ SQL;
 	 * @param string $condition Bedingung, mit der gesucht werden
 	 * @return integer
 	 */
-	function find_id($table, $condition) {
+	public function find_id($table, $condition) {
 		$result = $this->retrieve($table, 'id', $condition);
 		$id = (integer) $result['id'];
 		return $id;
@@ -269,7 +269,7 @@ SQL;
 	 * @param string $table
 	 * @return integer
 	 */
-	function last_insert_id($table) {
+	public function last_insert_id($table) {
 		$result = $this->query('SELECT last_value FROM '.$this->_tableName($table).'_id_seq;');
 		return $result[0]['last_value'];
 	}
@@ -280,7 +280,7 @@ SQL;
 	 * @param string $sql
 	 * @return mixed
 	 */
-	function query($sql) {
+	public function query($sql) {
 		return $this->_query_db($sql);
 	}
 
@@ -293,7 +293,7 @@ SQL;
 	 * @param string $user
 	 * @param string $pass
 	 */
-	function _open_db($host, $db, $user, $pass) {
+	private function _open_db($host, $db, $user, $pass) {
 		if ( !extension_loaded('pgsql') ) {
 		  die("PHP-Erweiterung 'pgsql' nicht geladen");
 		}
@@ -313,7 +313,7 @@ SQL;
 	 * @param mixed $sql String oder Array, das die SQL-Abfragen enthält
 	 * @return mixed
 	 */
-	function _query_db($sql) {
+	private function _query_db($sql) {
 		if ( is_array($sql) ) {
 			foreach ( $sql as $nr => $query ) {
 				$output[$nr] = $this->query( $query );
@@ -381,7 +381,7 @@ SQL;
 	 * @param string $table
 	 * @return string
 	 */
-	function _tableName($table) {
+	private function _tableName($table) {
 		return $this->schema . '.' . $this->table_prefix . $table;
 	}
 
@@ -392,7 +392,7 @@ SQL;
 	 *
 	 * @param mixed &$var
 	 */
-	function _secureFieldContent(&$var){
+	private function _secureFieldContent(&$var){
 		if ( is_array($var) ) {
 			$varvalue = var_export($var, TRUE);
 			$this->_error('Array wurde uebergeben, kann aber nicht gespeichert werden.', $varvalue );
@@ -403,7 +403,7 @@ SQL;
 	/**
 	 * Datenbankabfragen loggen
 	 */
-	function _logSQL($sql) {
+	private function _logSQL($sql) {
 		$this->lastSQL = $sql;
 		$this->allSQL[] = $sql;
 	}
@@ -413,7 +413,7 @@ SQL;
 	 *
 	 * @todo in gemeinsame Basisklasse fuer Datenbankzugriff auslagern
 	 */
-	function _error($error, $sql) {
+	private function _error($error, $sql) {
 		if ( $this->show_errors OR 
 			( error_reporting() > 0 AND ini_get('display_errors') == 1 ) ) {
 			$factory = new factory();
