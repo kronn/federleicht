@@ -140,37 +140,6 @@ class federleicht {
 
 	/**
 	 * Einbindung der allgemeinen Klassendefinitionen
-	 *
-	 * Mittels require_once werden die folgenden Klassen eingebunden:
-	 * - modul.php
-	 *   Allgmeine Modul- und Objektklassen
-	 *
-	 * - dispatcher.php
-	 * - lang.php
-	 * - routes.php
-	 *   Klassen zur URL-Analyse und Sprachauswertung
-	 *
-	 * - structures.php
-	 * - structures/data_structure.php
-	 * - structures/image_structure.php
-	 *   Klassen für besondere Datenstrukturen
-	 *
-	 * - data-access.php
-	 *   Datenzugriffsklasse (bislang nur MySQL-Datenbank)
-	 *
-	 * - flash.php
-	 * - functions.php
-	 * - factory.php
-	 *   Hilfsklassen
-	 *
-	 * - controller.php
-	 *   Klasse zur Ablaufsteuerung
-	 *
-	 * - model.php
-	 *   Klasse mit Anwendungskern
-	 *
-	 * - view.php
-	 *   Klasse mit Templatetags
 	 */
 	function import_classes() {
 		$libpath = $this->registry->get('path', 'lib');
@@ -178,6 +147,8 @@ class federleicht {
 		require_once $libpath . 'dispatch/dispatcher.php';
 		require_once $libpath . 'dispatch/lang.php';
 		require_once $libpath . 'dispatch/routes.php';
+
+		require_once $libpath . 'interfaces/data_accessor.php';
 
 		require_once $libpath . 'data/structures.php';
 		require_once $libpath . 'data/structures/data_structure.php';
