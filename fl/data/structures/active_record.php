@@ -16,15 +16,15 @@ class active_record {
 	/**
 	 * Instanzvariablen
 	 */
-	var $db = null;
-	var $table = '';
-	var $data = null;
-	var $id = null;
+	public $db = null;
+	public $table = '';
+	public $data = null;
+	public $id = null;
 
 	/**
 	 * Variablen
 	 */
-	var $unneeded_fields = array();
+	protected $unneeded_fields = array();
 
 	/**
 	 * Konstruktor
@@ -35,18 +35,12 @@ class active_record {
 	 * @param data_structure $data
 	 * @param boolean $loaded
 	 */
-	function active_record($db, $table, $id, $data, $loaded=false) {
+	public function __construct(data_accessor $db, $table, $id, data_structure $data, $loaded=false) {
 		$this->db =& $db;
 		$this->table = $table;
 		$this->id = $id;
 
-		if ( !(is_a($data, 'data_structure')) ) {
-			$factory = new factory();
-			$factory->set_data_access($this->db);
-			$this->data = $factory->get_structure('data_structure');
-		} else {
-			$this->data = $data;
-		}
+		$this->data = $data;
 
 		if ( !$loaded ) {
 			$this->load();
@@ -56,7 +50,7 @@ class active_record {
 	/**
 	 * Daten setzen
 	 */
-	function set_data($data) {
+	public function set_data($data) {
 		foreach ( $data as $key => $value ) {
 			if ( empty($value) ) continue;
 			
@@ -67,7 +61,7 @@ class active_record {
 	/**
 	 * Daten holen
 	 */
-	function get_data() {
+	public function get_data() {
 		$data = array();
 
 		foreach ( $this->data->get_data() as $key => $value ) {
@@ -84,7 +78,7 @@ class active_record {
 	 *
 	 * @param string $key
 	 */
-	function say($key) {
+	public function say($key) {
 		return $this->data->say($key);
 	}
 
@@ -94,7 +88,7 @@ class active_record {
 	 * @param string $key
 	 * @return mixed
 	 */
-	function get($key) {
+	public function get($key) {
 		return $this->data->get($key);
 	}
 
@@ -104,14 +98,14 @@ class active_record {
 	 * @param string $key
 	 * @param mixed $value
 	 */
-	function set($key, $value) {
+	public function set($key, $value) {
 		return $this->data->set($key, $value);
 	}
 
 	/**
 	 * Daten aus Datenbank laden
 	 */
-	function load() {
+	public function load() {
 		if ( $this->id > 0 ) {
 			$result = $this->db->convert_result(
 				$this->table,
@@ -136,7 +130,7 @@ class active_record {
 	 *
 	 * @return boolean
 	 */
-	function save() {
+	public function save() {
 		$this->remove_unneeded_fields($this->unneeded_fields);
 		$this->prepare_data();
 
@@ -159,7 +153,7 @@ class active_record {
 	 *
 	 * @return boolean
 	 */
-	function delete() {
+	public function delete() {
 		if ( $this->id > 0 ) {
 			$result = $this->db->del($this->table, $this->id);
 		} else {
@@ -170,11 +164,18 @@ class active_record {
 	}
 
 	/**
+	 * Objekt als String verwenbar machen
+	 */
+	public function __toString() {
+		return (string) $this->data;
+	}
+
+	/**
 	 * Nicht benoetigte Daten loeschen
 	 *
 	 * @param array $unneeded_fields
 	 */
-	function remove_unneeded_fields($unneeded_fields) {
+	protected function remove_unneeded_fields($unneeded_fields) {
 		foreach ( $unneeded_fields as $key ) {
 			$this->data->remove($key);
 		}
@@ -183,10 +184,10 @@ class active_record {
 	/**
 	 * Daten vorbereiten
 	 */
-	function prepare_data() {}
+	protected function prepare_data() {}
 
 	/**
 	 * zusätzliche Daten laden
 	 */
-	function load_additional_data_parts() {}
+	protected function load_additional_data_parts() {}
 }
