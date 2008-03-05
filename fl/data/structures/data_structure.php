@@ -3,7 +3,7 @@
  * Allgemeines Datenstrukturobjekt
  *
  * @author Matthias Viehweger <kronn@kronn.de>
- * @version 0.3
+ * @version 0.4
  * @package federleicht
  * @subpackage base
  */
@@ -13,7 +13,7 @@ class data_structure {
 	 *
 	 * @param string $key
 	 */
-	function say($key) {
+	public function say($key) {
 		echo $this->get($key);
 	}
 
@@ -23,7 +23,7 @@ class data_structure {
 	 * @param string $key
 	 * @return mixed
 	 */
-	function get($key) {
+	public function get($key) {
 		return $this->_get_field($key);
 	}
 
@@ -33,7 +33,7 @@ class data_structure {
 	 * @param string $key
 	 * @param mixed  $value
 	 */
-	function set($key, $value) {
+	public function set($key, $value) {
 		$this->_set_field($key, $value);
 	}
 
@@ -42,7 +42,7 @@ class data_structure {
 	 *
 	 * @param string $key
 	 */
-	function remove($key) {
+	public function remove($key) {
 		$this->_unset_field($key);
 	}
 
@@ -51,7 +51,7 @@ class data_structure {
 	 *
 	 * @param array $data
 	 */
-	function set_data($data) {
+	public function set_data($data) {
 		foreach ($data as $key => $value ) {
 			$this->set($key, $value);
 		}
@@ -62,7 +62,7 @@ class data_structure {
 	 *
 	 * @return array
 	 */
-	function get_data() {
+	public function get_data() {
 		$data = (array) $this;
 
 		return $data;
@@ -74,7 +74,7 @@ class data_structure {
 	 * @param string $key
 	 * @return boolean
 	 */
-	function is_set($key) {
+	public function is_set($key) {
 		return $this->_isset_field($key);
 	}
 
@@ -83,8 +83,15 @@ class data_structure {
 	 *
 	 * @param array $data
 	 */
-	function data_structure($data = null) {
+	public function __construct($data = null) {
 		$this->set_data((array) $data);
+	}
+
+	/**
+	 * Datenobjekte als String verwendbar machen
+	 */
+	public function __toString() {
+		return 'Datenobjekt: ' . get_class($this);
 	}
 
 	/** ====== Zugriffsfunktionen auf die internen Daten ====== */
@@ -94,7 +101,7 @@ class data_structure {
 	 * @param string $key
 	 * @return mixed
 	 */
-	function _get_field($key) {
+	protected function _get_field($key) {
 		if ( $this->_isset_field($key) ) {
 			$value = $this->$key;
 		} else {
@@ -118,7 +125,7 @@ class data_structure {
 	 * @param string $key
 	 * @param mixed  $value
 	 */
-	function _set_field($key, $value) {
+	protected function _set_field($key, $value) {
 		$this->$key = $value;
 	}
 
@@ -127,7 +134,7 @@ class data_structure {
 	 *
 	 * @param string $key
 	 */
-	function _unset_field($key) {
+	protected function _unset_field($key) {
 		if ( $this->_isset_field($key) ) {
 			unset($this->$key);
 		}
@@ -139,7 +146,7 @@ class data_structure {
 	 * @param string $key
 	 * @return boolean
 	 */
-	function _isset_field($key){
+	protected function _isset_field($key){
 		return isset($this->$key);
 	}
 }
