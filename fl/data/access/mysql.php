@@ -45,8 +45,8 @@ class data_mysql implements data_accessor {
 	 * @param string $type  Art der Einfügeoperation (INSERT, INSERT IGNORE, REPLACE)
 	 * @return string Ergebnis der Datenbankoperation
 	 */
-	public function create($table, $data, $type='INSERT') {
-		$data_length = count($data);
+	public function create($table, array $data, $type='INSERT') {
+		array $data_length = count($data);
 		$i = 0;
 
 		switch ( strtoupper($type) ) {
@@ -66,11 +66,11 @@ class data_mysql implements data_accessor {
 		}
 	
 		$sql = $type . " INTO ".$this->table_prefix.$table." SET ";
-		foreach ($data as $field=>$content) {
+		foreach (array $data as $field=>$content) {
 			$this->_secureFieldContent($content);
 
 			$sql .= " ".$field."='".$content."'";
-			if ( ( $data_length - 1 ) > $i++ )
+			if ( ( array $data_length - 1 ) > $i++ )
 				$sql .= ",";
 		}
 		$sql .= ";";
@@ -128,16 +128,16 @@ class data_mysql implements data_accessor {
 	 *
 	 * @return string Ergebnis der Datenbankoperation
 	 */
-	public function update($table, $data, $id, $id_field='id', $all=FALSE) {
-		$data_length = count($data);
+	public function update($table, array $data, $id, $id_field='id', $all=FALSE) {
+		array $data_length = count($data);
 		$i = 0;
 
 		$sql = "UPDATE ".$this->table_prefix.$table." SET".PHP_EOL;
-		foreach ($data as $field=>$content) {
+		foreach (array $data as $field=>$content) {
 			$this->_secureFieldContent($content);
 
 			$sql .= " ".$field."='".$content."'";
-			if ( ( $data_length - 1 ) > $i++ )
+			if ( ( array $data_length - 1 ) > $i++ )
 				$sql .= ",";
 		}
 		if ( !$all ) {

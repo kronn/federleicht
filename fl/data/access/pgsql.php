@@ -47,7 +47,7 @@ class data_pgsql implements data_accessor {
 	 * @param string $type  Art der Einfügeoperation (INSERT, INSERT IGNORE, REPLACE)
 	 * @return string Ergebnis der Datenbankoperation
 	 */
-	public function create($table, $data) {
+	public function create($table, array $data) {
 		$rows = array_keys($data);
 
 		$values = array();
@@ -117,7 +117,7 @@ class data_pgsql implements data_accessor {
 	 *
 	 * @return string Ergebnis der Datenbankoperation
 	 */
-	public function update($table, $data, $id, $id_field='id', $all=FALSE) {
+	public function update($table, array $data, $id, $id_field='id', $all=FALSE) {
 		$data_length = count($data);
 		$i = 0;
 

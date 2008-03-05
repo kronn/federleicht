@@ -13,7 +13,7 @@
  */
 interface data_accessor {
 	public function create($target, array $data);
-	public function retrieve($target, $fields, $conditions, $order, $limit );
+	public function retrieve($target, $fields='*', $conditions='', $order='', $limit='');
 	public function update($target, array $data, $id);
 	public function del($target, $id);
 }
