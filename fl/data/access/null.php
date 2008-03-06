@@ -15,7 +15,7 @@ class data_null implements data_accessor {
 	public function __construct() {
 	}
 
-	public function create() {
+	public function create($table, array $data) {
 		return true;
 	}
 
@@ -23,7 +23,7 @@ class data_null implements data_accessor {
 		return true;
 	}
 
-	public function update($table, $data, $id, $id_field='id', $all=FALSE) {
+	public function update($table, array $data, $id, $id_field='id', $all=FALSE) {
 		return true;
 	}
 
