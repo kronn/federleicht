@@ -6,25 +6,20 @@
  * @version 0.2
  * @package federleicht
  * @subpackage data
- * @todo $unneeded_fields zu $fields (positiv liste) umwandeln
  * @todo $fields automatisch aus Datenbank auslesen
  * @todo validator in Basisklasse instanziieren
- * @todo validate_data als standardfunktion in Basisklasse uebernehmen
  * @todo active_record als Datenzugriffsklasse (und nicht als Datenstruktur) im richtigen Verzeichnis ablegen und von dort laden lassen.
  */
-class active_record {
+abstract class active_record {
 	/**
 	 * Instanzvariablen
 	 */
-	public $db = null;
-	public $table = '';
-	public $data = null;
+	protected $db = null;
+	protected $table = '';
+	protected $data = null;
 	public $id = null;
 
-	/**
-	 * Variablen
-	 */
-	protected $unneeded_fields = array();
+	public $error_messages = array();
 
 	/**
 	 * Konstruktor
@@ -35,7 +30,7 @@ class active_record {
 	 * @param data_structure $data
 	 * @param boolean $loaded
 	 */
-	public function __construct(data_accessor $db, $table, $id, data_structure $data, $loaded=false) {
+	final public function __construct(data_accessor $db, $table, $id, data_structure $data, $loaded=false) {
 		$this->db =& $db;
 		$this->table = $table;
 		$this->id = $id;
@@ -60,11 +55,22 @@ class active_record {
 
 	/**
 	 * Daten holen
+	 *
+	 * @return data_structure
 	 */
 	public function get_data() {
+		return $this->data;
+	}
+
+	/**
+	 * Daten holen und als Array zurueckgeben
+	 *
+	 * @return array
+	 */
+	public function get_data_as_array() {
 		$data = array();
 
-		foreach ( $this->data->get_data() as $key => $value ) {
+		foreach ( $this->data as $key => $value ) {
 			if ( empty($value) OR $value === null ) continue;
 
 			$data[$key] = $value;
@@ -78,7 +84,7 @@ class active_record {
 	 *
 	 * @param string $key
 	 */
-	public function say($key) {
+	final public function say($key) {
 		return $this->data->say($key);
 	}
 
@@ -105,7 +111,7 @@ class active_record {
 	/**
 	 * Daten aus Datenbank laden
 	 */
-	public function load() {
+	final public function load() {
 		if ( $this->id > 0 ) {
 			$result = $this->db->convert_result(
 				$this->table,
@@ -130,14 +136,13 @@ class active_record {
 	 *
 	 * @return boolean
 	 */
-	public function save() {
-		$this->remove_unneeded_fields($this->unneeded_fields);
+	final public function save() {
 		$this->prepare_data();
 
 		if ( $this->id > 0 ) {
-			$result = $this->db->update($this->table, $this->get_data(), $this->id);
+			$result = $this->db->update($this->table, $this->get_data_as_array(), $this->id);
 		} else {
-			$result = $this->db->create($this->table, $this->get_data());
+			$result = $this->db->create($this->table, $this->get_data_as_array());
 			if ( is_numeric($result) ) {
 				$this->id = $result;
 				$this->load();
@@ -153,7 +158,7 @@ class active_record {
 	 *
 	 * @return boolean
 	 */
-	public function delete() {
+	final public function delete() {
 		if ( $this->id > 0 ) {
 			$result = $this->db->del($this->table, $this->id);
 		} else {
@@ -171,17 +176,6 @@ class active_record {
 	}
 
 	/**
-	 * Nicht benoetigte Daten loeschen
-	 *
-	 * @param array $unneeded_fields
-	 */
-	protected function remove_unneeded_fields($unneeded_fields) {
-		foreach ( $unneeded_fields as $key ) {
-			$this->data->remove($key);
-		}
-	}
-
-	/**
 	 * Daten vorbereiten
 	 */
 	protected function prepare_data() {}
@@ -190,4 +184,26 @@ class active_record {
 	 * zusätzliche Daten laden
 	 */
 	protected function load_additional_data_parts() {}
+
+	/**
+	 * Datenprüfung
+	 *
+	 * @return array
+	 */
+	public function validate_data() {
+		/**
+		 * Prüfregeln durchlaufen
+		 */
+		$validator = $this->get_validator();
+		$this->error_messages += $validator->validate_form($this->get_data());
+
+		return $this->error_messages;
+	}
+
+	/**
+	 * Datenprüfungsobjekt erzeugen
+	 *
+	 * @return validation
+	 */
+	abstract public function get_validator();
 }

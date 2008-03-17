@@ -21,6 +21,9 @@ class structures {
 		$this->modulepath = $registry->get('path', 'module');
 
 		$this->built_in = '%%builtin';
+
+		$this->load_structure($this->built_in, 'data_structure');
+		$this->load_structure($this->built_in, 'image_structure');
 	}
 
 	/**

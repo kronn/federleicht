@@ -14,15 +14,15 @@
  * @package federleicht
  * @subpackage base
  */
-class data_access {
-	var $data_source;
+class fl_data_access {
+	protected $data_source;
 
 	/**
 	 * Kontruktor des Datenmodells, enthält Zugangsdaten
 	 *
 	 * @param array $config
 	 */
-	function data_access($config = null ) {
+	public function __construct($config = null ) {
 		if ( $config === null ) {
 			$type = 'null';
 		} else {
@@ -41,7 +41,7 @@ class data_access {
 	 *
 	 * @return object $type
 	 */
-	function get_data_souce() {
+	public function get_data_souce() {
 		return $this->data_source;
 	}
 }

@@ -7,7 +7,7 @@
  * @package federleicht
  * @subpackage base
  */
-class view_data extends data_structure implements ArrayAccess {
+class view_data extends data_structure {
 	protected $_default = '';
 	private $_raw_output = false;
 
@@ -75,23 +75,4 @@ class view_data extends data_structure implements ArrayAccess {
 		$this->_default = (string) $default;
 		return $former_default;
 	}
-
-	/**
-	 * Methoden des Interface ArrayAccess
-	 */
-	public function offsetExists($offset) {
-		return $this->is_set($offset);
-	}
-	public function offsetGet($offset) {
-		return $this->get($offset);
-	}
-	public function offsetSet($offset, $value) {
-		return $this->set($offset, $value);
-	}
-	public function offsetUnset($offset) {
-		return $this->remove($offset);
-	}
-	/**
-	 * ArrayAccess Ende
-	 */
 }

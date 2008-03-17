@@ -69,9 +69,9 @@ class federleicht {
 		}
 
 		if ( NO_DATABASE ) {
-			$data = new data_access( null );
+			$data = new fl_data_access( null );
 		} else {
-			$data = new data_access($this->registry->get('config', 'database'));
+			$data = new fl_data_access($this->registry->get('config', 'database'));
 		}
 
 		$this->datamodel = $data->get_data_souce();
@@ -143,6 +143,9 @@ class federleicht {
 	 */
 	function import_classes() {
 		$libpath = $this->registry->get('path', 'lib');
+
+		require_once $libpath . 'tools/autoload.php';
+		return;
 
 		require_once $libpath . 'dispatch/dispatcher.php';
 		require_once $libpath . 'dispatch/lang.php';
@@ -222,7 +225,44 @@ class federleicht {
 	 * @return array
 	 */
 	function read_config() {
-		$config = require_once $this->registry->get('path', 'lib') . 'config.php';
+		$configfiles = glob( ABSPATH . 'config/*.ini');
+
+		if ( empty($configfiles) ) {
+			die('Keine Konfigurationsdateien gefunden.');
+		}
+
+		$config = array();
+
+		foreach($configfiles as $file) {
+			$config += parse_ini_file($file, true);
+		}
+
+		/**
+		 * Spezielle Behandlung bestimmter Einstellungen
+		 */
+		// Konstanten setzen
+		if ( isset( $config['constants'] ) ) {
+			foreach ( $config['constants'] as $key => $value ) {
+				define( strtoupper($key), $value );
+			}
+		}
+
+		// Sprachenliste in Array umwandeln
+		if ( isset( $config['lang'] ) ) {
+			$config['lang']['all'] = explode( ',', $config['lang']['all'] );
+		}
+
+		// Wenn keine Datenbankkonfiguration angegeben ist und auch nicht
+		// gesagt wurde, dass keine Datenbank verwendet wird, abbrechen.
+		if ( !in_array(ABSPATH.'config/database.ini', $configfiles) AND 
+			( !defined('NO_DATABASE') OR NO_DATABASE === false ) ) {
+			die('Keine Datenbankkonfiguration angegeben.');
+		}
+
+		/**
+		 * Routen einlesen
+		 */
+		require_once ABSPATH . 'config/routes.conf.php';
 
 		return (array) $config;
 	}

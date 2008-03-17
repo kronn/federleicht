@@ -8,7 +8,7 @@
  * @subpackage base
  * @todo Datenstruktur "abschliessbar" machen, also hinzufuegen neuer Werte verhindern.
  */
-class data_structure {
+class data_structure implements ArrayAccess {
 	/**
 	 * Daten direkt ausgeben
 	 *
@@ -59,17 +59,6 @@ class data_structure {
 	}
 
 	/**
-	 * Ein assoziatives Array aller Daten holen
-	 *
-	 * @return array
-	 */
-	public function get_data() {
-		$data = (array) $this;
-
-		return $data;
-	}
-
-	/**
 	 * Pruefen, ob eine Datenfeld existiert
 	 * 
 	 * @param string $key
@@ -79,6 +68,10 @@ class data_structure {
 		return $this->_isset_field($key);
 	}
 
+	public function get_data() {
+		throw new Exception('Funktion nicht mehr unterstuetzt. "foreach($data_structure as $key=>value) { $data[$key] = $value }" verwenden!');
+	}
+	
 	/**
 	 * Konstruktor
 	 *
@@ -94,6 +87,25 @@ class data_structure {
 	public function __toString() {
 		return 'Datenobjekt: ' . get_class($this);
 	}
+
+	/**
+	 * Methoden des Interface ArrayAccess
+	 */
+	public function offsetExists($offset) {
+		return $this->is_set($offset);
+	}
+	public function offsetGet($offset) {
+		return $this->get($offset);
+	}
+	public function offsetSet($offset, $value) {
+		return $this->set($offset, $value);
+	}
+	public function offsetUnset($offset) {
+		return $this->remove($offset);
+	}
+	/**
+	 * ArrayAccess Ende
+	 */
 
 	/** ====== Zugriffsfunktionen auf die internen Daten ====== */
 	/**

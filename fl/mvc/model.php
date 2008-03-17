@@ -151,6 +151,32 @@ class model {
 	}
 
 	/**
+	 * Umlaute in Daten fuer HTML umwandeln
+	 *
+	 * Es wird angenommen, dass ein zweidimensionales Array mit
+	 * Datenbankergebnissen umzuwandlen ist.
+	 *
+	 * @param array $data
+	 * @param string $field
+	 * @return array
+	 */
+	public function encode_entities($data, $field = 'name') {
+		foreach($data as $key => $value ) {
+			$data[$key][$field] = htmlentities( 
+				html_entity_decode(
+					$value[$field],
+					ENT_QUOTES,
+					'UTF-8'
+				), 
+				ENT_QUOTES, 
+				'UTF-8'
+			);
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Checkboxen in Binärzahlen umwandeln
 	 *
 	 * Die Funktion verhält sich standardmäßig unauffälig und übergeht fehlende 

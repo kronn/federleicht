@@ -99,6 +99,11 @@ class data_pgsql implements data_accessor {
 		$sql .= ';';
 
 		$result = $this->query($sql);
+
+		if ( $result === false ) {
+			$result = array();
+		}
+
 		return $result;
 	}
 
@@ -427,7 +432,7 @@ SQL;
 			$database_object = $this;
 		}
 
-		trigger_error($error, E_USER_ERROR);
+		throw new Exception($error);
 	}
 }
 ?>

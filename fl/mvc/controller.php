@@ -131,8 +131,6 @@ class controller {
 		
 		$zieladresse = 'http://'.$_SERVER['HTTP_HOST'].'/'.$target;
 
-		$this->functions->flash->_flash();
-
 		if ( headers_sent($file, $line) ) {
 			if ( error_reporting() > 0 ) {
 				$html = <<<HTML

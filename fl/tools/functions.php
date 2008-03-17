@@ -122,10 +122,6 @@ class functions {
 	 * Federleicht anhalten
 	 */
 	function stop($message='') {
-		if ( isset($this->flash) ) {
-			$this->flash->_flash();
-		}
-
 		echo $message;
 		exit();
 	}

@@ -8,6 +8,10 @@
  * @subpackage base
  */
 class image_structure extends data_structure {
+	protected $src;
+	protected $height;
+	protected $width;
+
 	/**
 	 * Metadaten einer Bilddatei einlesen und speichern
 	 *

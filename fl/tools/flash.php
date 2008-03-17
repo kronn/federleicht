@@ -36,35 +36,32 @@ class flash {
 	 *
 	 * types and namespaces are saved lowercase only 
 	 */
-	var $messages;
+	private $messages;
 
 	/**
 	 * default message type
 	 */
-	var $default_type;
+	private $default_type;
 
 	/**
 	 * default namespace
 	 */
-	var $default_namespace;
+	private $default_namespace;
 
 	/**
 	 * constructor
 	 */
-	function flash($type='', $namespace='') {
+	public function __construct($type='', $namespace='') {
 		$this->set_default_type($type);
 		$this->set_default_namespace($namespace);
 
 		$this->messages = $this->load_all_messages();
-		#register_shutdown_function( $this->_flash() );
 	}
 
 	/**
 	 * destructor
-	 *
-	 * @todo use register_shutdown_function to point to this method.
 	 */
-	function _flash() {
+	public function __destruct() {
 		return $this->save_all_messages();
 	}
 
@@ -74,7 +71,7 @@ class flash {
 	 * @param string $type
 	 * @return bool
 	 */
-	function set_default_type($type='') {
+	public function set_default_type($type='') {
 		$set = FALSE;
 		$type = ( empty($type) )? 
 			'notice':
@@ -92,7 +89,7 @@ class flash {
 	 * @param string $namespace
 	 * @return bool
 	 */
-	function set_default_namespace($namespace='') {
+	public function set_default_namespace($namespace='') {
 		$set = FALSE;
 		$namespace = ( empty($namespace) )? 
 			'global':
@@ -112,7 +109,7 @@ class flash {
 	 * @param string $type
 	 * @return bool
 	 */
-	function add_message($message='', $namespace='', $type='') {
+	public function add_message($message='', $namespace='', $type='') {
 		$added = FALSE;
 
 		if ($message == '') return $added;
@@ -140,7 +137,7 @@ class flash {
 	 * @param string $namespace
 	 * @return array
 	 */
-	function get_messages($namespace='') {
+	public function get_messages($namespace='') {
 		$messages = array();
 
 		if ($namespace == '') $namespace = $this->default_namespace;
@@ -158,7 +155,7 @@ class flash {
 	 * @param string $namespace
 	 * @return bool
 	 */
-	function clear_messages($namespace='') {
+	public function clear_messages($namespace='') {
 		$cleared = FALSE;
 
 		if ($namespace == '') $namespace = $this->default_namespace;
@@ -177,7 +174,7 @@ class flash {
 	 * @todo check save success reliable
 	 * @return bool
 	 */
-	function save_all_messages() {
+	private function save_all_messages() {
 		$saved = FALSE;
 
 		$msg = serialize($this->messages);
@@ -193,7 +190,7 @@ class flash {
 	 *
 	 * @return array
 	 */
-	function load_all_messages() {
+	private function load_all_messages() {
 		$msg = array();
 
 		if ( isset($_SESSION['flash_messages'] )) {
