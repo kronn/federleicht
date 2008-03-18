@@ -30,7 +30,7 @@ abstract class active_record {
 	 * @param data_structure $data
 	 * @param boolean $loaded
 	 */
-	final public function __construct(data_accessor $db, $table, $id, data_structure $data, $loaded=false) {
+	public function __construct(data_accessor $db, $table, $id, data_structure $data, $loaded=false) {
 		$this->db =& $db;
 		$this->table = $table;
 		$this->id = $id;
@@ -84,7 +84,7 @@ abstract class active_record {
 	 *
 	 * @param string $key
 	 */
-	final public function say($key) {
+	public function say($key) {
 		return $this->data->say($key);
 	}
 
@@ -111,7 +111,7 @@ abstract class active_record {
 	/**
 	 * Daten aus Datenbank laden
 	 */
-	final public function load() {
+	public function load() {
 		if ( $this->id > 0 ) {
 			$result = $this->db->convert_result(
 				$this->table,
@@ -136,7 +136,7 @@ abstract class active_record {
 	 *
 	 * @return boolean
 	 */
-	final public function save() {
+	public function save() {
 		$this->prepare_data();
 
 		if ( $this->id > 0 ) {
@@ -158,7 +158,7 @@ abstract class active_record {
 	 *
 	 * @return boolean
 	 */
-	final public function delete() {
+	public function delete() {
 		if ( $this->id > 0 ) {
 			$result = $this->db->del($this->table, $this->id);
 		} else {
