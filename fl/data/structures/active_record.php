@@ -59,7 +59,7 @@ abstract class active_record {
 	 * @return data_structure
 	 */
 	public function get_data() {
-		return $this->data;
+		return clone $this->data;
 	}
 
 	/**

@@ -7,6 +7,7 @@
  * - retrieve
  * - update
  * - del
+ * Dies wird durch das Interface data_accessor ausgedrückt.
  *
  * Weiterhin gibt es:
  * - query
@@ -159,8 +160,7 @@ class data_pgsql implements data_accessor {
 			return FALSE;
 		}
 
-		$sql = "DELETE FROM ".$this->table_prefix.$table."
-		 WHERE id=".$id.";";
+		$sql = "DELETE FROM $this->table_prefix.$table WHERE id=$id;";
 
 		$result = $this->query($sql);
 		return $result;
@@ -231,7 +231,7 @@ SQL;
 	 *
 	 * @param string $table Tabellenname
 	 * @return boolean
-	 * @todo Funktion fuer PostgreSQL umarbeiten
+	 * @todo Funktion fuer PostgreSQL umarbeiten, VACCUUM
 	 */
 	public function optimize_table($table) {
 		return false;

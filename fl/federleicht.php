@@ -76,7 +76,6 @@ class federleicht {
 
 		$this->datamodel = $data->get_data_souce();
 		$this->functions->set_data_access($this->datamodel);
-
 	}
 
 	/**
@@ -149,14 +148,14 @@ class federleicht {
 
 		require_once $libpath . 'dispatch/dispatcher.php';
 		require_once $libpath . 'dispatch/lang.php';
-		require_once $libpath . 'dispatch/routes.php';
+		require_once $libpath . 'dispatch/route.php';
 
 		require_once $libpath . 'interfaces/data_accessor.php';
 
 		require_once $libpath . 'data/structures.php';
 		require_once $libpath . 'data/structures/data_structure.php';
 		require_once $libpath . 'data/structures/image_structure.php';
-		require_once $libpath . 'data/data-access.php';
+		require_once $libpath . 'data/access.php';
 
 		require_once $libpath . 'tools/flash.php';
 		require_once $libpath . 'tools/functions.php';
