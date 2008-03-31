@@ -24,13 +24,13 @@ abstract class active_record {
 	/**
 	 * Konstruktor
 	 *
-	 * @param datamodel $db
+	 * @param data_access $db
 	 * @param string $table
 	 * @param int $id
 	 * @param data_structure $data
 	 * @param boolean $loaded
 	 */
-	public function __construct(data_accessor $db, $table, $id, data_structure $data, $loaded=false) {
+	public function __construct(data_access $db, $table, $id, data_structure $data, $loaded=false) {
 		$this->db =& $db;
 		$this->table = $table;
 		$this->id = $id;

@@ -150,7 +150,7 @@ class federleicht {
 		require_once $libpath . 'dispatch/lang.php';
 		require_once $libpath . 'dispatch/route.php';
 
-		require_once $libpath . 'interfaces/data_accessor.php';
+		require_once $libpath . 'interfaces/data_access.php';
 
 		require_once $libpath . 'data/structures.php';
 		require_once $libpath . 'data/structures/data_structure.php';

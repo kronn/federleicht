@@ -39,7 +39,7 @@ class fl_data_access {
 	/**
 	 * Datenzugriffsobjekt zurückgeben
 	 *
-	 * @return object $type
+	 * @return data_access
 	 */
 	public function get_data_souce() {
 		return $this->data_source;

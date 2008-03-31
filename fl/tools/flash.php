@@ -11,7 +11,7 @@
  * @package federleicht
  * @subpackage base
  * @author Matthias Viehweger <kronn@kronn.de>
- * @version 0.1
+ * @version 0.2
  * @license MIT-Style
  */
 class flash {

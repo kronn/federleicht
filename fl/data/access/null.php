@@ -8,7 +8,7 @@
  * - update
  * - del
  */
-class data_null implements data_accessor {
+class data_null implements data_access {
 	private $true_value = true;
 	private $false_value = false;
 

@@ -32,9 +32,9 @@ class model {
 	 * @param factory      &$factory      Objekterzeugungsobjekt
 	 * @param string       &$path         Pfad zu Moduldateien
 	 */
-	function model(&$data_access, &$factory, $path) {
-		$this->datamodel = &$data_access;
-		$this->factory = &$factory;
+	function model(data_access $data_access, &$factory, $path) {
+		$this->datamodel = $data_access;
+		$this->factory = $factory;
 		$this->modulepath = $path;
 
 		$this->modul = array_shift(explode('_', get_class($this)));

@@ -15,7 +15,7 @@
  *
  * @version 0.2.1
  */
-class data_mysql implements data_accessor {
+class data_mysql implements data_access {
 	protected $connection;
 	public $database;
 

@@ -38,12 +38,12 @@ class controller {
 	 * @param functions    $functions
 	 * @param model        $model
 	 */
-	function controller(&$data_access, &$functions, $model) {
-		$this->datamodel = &$data_access;
-		$this->functions = &$functions;
-		$this->factory = &$functions->get_factory();
+	function controller(data_access $data_access, $functions, $model) {
+		$this->datamodel = $data_access;
+		$this->functions = $functions;
+		$this->factory = $functions->get_factory();
 
-		$this->model = &$model;
+		$this->model = $model;
 
 		$registry =& registry::getInstance();
 		$this->request = $registry->get('request');

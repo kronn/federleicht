@@ -7,14 +7,14 @@
  * - retrieve
  * - update
  * - del
- * Dies wird durch das Interface data_accessor ausgedrückt.
+ * Dies wird durch das Interface data_access ausgedrückt.
  *
  * Weiterhin gibt es:
  * - query
  *
  * @version 0.2
  */
-class data_pgsql implements data_accessor {
+class data_pgsql implements data_access {
 	protected $connection;
 
 	public $lastSQL = '';

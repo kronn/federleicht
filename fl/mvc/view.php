@@ -45,14 +45,14 @@ class view {
 	 * @param functions $functions    Federleicht-Hilfsobjekt
 	 * @param string       $model_name   Name des in erster Linie verwendeten Models
 	 */
-	public function __construct($data, $data_access, $functions, $model_name) {
+	public function __construct($data, data_access $data_access, $functions, $model_name) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
 		$this->factory   = $functions->get_factory();
 
 		$this->data = $this->factory->get_structure('view_data', $data);
 
-		$registry =& registry::getInstance();
+		$registry = registry::getInstance();
 		$this->cap = $registry->get('request', 'route');
 		$this->subview = $registry->get('subview');
 

@@ -33,8 +33,8 @@ class factory {
 	 *
 	 * @param data_access $data_access
 	 */
-	function set_data_access($data_access) {
-		$this->data_access = &$data_access;
+	function set_data_access(data_access $data_access) {
+		$this->data_access = $data_access;
 	}
 
 	/**

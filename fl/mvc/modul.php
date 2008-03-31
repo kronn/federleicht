@@ -36,11 +36,11 @@ class modul {
 	 * @param data_access  $data_access
 	 * @param functions $functions
 	 */
-	function modul($data_access, $functions) {
-		$this->datamodel = &$data_access;
-		$this->functions = &$functions;
+	function modul(data_access $data_access, $functions) {
+		$this->datamodel = $data_access;
+		$this->functions = $functions;
 		$this->factory = $functions->get_factory();
-		$this->registry =& registry::getInstance();
+		$this->registry = registry::getInstance();
 
 		$this->cap = $this->registry->get('request', 'route');
 		$this->modulepath = $this->registry->get('path', 'module');

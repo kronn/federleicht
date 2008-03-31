@@ -28,7 +28,6 @@ function __autoload($class) {
 		'route'=>'fl/dispatch',
 
 		'structures'=>'fl/data',
-		'data-access'=>'fl/data',
 
 		'flash'=>'fl/tools',
 		'functions'=>'fl/tools',
@@ -37,7 +36,7 @@ function __autoload($class) {
 	);
 
 	$interfaces = array(
-		'data_accessor'
+		'data_access'
 	);
 
 	$patterns = array(
