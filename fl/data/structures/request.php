@@ -9,7 +9,7 @@
  * @package federleicht
  * @subpackage base
  */
-class request {
+class fl_data_structures_request {
     /**
      * Referenz auf Routenobjekt
      */
@@ -28,7 +28,7 @@ class request {
      *
      * @param route $route
      */
-    function request($route) {
+    function __construct($route) {
         $this->route = $route;
 
         $this->all_post = $_POST;

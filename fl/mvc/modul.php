@@ -5,7 +5,7 @@
  * @package federleicht
  * @subpackage base
  */
-class modul {
+class fl_mvc_modul {
 	/**
 	 * Instanzvariablen
 	 */
@@ -36,7 +36,7 @@ class modul {
 	 * @param data_access  $data_access
 	 * @param functions $functions
 	 */
-	function modul(data_access $data_access, $functions) {
+	function __construct(data_access $data_access, $functions) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
 		$this->factory = $functions->get_factory();

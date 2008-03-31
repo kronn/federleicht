@@ -7,7 +7,7 @@
  * @package federleicht
  * @subpackage base
  */
-class view {
+class fl_mvc_view {
 	/**
 	 * Instanzvariablen
 	 */
@@ -50,7 +50,7 @@ class view {
 		$this->functions = $functions;
 		$this->factory   = $functions->get_factory();
 
-		$this->data = $this->factory->get_structure('view_data', $data);
+		$this->data = $this->factory->get_structure('view', $data);
 
 		$registry = registry::getInstance();
 		$this->cap = $registry->get('request', 'route');

@@ -16,47 +16,13 @@ function __autoload($class) {
 		return;
 	}
 
-	// andernfalls der lange Weg...
-	$class_list = array(
-		'model'=>'fl/mvc',
-		'view'=>'fl/mvc',
-		'controller'=>'fl/mvc',
-		'modul'=>'fl/mvc',
-
-		'dispatcher'=>'fl/dispatch',
-		'lang'=>'fl/dispatch',
-		'route'=>'fl/dispatch',
-
-		'structures'=>'fl/data',
-
-		'flash'=>'fl/tools',
-		'functions'=>'fl/tools',
-		'factory'=>'fl/tools',
-		'inflector'=>'fl/tools',
-	);
-
+	// Interfaces einbinden 
 	$interfaces = array(
 		'data_access'
 	);
 
-	$patterns = array(
-		'[-_a-z]+_structure'=>'fl/data/structures',
-	);
-
-	$path = '';
-
 	if ( in_array($class, $interfaces) ) {
 		$path = 'fl/interfaces/';
-	} elseif ( isset($class_list[$class]) ) {
-		$path = $class_list[$class] . '/';
-	} elseif ( isset($patterns) ) {
-		foreach ( $patterns as $pattern => $path ) {
-			if ( preg_match('/^'.$pattern.'$/', $class) ) {
-				break; // $path wird dadurch uebernommen...
-			} else {
-				$path = '';
-			}
-		}
 	}
 
 	$file = ABSPATH . $path . $class . '.php';

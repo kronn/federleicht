@@ -7,7 +7,7 @@
  * @package federleicht
  * @subpackage base
  */
-class controller {
+class fl_mvc_controller {
 	/**
 	 * Instanzvariablen
 	 */
@@ -38,7 +38,7 @@ class controller {
 	 * @param functions    $functions
 	 * @param model        $model
 	 */
-	function controller(data_access $data_access, $functions, $model) {
+	function __construct(data_access $data_access, $functions, $model) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
 		$this->factory = $functions->get_factory();

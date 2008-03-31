@@ -7,15 +7,15 @@
  * - retrieve
  * - update
  * - del
+ * - query
  *
  * Weiterhin gibt es:
  * - clear_table
  * - optimize_table
- * - query
  *
  * @version 0.2.1
  */
-class data_mysql implements data_access {
+class fl_data_access_mysql implements data_access {
 	protected $connection;
 	public $database;
 
@@ -29,7 +29,7 @@ class data_mysql implements data_access {
 	protected $true_value = 1;
 	protected $false_value = 0;
 
-	public function data_mysql($config) {
+	public function __construct($config) {
 		$this->table_prefix = (string) $config['table_prefix'];
 		$this->_open_db($config['host'], $config['database'], $config['user'], $config['pass']);
 	}

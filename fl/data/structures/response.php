@@ -7,7 +7,7 @@
  * @package federleicht
  * @subpackage base
  */
-class response {
+class fl_data_structures_response {
     var $http_header;
     var $data;
     var $layout;
@@ -16,6 +16,6 @@ class response {
     /**
      * Konstruktor
      */
-    function response() {
+    function __construct() {
     }
 }

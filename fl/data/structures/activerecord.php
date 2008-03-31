@@ -10,7 +10,7 @@
  * @todo validator in Basisklasse instanziieren
  * @todo active_record als Datenzugriffsklasse (und nicht als Datenstruktur) im richtigen Verzeichnis ablegen und von dort laden lassen.
  */
-abstract class active_record {
+abstract class fl_data_structures_activerecord {
 	/**
 	 * Instanzvariablen
 	 */

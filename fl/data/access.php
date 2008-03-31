@@ -28,7 +28,7 @@ class fl_data_access {
 		} else {
 			$type =  strtolower($config['type']);
 		}
-		$object_name = 'data_'.$type;
+		$object_name = 'fl_data_access_'.$type;
 
 		$registry = registry::getInstance();
 

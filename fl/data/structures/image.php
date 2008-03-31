@@ -7,7 +7,7 @@
  * @package federleicht
  * @subpackage base
  */
-class image_structure extends data_structure {
+class fl_data_structures_image extends fl_data_structures_data {
 	protected $src;
 	protected $height;
 	protected $width;

@@ -5,13 +5,13 @@
  * @package federleicht
  * @subpackage base
  */
-class registry {
+class fl_tools_registry {
 	var $values  = array();
 
 	/**
 	 * Konstruktor
 	 */
-	function registry() {
+	function __construct() {
 	}
 
 	/**

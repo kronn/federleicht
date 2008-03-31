@@ -8,7 +8,7 @@
  * @package federleicht
  * @subpackage base
  */
-class factory {
+class fl_tools_factory {
 	/**
 	 * Referenzen auf externe Objekte
 	 */
@@ -21,11 +21,11 @@ class factory {
 	 * Konstruktor
 	 */
 	function factory() {
-		$this->registry = &registry::getInstance();
-		$this->structures = new structures();
+		$this->registry = fl_tools_registry::getInstance();
+		$this->structures = new fl_data_structures();
 
 		$lang = $this->registry->get('config', 'lang');
-		$this->inflector = new inflector($lang['application']);
+		$this->inflector = new fl_tools_inflector($lang['application']);
 	}
 
 	/**
@@ -53,7 +53,7 @@ class factory {
 
 			$this->load_module($modul);
 
-			$model_name = $modul.'_model';
+			$model_name = 'app_' . $modul . '_model';
 			$get_model = new $model_name(
 				$this->data_access, 
 				$this, 
@@ -101,14 +101,14 @@ class factory {
 	 * @param array $data
 	 * @return active_record
 	 */
-	function get_ar_class($class, $id = 0, $data = array()) {
+	function get_ar_class($class, $id = 0, array $data = array()) {
 		if ( strpos($class, '/') === false) {
 			return false;
 		} else {
 			list($modul, $class_name) = explode('/', $class, 2);
 		}
 
-		$this->load_structure('active_record');
+		$this->load_structure('activerecord');
 		$this->load_class($modul, $class_name);
 
 		$data = (array) $data;

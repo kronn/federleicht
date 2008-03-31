@@ -14,7 +14,7 @@
  *
  * @version 0.2
  */
-class data_pgsql implements data_access {
+class fl_data_access_pgsql implements data_access {
 	protected $connection;
 
 	public $lastSQL = '';

@@ -7,7 +7,7 @@
  * @package federleicht
  * @subpackage base
  */
-class view_data extends data_structure {
+class fl_data_structure_view extends fl_data_structures_data {
 	protected $_default = '';
 	private $_raw_output = false;
 

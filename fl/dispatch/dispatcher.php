@@ -9,7 +9,7 @@
 /**
  * Dispatcher-Klasse
  */
-class dispatcher {
+class fl_dispatch_dispatcher {
 	/**
 	 * Speicher für die Routen
 	 */
@@ -35,9 +35,9 @@ class dispatcher {
 	 * @param object $db     Datenbankobjekt
 	 * @param array  $lang   Sprachkonfiguration
 	 */
-	function dispatcher($lang) {
+	function __construct(array $lang) {
 		$this->clean_superglobals();
-		$this->lang = new lang($lang['default'], $lang['all']);
+		$this->lang = new fl_dispatch_lang($lang['default'], $lang['all']);
 	}
 
 	/**

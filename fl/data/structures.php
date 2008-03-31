@@ -7,7 +7,7 @@
  * @package federleicht
  * @subpackage base
  */
-class structures {
+class fl_data_structures {
 	var $libpath;
 	var $modulepath;
 	var $built_in;
@@ -15,15 +15,15 @@ class structures {
 	/**
 	 * Konstruktor
 	 */
-	function structures() {
+	function __construct() {
 		$registry =& registry::getInstance();
 		$this->libpath = $registry->get('path', 'lib');
 		$this->modulepath = $registry->get('path', 'module');
 
 		$this->built_in = '%%builtin';
 
-		$this->load_structure($this->built_in, 'data_structure');
-		$this->load_structure($this->built_in, 'image_structure');
+		$this->load_structure($this->built_in, 'data');
+		$this->load_structure($this->built_in, 'image');
 	}
 
 	/**
@@ -41,7 +41,7 @@ class structures {
 
 		} else {
 			list($modul, $name) = explode('/', $wanted_structure, 2);
-			$structure_name = $name . '_data';
+			$structure_name = 'fl_data_structures_' . $name;
 		}
 
 		$this->load_structure($modul, $name);

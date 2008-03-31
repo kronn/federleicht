@@ -14,7 +14,7 @@
  * Funktionenklasse, die an die meisten nachfolgenden Objekte weiter-
  * gegeben wird.
  */
-class federleicht {
+class fl_federleicht {
 	/**
 	 * Objektreferenzen
 	 */
@@ -32,7 +32,7 @@ class federleicht {
 	 *
 	 * @param string $url
 	 */
-	function federleicht($url='') {
+	function __construct($url='') {
 		if ( !defined('ABSPATH') ) {
 			$abspath = realpath(dirname(__FILE__) . '/../');
 			define('ABSPATH', $abspath . '/');
@@ -48,7 +48,7 @@ class federleicht {
 		);
 
 		require_once $path['lib'] . 'tools/registry.php';
-		$this->registry =& registry::getInstance();
+		$this->registry = fl_tools_registry::getInstance();
 		$this->registry->set('url', (string) $url);
 		$this->registry->set('path', $path);
 
@@ -62,7 +62,7 @@ class federleicht {
 		$this->registry->set('modules', $modules);
 		$this->registry->set('helpers', $helpers);
 
-		$this->functions = new functions();
+		$this->functions = new fl_tools_functions();
 
 		if ( count($modules) == 0 ) {
 			$this->functions->stop('<h2>Fehler</h2><p>Keine Module installiert</p>');
@@ -138,34 +138,15 @@ class federleicht {
 	}
 
 	/**
-	 * Einbindung der allgemeinen Klassendefinitionen
+	 * Einbindung der autoload-Funktion
+	 *
+	 * @todo Einbindung aller Interfaces?
 	 */
 	function import_classes() {
 		$libpath = $this->registry->get('path', 'lib');
 
 		require_once $libpath . 'tools/autoload.php';
 		return;
-
-		require_once $libpath . 'dispatch/dispatcher.php';
-		require_once $libpath . 'dispatch/lang.php';
-		require_once $libpath . 'dispatch/route.php';
-
-		require_once $libpath . 'interfaces/data_access.php';
-
-		require_once $libpath . 'data/structures.php';
-		require_once $libpath . 'data/structures/data_structure.php';
-		require_once $libpath . 'data/structures/image_structure.php';
-		require_once $libpath . 'data/access.php';
-
-		require_once $libpath . 'tools/flash.php';
-		require_once $libpath . 'tools/functions.php';
-		require_once $libpath . 'tools/factory.php';
-		require_once $libpath . 'tools/inflector.php';
-
-		require_once $libpath . 'mvc/modul.php';
-		require_once $libpath . 'mvc/model.php';
-		require_once $libpath . 'mvc/view.php';
-		require_once $libpath . 'mvc/controller.php';
 	}
 
 	/**

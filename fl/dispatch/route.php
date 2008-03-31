@@ -10,7 +10,7 @@
  * @author Matthias Viehweger <kronn@kronn.de>
  * @version 0.2
  */
-class route {
+class fl_dispatch_route {
 	var $route = '';
 	var $regex = '';
 	var $modul = '';
@@ -27,7 +27,7 @@ class route {
 	 * @param string $route
 	 * @param string $regex
 	 */
-	function route($route, $regex='') {
+	function __construct($route, $regex='') {
 		$this->route = (string) $route;
 
 		$this->default_regex = array(

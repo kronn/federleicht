@@ -7,7 +7,7 @@
  * @author Matthias Viehweger <kronn@kronn.de>
  * @version 0.1
  */
-class inflector {
+class fl_tools_inflector {
 	/**
 	 * Speicher für Ersetzungsregeln
 	 */
@@ -19,7 +19,7 @@ class inflector {
 	/**
 	 * Konstruktor
 	 */
-	function inflector($lang = null) {
+	function __construct($lang = null) {
 		switch ( $lang ) {
 		case 'de':
 			$this->plural = array(

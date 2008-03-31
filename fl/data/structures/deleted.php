@@ -2,7 +2,7 @@
 /**
  * Datenstruktur für gelöschte Datensätze
  */
-class deleted_item extends data_structure {
+class fl_data_structures_deleted extends fl_data_structures_data {
     var $revert_link;
     var $name;
 }

@@ -7,7 +7,7 @@
  * @package federleicht
  * @subpackage base
  */
-class model {
+class fl_mvc_model {
 	/**
 	 * Instanzvariablen
 	 */
@@ -32,7 +32,7 @@ class model {
 	 * @param factory      &$factory      Objekterzeugungsobjekt
 	 * @param string       &$path         Pfad zu Moduldateien
 	 */
-	function model(data_access $data_access, &$factory, $path) {
+	function __construct(data_access $data_access, &$factory, $path) {
 		$this->datamodel = $data_access;
 		$this->factory = $factory;
 		$this->modulepath = $path;
