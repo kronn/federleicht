@@ -15,8 +15,8 @@ class fl_data_structures {
 	/**
 	 * Konstruktor
 	 */
-	function __construct() {
-		$registry =& registry::getInstance();
+	public function __construct() {
+		$registry = fl_registry::getInstance();
 		$this->libpath = $registry->get('path', 'lib');
 		$this->modulepath = $registry->get('path', 'module');
 
@@ -33,7 +33,7 @@ class fl_data_structures {
 	 * @param array  $initial_data
 	 * @return data_structure
 	 */
-	function get($wanted_structure, $initial_data = array()) {
+	public function get($wanted_structure, $initial_data = array()) {
 		if ( strpos($wanted_structure, '/') === false) {
 			$modul = $this->built_in;
 			$name = $wanted_structure;
@@ -55,7 +55,7 @@ class fl_data_structures {
 	 * @param string $modul
 	 * @param string $name
 	 */
-	function load_structure($modul, $name) {
+	public function load_structure($modul, $name) {
 		if ( $modul === $this->built_in ) {
 			$file = $this->libpath . 'data/structures/'.$name.'.php';
 		} else {
@@ -71,7 +71,7 @@ class fl_data_structures {
 	 * @param string $wanted_structure
 	 * @deprecated
 	 */
-	function load($wanted_structure) {
+	public function load($wanted_structure) {
 		trigger_error(
 			'deprecated, use load_structure($modul, $name) instead',
 			E_USER_WARNING
@@ -87,7 +87,7 @@ class fl_data_structures {
 	 * @param string $name
 	 * @return boolean
 	 */
-	function exists($modul, $name) {
+	public function exists($modul, $name) {
 		$filename = ( $modul === $this->built_in )?
 			$this->libpath . 'data/structures/'.$name.'.php':
 			$this->modulepath.$modul.'/data/'.$name.'.php';

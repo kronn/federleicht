@@ -12,15 +12,15 @@ class fl_factory {
 	/**
 	 * Referenzen auf externe Objekte
 	 */
-	var $registry = null;
-	var $data_access = null;
-	var $structures = null;
-	var $inflector = null;
+	protected $registry = null;
+	protected $data_access = null;
+	protected $structures = null;
+	protected $inflector = null;
 
 	/**
 	 * Konstruktor
 	 */
-	function factory() {
+	public function __construct() {
 		$this->registry = fl_registry::getInstance();
 		$this->structures = new fl_data_structures();
 
@@ -33,7 +33,7 @@ class fl_factory {
 	 *
 	 * @param data_access $data_access
 	 */
-	function set_data_access(data_access $data_access) {
+	public function set_data_access(data_access $data_access) {
 		$this->data_access = $data_access;
 	}
 
@@ -45,7 +45,7 @@ class fl_factory {
 	 * @param string $modul     Name des Moduls, aus dem das Model geholt wird.
 	 * @return model
 	 */
-	function get_model($modul) {
+	public function get_model($modul) {
 		if (  $this->registry->get('loaded_model_'.$modul) === FALSE ) {
 			if ( $this->data_access == NULL ) { 
 				return FALSE;
@@ -72,7 +72,7 @@ class fl_factory {
 	 * @param array  $options (dynamic)
 	 * @return object
 	 */
-	function get_class($class) {
+	public function get_class($class) {
 		if ( strpos($class, '/') === false) {
 			return false;
 		} else {
@@ -101,7 +101,7 @@ class fl_factory {
 	 * @param array $data
 	 * @return active_record
 	 */
-	function get_ar_class($class, $id = 0, array $data = array()) {
+	public function get_ar_class($class, $id = 0, array $data = array()) {
 		if ( strpos($class, '/') === false) {
 			return false;
 		} else {
@@ -143,7 +143,7 @@ class fl_factory {
 	 * @param array  $data
 	 * @return data_structure
 	 */
-	function get_structure($wanted_structure, $data = null) {
+	public function get_structure($wanted_structure, $data = null) {
 		return $this->structures->get($wanted_structure, $data);
 	}
 
@@ -155,7 +155,7 @@ class fl_factory {
 	 *
 	 * @return mixed
 	 */
-	function get_helper($wanted_helper) {
+	public function get_helper($wanted_helper) {
 		$this->load_helper($wanted_helper);
 
 		switch ( func_num_args() ) {
@@ -189,7 +189,7 @@ class fl_factory {
 	 *
 	 * @param string $wanted_structure
 	 */
-	function load_structure($wanted_structure) {
+	public function load_structure($wanted_structure) {
 		if ( strpos($wanted_structure, '/') === false ) {
 			$this->structures->load_structure($this->structures->built_in, $wanted_structure);
 		}
@@ -201,7 +201,7 @@ class fl_factory {
 	 * @param string $modul
 	 * @param string $class
 	 */
-	function load_class($modul, $class) {
+	public function load_class($modul, $class) {
 		require_once $this->registry->get('path', 'module') . $modul . '/classes/'.$class.'.php';
 	}
 
@@ -214,7 +214,7 @@ class fl_factory {
 	 * @param string $wanted Name des gewünschten Helfermoduls
 	 * @return boolean
 	 */
-	function load_helper($wanted) {
+	public function load_helper($wanted) {
 		if ( !in_array( $wanted, $this->registry->get('helpers') ) ) {
 			return FALSE;
 		}
@@ -229,7 +229,7 @@ class fl_factory {
 	 *
 	 * @param string $modul
 	 */
-	function load_module($modul) {
+	public function load_module($modul) {
 		$modul_path = $this->registry->get('path', 'module') . $modul . '/model.php';
 
 		if ( !in_array($modul, $this->registry->get('modules')) ) {
@@ -259,7 +259,7 @@ class fl_factory {
 	 * @param string $class
 	 * @return boolean
 	 */
-	function is_structure($modul, $class) {
+	public function is_structure($modul, $class) {
 		return $this->structures->exists($modul, $class);
 	}
 
@@ -274,7 +274,7 @@ class fl_factory {
 	 * @return array
 	 * @access private
 	 */
-	function parse_class_name($class) {
+	protected function parse_class_name($class) {
 		$common = 'common';
 		$builtin = 'builtin';
 
