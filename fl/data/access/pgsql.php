@@ -14,16 +14,11 @@
  *
  * @version 0.2
  */
-class fl_data_access_pgsql implements data_access {
+class fl_data_access_pgsql extends fl_data_access_database implements data_access {
 	protected $connection;
 
-	public $lastSQL = '';
-	public $allSQL = array();
-	public $query_count = 0;
 	public $table_prefix = '';
 	public $schema = '';
-
-	public $show_errors = FALSE;
 
 	protected $true_value = 't';
 	protected $false_value = 'f';
@@ -243,32 +238,6 @@ SQL;
 	}
 
 	/**
-	 * Anzahl der Datensätze mit bestimmter Bedingung zurückgeben
-	 *
-	 * @param string $table		Tabelle in der DB
-	 * @param string $condition Bedingung, die überprüft werden soll, optional
-	 * @return integer
-	 */
-	public function count($table, $condition='') {
-		$result = $this->retrieve($table, 'COUNT(*) AS anzahl', $condition);
-		$anzahl = (integer) $result[0]['anzahl'];
-		return $anzahl;
-	}
-
-	/**
-	 * ID holen
-	 *
-	 * @param string $table		Tabelle in der DB
-	 * @param string $condition Bedingung, mit der gesucht werden
-	 * @return integer
-	 */
-	public function find_id($table, $condition) {
-		$result = $this->retrieve($table, 'id', $condition);
-		$id = (integer) $result['id'];
-		return $id;
-	}
-
-	/**
 	 * Zuletzt einfügte ID zurückgeben
 	 *
 	 * @param string $table
@@ -325,11 +294,11 @@ SQL;
 			}
 
 		} else {
-			$this->_logSQL($sql);
+			$this->log_query($sql);
 
 			$output = array();
 
-			$abfrage = is_string($sql) ? trim($sql) :  $this->_error('Fehlerhafte Daten', $sql);
+			$abfrage = is_string($sql) ? trim($sql) :  $this->error('Fehlerhafte Daten', $sql);
 			$abfragetyp = strtoupper(substr($abfrage,0,6));
 
 			/* Asynchrone Abfrage
@@ -356,9 +325,8 @@ SQL;
 
 			/* Einzelne, synchrone Abfrage */
 			if ( ($result = pg_query($this->connection, $abfrage)) === false ) {
-				$this->_error(pg_last_error($this->connection), $abfrage);
+				$this->error(pg_last_error($this->connection), $abfrage);
 			} else {
-				$this->query_count++;
 				$result_status = pg_result_status($result);
 			}
 
@@ -386,8 +354,11 @@ SQL;
 	 * @param string $table
 	 * @return string
 	 */
-	private function _tableName($table) {
+	protected function _tableName($table) {
 		return $this->schema . '.' . $this->table_prefix . $table;
+	}
+	public function get_table_name($table) {
+		return $this->_tableName($table);
 	}
 
 	/**
@@ -397,42 +368,12 @@ SQL;
 	 *
 	 * @param mixed &$var
 	 */
-	private function _secureFieldContent(&$var){
+	protected function _secureFieldContent(&$var){
 		if ( is_array($var) ) {
 			$varvalue = var_export($var, TRUE);
-			$this->_error('Array wurde uebergeben, kann aber nicht gespeichert werden.', $varvalue );
+			$this->error('Array wurde uebergeben, kann aber nicht gespeichert werden.', $varvalue );
 		}
 		return $var = pg_escape_string($var);
-	}
-
-	/**
-	 * Datenbankabfragen loggen
-	 */
-	private function _logSQL($sql) {
-		$this->lastSQL = $sql;
-		$this->allSQL[] = $sql;
-	}
-
-	/**
-	 * Fehlermeldungen ausgeben und Ausführung stoppen
-	 *
-	 * @todo in gemeinsame Basisklasse fuer Datenbankzugriff auslagern
-	 */
-	private function _error($error, $sql) {
-		if ( $this->show_errors OR 
-			( error_reporting() > 0 AND ini_get('display_errors') == 1 ) ) {
-			$factory = new factory();
-			$err = $factory->get_helper('var_analyze', 'data-access', 'Fehler');
-			$err->sql($sql, 'Datenbankabfrage, die zu Fehler gefuehrt hat');
-
-			/**
-			 * Um mehr Informationen mit xDebug erhalten zu koennen, 
-			 * das Datenbankobjekt in den lokalen Scope holen
-			 */
-			$database_object = $this;
-		}
-
-		throw new Exception($error);
 	}
 }
 ?>
