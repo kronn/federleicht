@@ -5,7 +5,7 @@
  * @package federleicht
  * @subpackage base
  */
-class fl_mvc_modul {
+class fl_modul {
 	/**
 	 * Instanzvariablen
 	 */

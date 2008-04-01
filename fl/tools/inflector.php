@@ -7,7 +7,7 @@
  * @author Matthias Viehweger <kronn@kronn.de>
  * @version 0.1
  */
-class fl_tools_inflector {
+class fl_inflector {
 	/**
 	 * Speicher für Ersetzungsregeln
 	 */

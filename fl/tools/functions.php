@@ -8,7 +8,7 @@
  * @package federleicht
  * @subpackage base
  */
-class fl_tools_functions {
+class fl_functions {
 	/**
 	 * Referenzen auf Objekte
 	 */
@@ -21,8 +21,8 @@ class fl_tools_functions {
 	 * Konstruktor
 	 */
 	function __construct() {
-		$this->registry = fl_tools_registry::getInstance();
-		$this->factory = new fl_tools_factory();
+		$this->registry = fl_registry::getInstance();
+		$this->factory = new fl_factory();
 		$this->structures = $this->factory->structures;
 	}
 

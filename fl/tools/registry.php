@@ -5,24 +5,29 @@
  * @package federleicht
  * @subpackage base
  */
-class fl_tools_registry {
-	var $values  = array();
+class fl_registry {
+	protected $values;
+	private static $instance;
 
 	/**
 	 * Konstruktor
 	 */
-	function __construct() {
+	protected function __construct() {
+		$this->values = array();
+	}
+
+	private function __clone() {
 	}
 
 	/**
 	 * Instanz holen
 	 */
-	function &getInstance() {
-		if ( !isset($GLOBALS['federleicht_registry_instance']) ) { 
-			$GLOBALS['federleicht_registry_instance'] = new registry(); 
-		} 
-		
-		return $GLOBALS['federleicht_registry_instance'];
+	public static function getInstance() {
+		if ( self::$instance === null ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -40,7 +45,7 @@ class fl_tools_registry {
 	 * @paran  string $index
 	 * @return mixed
 	 */
-	function get($key, $index = null) {
+	public function get($key, $index = null) {
 		$key = (string) $key;
 		$methodcall = 'get_'.$index;
 
@@ -71,7 +76,7 @@ class fl_tools_registry {
 	 * @param string $key
 	 * @param mixed  $value
 	 */
-	function set($key, $value) {
+	public function set($key, $value) {
 		$key = (string) $key;
 
 		$this->values[$key] = $value;

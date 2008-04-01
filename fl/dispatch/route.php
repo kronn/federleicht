@@ -10,7 +10,7 @@
  * @author Matthias Viehweger <kronn@kronn.de>
  * @version 0.2
  */
-class fl_dispatch_route {
+class fl_route {
 	var $route = '';
 	var $regex = '';
 	var $modul = '';

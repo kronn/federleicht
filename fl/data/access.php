@@ -30,7 +30,7 @@ class fl_data_access {
 		}
 		$object_name = 'fl_data_access_'.$type;
 
-		$registry = registry::getInstance();
+		$registry = fl_registry::getInstance();
 
 		require_once $registry->get('path', 'lib') . 'data/access/' . $type . '.php';
 		$this->data_source = new $object_name($config);

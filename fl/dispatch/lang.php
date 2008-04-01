@@ -5,7 +5,7 @@
  * @package federleicht
  * @subpackage base
  */
-class fl_dispatch_lang {
+class fl_lang {
 	var $default_lang = '';
 	var $all = array();
 	var $language;

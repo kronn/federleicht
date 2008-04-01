@@ -7,7 +7,7 @@
  * @package federleicht
  * @subpackage base
  */
-class fl_mvc_controller {
+class fl_controller {
 	/**
 	 * Instanzvariablen
 	 */

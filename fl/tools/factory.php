@@ -8,7 +8,7 @@
  * @package federleicht
  * @subpackage base
  */
-class fl_tools_factory {
+class fl_factory {
 	/**
 	 * Referenzen auf externe Objekte
 	 */
@@ -21,11 +21,11 @@ class fl_tools_factory {
 	 * Konstruktor
 	 */
 	function factory() {
-		$this->registry = fl_tools_registry::getInstance();
+		$this->registry = fl_registry::getInstance();
 		$this->structures = new fl_data_structures();
 
 		$lang = $this->registry->get('config', 'lang');
-		$this->inflector = new fl_tools_inflector($lang['application']);
+		$this->inflector = new fl_inflector($lang['application']);
 	}
 
 	/**

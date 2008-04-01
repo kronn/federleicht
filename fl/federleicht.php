@@ -14,7 +14,7 @@
  * Funktionenklasse, die an die meisten nachfolgenden Objekte weiter-
  * gegeben wird.
  */
-class fl_federleicht {
+class federleicht {
 	/**
 	 * Objektreferenzen
 	 */
@@ -47,12 +47,11 @@ class fl_federleicht {
 			'layouts'=>ABSPATH . 'app/layouts'
 		);
 
-		require_once $path['lib'] . 'tools/registry.php';
-		$this->registry = fl_tools_registry::getInstance();
+		$this->import_classes($path);
+
+		$this->registry = fl_registry::getInstance();
 		$this->registry->set('url', (string) $url);
 		$this->registry->set('path', $path);
-
-		$this->import_classes();
 
 		$config = $this->read_config();
 		$modules = $this->search_modules();
@@ -62,7 +61,7 @@ class fl_federleicht {
 		$this->registry->set('modules', $modules);
 		$this->registry->set('helpers', $helpers);
 
-		$this->functions = new fl_tools_functions();
+		$this->functions = new fl_functions();
 
 		if ( count($modules) == 0 ) {
 			$this->functions->stop('<h2>Fehler</h2><p>Keine Module installiert</p>');
@@ -96,7 +95,7 @@ class fl_federleicht {
 			define('DEFAULTSECTION', $result['value']);
 		}
 
-		$dispatcher = new dispatcher($this->registry->get('config', 'lang'));
+		$dispatcher = new fl_dispatcher($this->registry->get('config', 'lang'));
 		$dispatcher->modules = $this->registry->get('modules');
 		$dispatcher->set_default_controller(DEFAULTSECTION);
 		foreach( $this->registry->get('config', 'routes') as $route ) {
@@ -140,12 +139,19 @@ class fl_federleicht {
 	/**
 	 * Einbindung der autoload-Funktion
 	 *
-	 * @todo Einbindung aller Interfaces?
+	 * @param array $path
 	 */
-	function import_classes() {
-		$libpath = $this->registry->get('path', 'lib');
+	function import_classes(array $path) {
+		require_once  $path['lib'] . 'tools/autoload.php';
 
-		require_once $libpath . 'tools/autoload.php';
+		$interfaces = array(
+			'data_access'
+		);
+
+		foreach ($interfaces as $interface) {
+			require_once $path['lib'] . 'interfaces/'. $interface . '.php';
+		}
+
 		return;
 	}
 

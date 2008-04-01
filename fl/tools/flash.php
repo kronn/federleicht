@@ -14,7 +14,7 @@
  * @version 0.2
  * @license MIT-Style
  */
-class fl_tools_flash {
+class fl_flash {
 	/**
 	 * message storage
 	 *
