@@ -6,16 +6,16 @@
  * @subpackage base
  */
 class fl_lang {
-	var $default_lang = '';
-	var $all = array();
-	var $language;
+	protected $default_lang = '';
+	protected $all = array();
+	protected $language;
 
-	function __construct($default, $all) {
+	public function __construct($default, array $all) {
 		$this->default_lang = $default;
 		$this->all = $all;
 	}
 
-	function set($page) {
+	public function set($page) {
 		$defaultlang = $this->default_lang;
 		$all_langs = $this->all;
 		if ( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) AND !empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) ) { // Sprache aus ACCEPT-Header herauslesen, wenn möglich
@@ -49,7 +49,7 @@ class fl_lang {
 		return $page;
 	}
 
-	function get_lang() {
+	public function get_lang() {
 		return $this->language;
 	}
 }

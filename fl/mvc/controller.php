@@ -11,22 +11,22 @@ class fl_controller {
 	/**
 	 * Instanzvariablen
 	 */
-	var $data = array();
-	var $flash_text = '';
+	protected $data = array();
+	protected $flash_text = '';
 
-	var $layout = 'default';
-	var $view;
+	protected $layout = 'default';
+	protected $view;
 
 	/**
 	 * Referenzen auf externe Objekte und Daten
 	 */
-	var $datamodel;
-	var $model;
-	var $functions;
-	var $factory;
-	var $cap;
-	var $request;
-	var $modulepath;
+	protected $datamodel;
+	protected $model;
+	protected $functions;
+	protected $factory;
+	protected $cap;
+	protected $request;
+	protected $modulepath;
 
 	/**
 	 * Konstruktor, speichert Ablaufvariable und Datenbankverbindung
@@ -38,14 +38,14 @@ class fl_controller {
 	 * @param functions    $functions
 	 * @param model        $model
 	 */
-	function __construct(data_access $data_access, $functions, $model) {
+	public function __construct(data_access $data_access, $functions, $model) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
 		$this->factory = $functions->get_factory();
 
 		$this->model = $model;
 
-		$registry =& registry::getInstance();
+		$registry =& fl_registry::getInstance();
 		$this->request = $registry->get('request');
 		$this->cap = $this->request->route;
 		$this->modulepath = $registry->get('path', 'module');
@@ -64,14 +64,14 @@ class fl_controller {
 	 *
 	 * @return bool Erfolgreiche Abarbeitung
 	 */
-	function common() {
+	public function common() {
 		return TRUE;
 	}
 
 	/**
 	 * Alternative Abläufe
 	 */
-	function alternate() {
+	public function alternate() {
 		echo 'controller->common() fehlgeschlagen';
 	}
 
@@ -86,7 +86,7 @@ class fl_controller {
 	 *
 	 * @param string $param
 	 */
-	function defaultAction($param) {
+	public function defaultAction($param) {
 		$this->cap['action'] = $this->defaultAction;
 		$action = $this->defaultAction;
 		$this->view = $this->defaultAction;
@@ -112,7 +112,7 @@ class fl_controller {
 	 * @param string $type      Wichtigkeit, wird als CSS-Klasse eingefügt
 	 * @param string $namespace Gültigkeitsbereich
 	 */
-	function flash($text, $type='', $namespace='') {
+	protected function flash($text, $type='', $namespace='') {
 		$this->functions->flash->add_message($text, $namespace, $type);
 	}
 
@@ -122,7 +122,7 @@ class fl_controller {
 	 * @param string $target
 	 * @todo externes Template fuer Weiterleitungsfehler verwenden
 	 */
-	function redirect($target='') {
+	protected function redirect($target='') {
 		$target = ltrim($target, '/');
 
 		if ( defined('SUBDIR') ) {
@@ -160,17 +160,6 @@ HTML;
 	}
 
 	/**
-	 * Wrapperfunktion fuer veralteten Funktionsaufruf
-	 */
-	function goToTarget($target='') {
-		trigger_error(
-			'Veraltete Methode! Neu: controller->redirect($target)',
-			E_USER_NOTICE
-		);
-		return $this->redirect($target);
-	}
-
-	/**
 	 * POST-Daten holen
 	 *
 	 * Die POST-Daten werde geholt und zurückgegeben.
@@ -180,7 +169,7 @@ HTML;
 	 * @param string $target Zieladresse, falls keine Daten vorliegen.
 	 * @return array
 	 */
-	function get_postdata($target='') {
+	protected function get_postdata($target='') {
 		if ( $this->request->has_postdata() ) {
 			$postdata = $this->request->post;
 		} else {
@@ -196,7 +185,7 @@ HTML;
 	 * @param string $params
 	 * @return array
 	 */
-	function parse_params($params) {
+	protected function parse_params($params) {
 		if ( strpos($params, '/') ) {
 			$params = explode('/', $params);
 		} else {
@@ -217,107 +206,6 @@ HTML;
 		}
 
 		return $params;
-	}
-
-	/**
-	 * Login überprüfen
-	 *
-	 * Der Loginstatus wird überprüft.
-	 *
-	 * Man kann man persönliche Seiten ermöglichen, indem man einen
-	 * Benutzernamen übergibt. (Der dazu erforderliche Benutzername
-	 * wird dabei üblicherweise im Controller anhand der URL und der
-	 * angefragten Daten bestimmt.)
-	 *
-	 * Um eine Rechteverwaltung zu ermöglichen, kann der Benutzerlevel
-	 * aus der Datenbank ausgelesen werden. Dies geschieht standardmäßig.
-	 * Wenn der Benutzername übergeben wird und mit dem derzeit
-	 * eingeloggten Nutzer übereinstimmt, wird grundsätzlich Erlaubnis
-	 * erteilt. Andernfalls zählt der Level.
-	 *
-	 * Wenn der Benutzer noch nicht eingeloggt ist, wird er zur Loginseite
-	 * verwiesen. Wenn der Nutzer nicht die erforderlichen Rechte hat,
-	 * wird er auf eine entsprechende Hinweisseite weitergeleitet.
-	 *
-	 * @param string $from
-	 * @param string $username
-	 * @param bool   $get_level_from_db
-	 * @todo hier entfernen und in Login-Klasse auslagern
-	 */
-	function check_login($from, $username = '', $get_level_from_db = 'auto') {
-		/**
-		 * Paranoide Ausgangswerte der Variablen
-		 */
-		$logged_in = FALSE; // nicht eingeloggt
-		$allowed = FALSE; // nicht berechtigt
-
-		$user_level = 255; // Benutzer ist nur Gast
-		$need_level = 0; // Eigentumsrechte sind erforderlich
-
-
-		if ( isset($_SESSION['username']) ) {
-			$logged_in = TRUE;
-		}
-
-		if ( $username !== '' AND $logged_in AND $username == $_SESSION['username'] ) {
-			if  ( $get_level_from_db === 'auto' ) $get_level_from_db = TRUE;
-			$allowed = TRUE;
-		} elseif ( $username == '' AND $logged_in ) {
-			$username = $_SESSION['username'];
-		}
-
-		if  ( $get_level_from_db === 'auto' ) $get_level_from_db = TRUE;
-
-
-		if ( $logged_in AND $get_level_from_db ) {
-			$controller = $this->cap['controller'];
-			$action = $this->cap['action'];
-
-			$result = $this->datamodel->retrieve('user_access', 'level', 'controller = "'.$controller.'" AND action = "'.$action.'"', '', '1');
-			if ( isset($result['level']) ) {
-				$need_level = $result['level'];
-			} elseif ( error_reporting() > 0 ) { 
-				$this->functions->needs('var_dump');
-				$err = new varDumper('Federleicht-Controller', 'check_login');
-				$msg ='Die Datenbank enthält keine Berechtigungsdaten!'; 
-				$err->say($msg);
-				$err->sv($this->cap, 'Anfrage');
-				$err->sql($this->datamodel->lastSQL, 'Datenbankabfrage');
-				$err->sv($result, 'Ergebnis der Datenbankabfrage');
-
-				$table_prefix = $this->datamodel->table_prefix;
-				$sql = <<<SQL
-
-INSERT INTO `{$table_prefix}user_access` 
-(`id`, `controller`, `action`, `level`) 
-VALUES (NULL, "{$controller}", "{$action}", "2");
-
-SQL;
-				$err->sv($sql, 'Vorschlag für Datenbankergänzung');
-
-				$err->say('Ausführung wird angehalten');
-				trigger_error($msg, E_USER_ERROR );
-				$err->stop();
-			}
-
-			unset($result);
-
-			$result = $this->datamodel->retrieve('user', 'level', 'name = "'.$username.'"');
-			$user_level = $result['level'];
-			unset($result);
-		}
-
-		if ( $user_level <= $need_level ) {
-			$allowed = TRUE;
-		}
-
-		if ( $logged_in AND $allowed ) {
-			return TRUE;
-		} elseif ( $logged_in AND !$allowed ) {
-			$this->redirect(ADMINMODULE.'/notallowed');
-		} else {
-			$this->redirect(ADMINMODULE.'/login/'.$from);
-		}
 	}
 }
 ?>

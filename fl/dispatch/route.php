@@ -8,18 +8,18 @@
  * @package federleicht
  * @subpackage base
  * @author Matthias Viehweger <kronn@kronn.de>
- * @version 0.2
+ * @version 0.3
  */
 class fl_route {
-	var $route = '';
-	var $regex = '';
-	var $modul = '';
-	var $defaults = array();
-	var $priority = 1;
-	var $language_key = '';
+	protected $route = '';
+	protected $regex = '';
+	protected $modul = '';
+	protected $defaults = array();
+	protected $priority = 1;
+	protected $language_key = '';
 
-	var $default_regex = array();
-	var $partial_regex = array();
+	protected $default_regex = array();
+	protected $partial_regex = array();
 
 	/**
 	 * Konstruktor
@@ -27,12 +27,12 @@ class fl_route {
 	 * @param string $route
 	 * @param string $regex
 	 */
-	function __construct($route, $regex='') {
+	public function __construct($route, $regex='') {
 		$this->route = (string) $route;
 
 		$this->default_regex = array(
-			'normal_item'=>'[-_+0-9a-z\|:%,\.]+',
-			'last_item'=>'[-_/+0-9a-zA-Z\|:%,\.]+'
+			'normal_item'=>'[-_0-9a-z\.]+',
+			'last_item'=>'[-_/0-9a-zA-Z%\.]+'
 		);
 
 		if ( $route === 'regex' AND $regex != '' ) {
@@ -51,7 +51,7 @@ class fl_route {
 	 * @param string $route
 	 * @return $string
 	 */
-	function compile($route) {
+	public function compile($route) {
 		$elements = explode('/', $route);
 		$group_count = 0;
 
@@ -115,7 +115,7 @@ class fl_route {
 	 * @param boolean $last_route
 	 * @return boolean
 	 */
-	function try_route($url, $last_route=FALSE) {
+	public function try_route($url, $last_route=FALSE) {
 		$treffer = array();
 
 		$host = ( isset($_SERVER['HTTP_HOST']) )? $_SERVER['HTTP_HOST']: 'localhost';
@@ -153,8 +153,8 @@ class fl_route {
 	 * @param array $defaults
 	 * @param string $modul
 	 */
-	function set_defaults($defaults, $modul=NULL) {
-		$this->defaults = array_merge($this->defaults, (array) $defaults);
+	public function set_defaults(array $defaults, $modul=NULL) {
+		$this->defaults = array_merge($this->defaults, $defaults);
 
 		if ( is_null($modul) AND isset($this->defaults['controller']) )  {
 			$modul = $this->defaults['controller'];
@@ -170,7 +170,7 @@ class fl_route {
 	 *
 	 * @param integer $priority
 	 */
-	function set_priority($priority) {
+	public function set_priority($priority) {
 		$this->priority = (integer) $priority;
 	}
 
@@ -179,7 +179,7 @@ class fl_route {
 	 *
 	 * @param string $key
 	 */
-	function set_language_key($key) {
+	public function set_language_key($key) {
 		$this->language_key = (string) $key;
 	}
 
@@ -191,7 +191,7 @@ class fl_route {
 	 * @param string $key
 	 * @param string $regex
 	 */
-	function set_partial_regex($key, $regex) {
+	public function set_partial_regex($key, $regex) {
 		$this->partial_regex[$key] = $regex;
 		$this->regex = $this->compile($this->route);
 	}
@@ -201,7 +201,7 @@ class fl_route {
 	 *
 	 * @param string $modul
 	 */
-	function set_modul($modul) {
+	public function set_modul($modul) {
 		$this->modul = (string) $modul;
 	}
 
@@ -210,7 +210,7 @@ class fl_route {
 	 *
 	 * @return array
 	 */
-	function get_request() {
+	public function get_request() {
 		$request = array_merge($this->request, array('modul'=>$this->modul));
 
 		return $request;
@@ -221,7 +221,7 @@ class fl_route {
 	 *
 	 * @return integer
 	 */
-	function get_priority() {
+	public function get_priority() {
 		return $this->priority;
 	}
 
@@ -232,7 +232,7 @@ class fl_route {
 	 * @param boolean $id_last
 	 * @return string
 	 */
-	function get_partial_regex($key, $is_last=FALSE) {
+	public function get_partial_regex($key, $is_last=FALSE) {
 		if ( isset( $this->partial_regex[$key] ) ) { 
 			$regex = $this->partial_regex[$key];
 		} elseif ( $is_last ) {
@@ -253,7 +253,7 @@ class fl_route {
 	 *
 	 * @return string
 	 */
-	function get_language_key() {
+	public function get_language_key() {
 		if ( isset( $this->language_key ) AND !empty($this->language_key)  ) {
 			return $this->language_key;
 		} else {
@@ -268,7 +268,7 @@ class fl_route {
 	 * @param  array  $parts
 	 * @return string
 	 */
-	function make_url($route, $parts) {
+	public function make_url($route, array $parts) {
 		$elements = explode('/', $route);
 
 		$url = '';
@@ -308,7 +308,7 @@ class fl_route {
 	 *
 	 * @return string
 	 */
-	function get_current_url() {
+	public function get_current_url() {
 		return $this->make_url($this->route, $this->request);
 	}
 
@@ -323,7 +323,7 @@ class fl_route {
 	 * @param route $b
 	 * @return integer
 	 */
-	function compare_routes($a, $b) {
+	public function compare_routes($a, $b) {
 		$ap = $a->get_priority();
 		$bp = $b->get_priority();
 

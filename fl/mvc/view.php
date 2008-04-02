@@ -52,7 +52,7 @@ class fl_view {
 
 		$this->data = $this->factory->get_structure('view', $data);
 
-		$registry = registry::getInstance();
+		$registry = fl_registry::getInstance();
 		$this->cap = $registry->get('request', 'route');
 		$this->subview = $registry->get('subview');
 
@@ -71,6 +71,7 @@ class fl_view {
 	 * Ruft das Template auf
 	 *
 	 * @param string $layout
+	 * @return string
 	 */
 	public function render_layout($layout) {
 		if ( strpos($layout, '/') === FALSE ) {
@@ -92,13 +93,18 @@ class fl_view {
 				'; charset=' . $this->headers['charset'] );
 		}
 
+		ob_start();
 		require_once $path . $layout . '.php';
+		$template = ob_get_content();
+		ob_end_clean();
+		
+		return $template;
 	}
 
 	/**
 	 * Sucht den zur Action passenden Unterview heraus.
 	 */
-	public function get_sub_view() {
+	protected function get_sub_view() {
 		require_once($this->modulepath . $this->cap['controller'] . '/views/' . $this->subview . '.php');
 	}
 
@@ -111,11 +117,10 @@ class fl_view {
 	 * Sonstigen Variablen sind meist nicht
 	 * verf&uuml;gbar.
 	 *
-	 * @param string $name      Dateiname (ohne Endung) des Elements.
-	 * @param array  $variablen Assoziatives Array mit Variablen fuer das Element.
+	 * @param string $name   Dateiname (ohne Endung) des Elements.
+	 * @param array  $vars   Assoziatives Array mit Variablen fuer das Element.
 	 */
-	public function get_element($name, $variablen='') {
-		$vars = ( !is_array($variablen) )? array($variablen): $variablen;
+	protected function get_element($name, array $vars = array() ) {
 		require_once $this->elementpath . $name . '.php';
 	}
 
@@ -124,7 +129,7 @@ class fl_view {
 	 *
 	 * @param string $name  Name des Teilbereichs
 	 */
-	public function get_partial($name, $forgiving=FALSE) {
+	protected function get_partial($name, $forgiving=FALSE) {
 		$file = $this->modulepath . $this->cap['controller'] . '/partials/' . $name . '.php';
 
 		if ( $forgiving AND !file_exists($file) ) {
@@ -140,7 +145,7 @@ class fl_view {
 	 * @param string $namespace
 	 * @return string
 	 */
-	public function render_flash($namespace='') {
+	protected function render_flash($namespace='') {
 		$html = '';
 
 		$messages = $this->functions->flash->get_messages($namespace);
@@ -157,7 +162,7 @@ class fl_view {
 	 *
 	 * @return string
 	 */
-	public function get_site_title() {
+	protected function get_site_title() {
 		if ( !defined('SEITENTITEL') ) {
 			$result = $this->datamodel->retrieve('optionen', '*', "optionname='seitentitel'", '', '1');
 			#define('SEITENTITEL', $result['value']);
@@ -173,7 +178,7 @@ class fl_view {
 	/**
 	 * Wrapper fuer Datenobjekt
 	 */
-	public function get($field, $type='string', $source=NULL, $raw=FALSE, $default='') {
+	protected function get($field, $type='string', $source=NULL, $raw=FALSE, $default='') {
 		if ( $source instanceof data_structure) {
 			return $source->get($field, $type, $raw, $default);
 		}
@@ -190,7 +195,7 @@ class fl_view {
 	/**
 	 * Wrapper fuer Datenobjekt
 	 */
-	public function say($field, $type='string', $source=NULL, $raw_output=FALSE, $default='') {
+	protected function say($field, $type='string', $source=NULL, $raw_output=FALSE, $default='') {
 		echo $this->get($field, $type, $source, $raw_output, $default);
 	}
 
@@ -214,7 +219,7 @@ class fl_view {
 	 * @param string $lang
 	 * @return string
 	 */
-	public function translate($text, $lang=LANG) {
+	protected function translate($text, $lang=LANG) {
 		if ( is_object($this->translator) ) { 
 			$translation = $this->translator->get($text, $lang);
 		} else {
@@ -225,47 +230,12 @@ class fl_view {
 	}
 
 	/**
-	 * Usernamen des aktuell eingeloggten Users ausgeben
-	 */
-	public function get_username() {
-		trigger_error(
-			'veraltet, Wert sollte als Variable uebergeben werden',
-			E_USER_NOTICE
-		);
-		if ( isset($_SESSION['username']) ) {
-			echo ucwords($_SESSION['username']);
-		}
-	}
-
-	/**
-	 * Alter aus Geburtsdatum berechnen und zurückgeben
-	 */
-	public function get_age($geburtsdatum) {
-		trigger_error(
-			'veraltet, Wert sollte als Variable uebergeben werden. siehe: datum_model::alter()',
-			E_USER_NOTICE
-		);
-		$date = explode('-', $geburtsdatum);
-
-		# Windows-Workaround
-		$year_diff = 0;
-		if ( $date[0] < 1970 ) {
-			$year_diff = 1970 - $date[0];
-			$date[0] = 1970;
-		}
-
-		$birthday = mktime(0, 0, 0, $date[1], $date[2], $date[0]);
-
-		return date('Y') - (date('Y', $birthday) - $year_diff) - 1 + (int)((date('m', $birthday) <= date('m')) && (date('d', $birthday) <= date('d')) );
-	}
-
-	/**
 	 * URL zur aktuellen Seite ausgeben
 	 *
 	 * @todo Routen so erweitern, das die aktuelle URL ausgegeben werden kann.
 	 */
-	public function current_url() {
-		$registry =& registry::getInstance();
+	protected function current_url() {
+		$registry =& fl_registry::getInstance();
 		$cap = $registry->get('request', 'route');
 		$url = 'http://'.$_SERVER['HTTP_HOST'].'/'.$cap['controller'].'/'.$cap['action'].'/'.$cap['param'];
 		return $url;

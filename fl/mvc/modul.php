@@ -9,26 +9,27 @@ class fl_modul {
 	/**
 	 * Instanzvariablen
 	 */
-	var $cap = array();
-	var $name = null;
+	protected $cap = array();
+	protected $name = null;
+	protected $content;
 
 	/**
 	 * Speicher für erstellte Objekte
 	 */
-	var $controller;
-	var $model;
-	var $view;
+	protected $controller;
+	protected $model;
+	protected $view;
 
 	/**
 	 * Referenzen auf benötigte externe Objekte und Daten
 	 */
-	var $datamodel;
-	var $functions;
-	var $factory;
-	var $registry;
+	protected $datamodel;
+	protected $functions;
+	protected $factory;
+	protected $registry;
 
-	var $modulepath;
-	var $apppath;
+	protected $modulepath;
+	protected $apppath;
 
 	/**
 	 * Modul-Konstruktor
@@ -36,11 +37,11 @@ class fl_modul {
 	 * @param data_access  $data_access
 	 * @param functions $functions
 	 */
-	function __construct(data_access $data_access, $functions) {
+	public function __construct(data_access $data_access, $functions) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
 		$this->factory = $functions->get_factory();
-		$this->registry = registry::getInstance();
+		$this->registry = fl_registry::getInstance();
 
 		$this->cap = $this->registry->get('request', 'route');
 		$this->modulepath = $this->registry->get('path', 'module');
@@ -57,7 +58,7 @@ class fl_modul {
 	 * @param string $name Modulname
 	 * @return object
 	 */
-	function create_controller($name) {
+	protected function create_controller($name) {
 		require_once $this->modulepath . $name . '/controller.php';
 		$controller_name = $name . '_controller';
 
@@ -72,7 +73,7 @@ class fl_modul {
 	 * @param string $name Modulname
 	 * @return object
 	 */
-	function create_model($name) {
+	protected function create_model($name) {
 		return $this->factory->get_model($name);
 	}
 
@@ -83,7 +84,7 @@ class fl_modul {
 	 * @param array  Daten
 	 * @return object
 	 */
-	function create_view($name, $data) {
+	protected function create_view($name, array $data) {
 		require_once $this->modulepath . $name . '/view.php';
 		$view_name = $name . '_view';
 
@@ -106,7 +107,7 @@ class fl_modul {
 	 *
 	 * @pattern "Template Method"
 	 */
-	function start_execution() {
+	public function start_execution() {
 		$modul_name = str_replace('_modul', '', get_class($this));
 
 		// Modul vorbereiten
@@ -130,10 +131,11 @@ class fl_modul {
 			$this->registry->set('subview', $this->controller->view);
 
 			$this->view = $this->create_view($modul_name, $data);
-			$this->view->render_layout($layout);
+			$this->content = $this->view->render_layout($layout);
 		} else {
 			$this->controller->alternate();
 		}
+		$this->output_contents();
 		$this->clean_up();
 	}
 
@@ -142,8 +144,15 @@ class fl_modul {
 	 *
 	 * Das Ergebnis wird nicht geprüft.
 	 */
-	function prepare() {
+	protected function prepare() {
 		return;
+	}
+	
+	/**
+	 * Ausgabe der Daten
+	 */
+	public function output_contents() {
+		echo $this->contents;
 	}
 
 	/**
@@ -154,7 +163,7 @@ class fl_modul {
 	 *
 	 * Das Ergebnis wird nicht geprüft.
 	 */
-	function clean_up() {
+	protected function clean_up() {
 		return;
 	}
 }

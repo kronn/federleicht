@@ -4,7 +4,7 @@
  *
  * @package federleicht
  * @subpackage base
- * @version 0.1.8
+ * @version 0.2
  */
 /**
  * Dispatcher-Klasse
@@ -13,29 +13,28 @@ class fl_dispatcher {
 	/**
 	 * Speicher für die Routen
 	 */
-	var $routes = array();
+	protected $routes = array();
 
 	/**
 	 * Referenz auf die Language-Klasse
 	 */
-	var $lang;
+	protected $lang;
 	/**
 	 * Array mit der liste der installierten Module
 	 */
-	var $modules = array();
+	protected $modules = array();
 
 	/**
 	 * Standardcontroller
 	 */
-	var $default_controller;
+	protected $default_controller;
 
 	/**
 	 * Dispatcher
 	 *
-	 * @param object $db     Datenbankobjekt
 	 * @param array  $lang   Sprachkonfiguration
 	 */
-	function __construct(array $lang) {
+	public function __construct(array $lang) {
 		$this->clean_superglobals();
 		$this->lang = new fl_lang($lang['default'], $lang['all']);
 	}
@@ -45,7 +44,7 @@ class fl_dispatcher {
 	 *
 	 * @param object $route
 	 */
-	function add_route($route) {
+	public function add_route($route) {
 		$this->routes[] = $route;
 	}
 
@@ -54,7 +53,7 @@ class fl_dispatcher {
 	 *
 	 * @param string $default_controller
 	 */
-	function set_default_controller($default_controller) {
+	public function set_default_controller($default_controller) {
 		$this->default_controller = (string) $default_controller;
 	}
 
@@ -74,7 +73,7 @@ class fl_dispatcher {
 	 * @param  url   Zu untersuchende URL
 	 * @return array $request
 	 */
-	function analyse($url){
+	public function analyse($url){
 		$url = preg_replace('@[/]{2,}@', '/', $url); // gegen Unsinn
 
 		$route_success = FALSE;
@@ -131,23 +130,23 @@ class fl_dispatcher {
 	/**
 	 * Superglobale bereinigen
 	 */
-	function clean_superglobals() {
+	protected function clean_superglobals() {
 		if(get_magic_quotes_gpc()) {
-			$this->_arrayStripSlashes($_GET);
-			$this->_arrayStripSlashes($_POST);
-			$this->_arrayStripSlashes($_COOKIE);
+			$this->arrayStripSlashes($_GET);
+			$this->arrayStripSlashes($_POST);
+			$this->arrayStripSlashes($_COOKIE);
 		}
 	}
 
 	/**
 	 * Stripslashes verallgemeinert (Strings und Arrays)
 	 */
-	function _arrayStripSlashes(&$var) {
+	protected function arrayStripSlashes(&$var) {
 		if ( is_string($var) ) {
 			$var = stripslashes($var);
 		} elseif( is_array($var) ) {
 			foreach( $var AS $key => $value ) {
-				$this->_arrayStripSlashes($var[$key]);
+				$this->arrayStripSlashes($var[$key]);
 			}
 		}
 	}

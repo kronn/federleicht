@@ -11,16 +11,16 @@ class fl_model {
 	/**
 	 * Instanzvariablen
 	 */
-	var $modul = '';
-	var $error_messages = array();
+	protected $modul = '';
+	protected $error_messages = array();
 
 	/**
 	 * extern eingebundene Objekte und Variablen
 	 */
-	var $datamodel;
-	var $factory;
-	var $modulepath;
-	var $translator = NULL;
+	protected $datamodel;
+	protected $factory;
+	protected $modulepath;
+	public $translator = NULL;
 
 	/**
 	 * Kontruktor des Models
@@ -32,7 +32,7 @@ class fl_model {
 	 * @param factory      &$factory      Objekterzeugungsobjekt
 	 * @param string       &$path         Pfad zu Moduldateien
 	 */
-	function __construct(data_access $data_access, &$factory, $path) {
+	public function __construct(data_access $data_access, &$factory, $path) {
 		$this->datamodel = $data_access;
 		$this->factory = $factory;
 		$this->modulepath = $path;
@@ -48,7 +48,7 @@ class fl_model {
 	 * @todo php4-Version des Ubersetzers erstellen und ggf. einbinden.
 	 * @return GetText
 	 */
-	function get_translator() {
+	protected function get_translator() {
 		$this->functions->needs('localization');
 		if ( class_exists('flGetText') AND class_exists('LocalizationDB') AND class_exists('RessourceManager') ) {
 			require ABSPATH . 'config/database.conf.php';
@@ -77,7 +77,7 @@ class fl_model {
 	 * @param string $id_alternate_name
 	 * @return array
 	 */
-	function get_data($modul, $id, $id_alternate_name='slug') {
+	public function get_data($modul, $id, $id_alternate_name='slug') {
 		$model = ( $modul != $this->modul )?
 			$this->factory->get_model($modul):
 			$this;
@@ -98,7 +98,7 @@ class fl_model {
 	 * @param mixed $page eindeutige id der Seite
 	 * @param string $string_field Feldname, der den Speichernamen enthält
 	 */
-	function get_data_from_db($table, $page, $string_field='slug') {
+	protected function get_data_from_db($table, $page, $string_field='slug') {
 		if ( empty($page) ) {
 			$page = $this->datamodel->retrieve($table.'_options', 'value', "optionname = 'STARTPAGE'", '', '1');
 			$page = $page['value'];
@@ -123,7 +123,7 @@ class fl_model {
 	 * @return array
 	 * @todo ins Datenbank-Objekt!
 	 */
-	function find_one($result, $field='id') {
+	public function find_one(array $result, $field='id') {
 
 		while ( !isset($result[$field]) AND is_array($result) ) {
 			$result = array_shift($result);
@@ -140,7 +140,7 @@ class fl_model {
 	 * @return array
 	 * @todo ins Datenbank-Objekt!
 	 */
-	function find_many($result, $field='id') {
+	public function find_many(array $result, $field='id') {
 		$result = (array) $result;
 
 		$many_results = ( isset($result[$field]) )?
@@ -160,7 +160,7 @@ class fl_model {
 	 * @param string $field
 	 * @return array
 	 */
-	public function encode_entities($data, $field = 'name') {
+	public function encode_entities(array $data, $field = 'name') {
 		foreach($data as $key => $value ) {
 			$data[$key][$field] = htmlentities( 
 				html_entity_decode(
@@ -190,7 +190,7 @@ class fl_model {
 	 * erzeugt
 	 * @return array
 	 */
-	function transform_checkboxes($postdata, $checkboxes, $strict = FALSE) {
+	public function transform_checkboxes(array $postdata, $checkboxes, $strict = FALSE) {
 		$checkboxes = explode(',', $checkboxes);
 		$data = (array) $postdata;
 
@@ -218,7 +218,7 @@ class fl_model {
 	 *
 	 * @return string
 	 */
-	function get_error_messages() {
+	public function get_error_messages() {
 		return implode('<br />', (array) $this->error_messages);
 	}
 
@@ -233,7 +233,7 @@ class fl_model {
 	 * @param string $lang
 	 * @return string
 	 */
-	function translate($text, $lang=LANG) {
+	public function translate($text, $lang=LANG) {
 		if ( is_object($this->translator) ) { 
 			$translation = $this->translator->get($text, $lang);
 		} else {
@@ -251,7 +251,7 @@ class fl_model {
 	 * @param string $index
 	 * @return array
 	 */
-	function translate_array($array, $lang=LANG, $index='') {
+	public function translate_array(array $array, $lang=LANG, $index='') {
 		if ( $index !== '' AND isset($array[0][$index])) {
 			foreach ( $array as $key => $value ) {
 				$array[$key][$index] = $this->translate($value[$index], $lang);
@@ -265,10 +265,6 @@ class fl_model {
 		}
 
 		return $array;
-	}
-
-	function count($table, $condition='') {
-		trigger_error('veraltet. neu: data_access->count()', E_USER_ERROR);
 	}
 }
 ?>
