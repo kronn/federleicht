@@ -1,9 +1,6 @@
 TODO und Ideen
 ==============
 
-* Alle Klassen von Federleicht umbennen, um Verzeichnisstruktur bessser
-  widerzuspiegeln und Namenskonflikte zu vermeiden. (PEAR-aehnlich)
-
 * Ausgabe cachen und Cache vorrangig verwenden
   http://www.php.net/outcontrol
   Die Dateinamen sollten dabei direkt mit der aufrufenden URL
@@ -12,7 +9,7 @@ TODO und Ideen
 * Routen per ini-Datei konfigurierbar machen
 
 * Routen erweitern, so dass eine Route einen Link erzeugen kann.
-  Zuerst das einfache Problem, die aktuellen Route zu einem Link zu machen.
+  Zuerst das einfache Problem, die aktuelle Route zu einem Link zu machen.
   Danach sollte das fuer beliebige "modul-controller-action-*-params"-
   Kombinationen funktionieren und dabei den bestmoeglichen Link erzeugen.  Da
   Routen sortiert werden koennen, ist das Problem des Vorrangs leicht zu
