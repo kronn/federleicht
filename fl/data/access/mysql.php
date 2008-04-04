@@ -26,8 +26,8 @@ class fl_data_access_mysql implements data_access {
 
 	public $show_errors = FALSE;
 
-	protected $true_value = 1;
-	protected $false_value = 0;
+	public $true_value = 1;
+	public $false_value = 0;
 
 	public function __construct($config) {
 		$this->table_prefix = (string) $config['table_prefix'];

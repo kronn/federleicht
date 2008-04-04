@@ -9,8 +9,8 @@
  * - del
  */
 class fl_data_access_null implements data_access {
-	private $true_value = true;
-	private $false_value = false;
+	public $true_value = true;
+	public $false_value = false;
 
 	public function __construct() {
 	}

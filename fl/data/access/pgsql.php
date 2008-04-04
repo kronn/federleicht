@@ -20,8 +20,8 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 	public $table_prefix = '';
 	public $schema = '';
 
-	protected $true_value = 't';
-	protected $false_value = 'f';
+	public $true_value = 't';
+	public $false_value = 'f';
 
 	public function __construct($config) {
 		$this->table_prefix = (string) $config['table_prefix'];
