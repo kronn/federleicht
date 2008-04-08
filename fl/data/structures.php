@@ -8,9 +8,9 @@
  * @subpackage base
  */
 class fl_data_structures {
-	var $libpath;
-	var $modulepath;
-	var $built_in;
+	protected $libpath;
+	protected $modulepath;
+	public $built_in;
 
 	/**
 	 * Konstruktor
@@ -37,11 +37,11 @@ class fl_data_structures {
 		if ( strpos($wanted_structure, '/') === false) {
 			$modul = $this->built_in;
 			$name = $wanted_structure;
-			$structure_name = $name;
+			$structure_name = 'fl_data_structures_' . $name;
 
 		} else {
 			list($modul, $name) = explode('/', $wanted_structure, 2);
-			$structure_name = 'fl_data_structures_' . $name;
+			$structure_name = $name . '_data';
 		}
 
 		$this->load_structure($modul, $name);

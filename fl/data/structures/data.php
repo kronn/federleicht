@@ -8,7 +8,7 @@
  * @subpackage base
  * @todo Datenstruktur "abschliessbar" machen, also hinzufuegen neuer Werte verhindern.
  */
-class fl_data_structures_data implements ArrayAccess {
+class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	/**
 	 * Daten direkt ausgeben
 	 *
@@ -52,7 +52,7 @@ class fl_data_structures_data implements ArrayAccess {
 	 *
 	 * @param array $data
 	 */
-	public function set_data($data) {
+	public function set_data(array $data) {
 		foreach ($data as $key => $value ) {
 			$this->set($key, $value);
 		}

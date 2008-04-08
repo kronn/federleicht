@@ -166,6 +166,16 @@ class fl_flash {
 		return $cleared;
 	}
 
+
+	/**
+	 * Invoke saving manually
+	 *
+	 * @return bool
+	 */
+	public function save_messages() {
+		return $this->save_all_messages();
+	}
+
 	/* == INTERNALLY USED == */
 
 	/**

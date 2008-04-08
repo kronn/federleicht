@@ -22,7 +22,7 @@ class fl_dispatcher {
 	/**
 	 * Array mit der liste der installierten Module
 	 */
-	protected $modules = array();
+	public $modules = array();
 
 	/**
 	 * Standardcontroller
@@ -77,7 +77,7 @@ class fl_dispatcher {
 		$url = preg_replace('@[/]{2,}@', '/', $url); // gegen Unsinn
 
 		$route_success = FALSE;
-		usort( $this->routes, array('route', 'compare_routes'));
+		usort( $this->routes, array('fl_route', 'compare_routes'));
 
 		$request = array();
 

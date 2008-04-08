@@ -7,15 +7,9 @@
  * @package federleicht
  * @subpackage base
  */
-class fl_data_structures_response {
-    var $http_header;
-    var $data;
-    var $layout;
-    var $subview;
-
-    /**
-     * Konstruktor
-     */
-    function __construct() {
-    }
+class fl_data_structures_response extends fl_data_structures_data {
+	protected $http_header;
+	protected $data;
+	protected $layout;
+	protected $subview;
 }

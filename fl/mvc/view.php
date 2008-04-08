@@ -48,7 +48,7 @@ class fl_view {
 	public function __construct($data, data_access $data_access, $functions, $model_name) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
-		$this->factory   = $functions->get_factory();
+		$this->factory   = $functions->factory;
 
 		$this->data = $this->factory->get_structure('view', $data);
 
@@ -95,7 +95,7 @@ class fl_view {
 
 		ob_start();
 		require_once $path . $layout . '.php';
-		$template = ob_get_content();
+		$template = ob_get_contents();
 		ob_end_clean();
 		
 		return $template;

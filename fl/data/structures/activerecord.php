@@ -30,7 +30,7 @@ abstract class fl_data_structures_activerecord {
 	 * @param data_structure $data
 	 * @param boolean $loaded
 	 */
-	public function __construct(data_access $db, $table, $id, data_structure $data, $loaded=false) {
+	public function __construct(data_access $db, $table, $id, data_wrapper $data, $loaded=false) {
 		$this->db =& $db;
 		$this->table = $table;
 		$this->id = $id;

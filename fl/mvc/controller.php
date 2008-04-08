@@ -41,7 +41,7 @@ class fl_controller {
 	public function __construct(data_access $data_access, $functions, $model) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
-		$this->factory = $functions->get_factory();
+		$this->factory = $functions->factory;
 
 		$this->model = $model;
 
@@ -52,6 +52,25 @@ class fl_controller {
 
 		$this->view = $this->cap['action'];
 		$this->flash_text = ( isset($_SESSION['flash'] ) )? $_SESSION['flash']: '';
+	}
+
+	/**
+	 * Datenobjekt (bislang ein Array) holen
+	 *
+	 * @return fl_data_structures_response
+	 */
+	public function get_response() {
+		$response = $this->factory->get_structure(
+			'response',
+			array(
+				'http_header'=>array(),
+				'data'=>$this->data,
+				'layout'=>$this->layout,
+				'subview'=>$this->view
+			)
+		);
+
+		return $response;
 	}
 
 	/**
@@ -113,7 +132,10 @@ class fl_controller {
 	 * @param string $namespace Gültigkeitsbereich
 	 */
 	protected function flash($text, $type='', $namespace='') {
-		$this->functions->flash->add_message($text, $namespace, $type);
+		$added = $this->functions->flash->add_message($text, $namespace, $type);
+		$saved = $this->functions->flash->save_messages();
+
+		trigger_error('debug', E_USER_ERROR);
 	}
 
 	/**

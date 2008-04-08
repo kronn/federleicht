@@ -40,7 +40,7 @@ class fl_modul {
 	public function __construct(data_access $data_access, $functions) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
-		$this->factory = $functions->get_factory();
+		$this->factory = $functions->factory;
 		$this->registry = fl_registry::getInstance();
 
 		$this->cap = $this->registry->get('request', 'route');
@@ -122,16 +122,17 @@ class fl_modul {
 
 		if ( $this->controller->common() ) {
 			if ( !isset($action) OR !method_exists($this->controller, $action) ) {
-				$action = $this->controller->defaultAction;
+				$action = 'defaultAction';
 			}
 			$this->controller->$action($params);
-			$data = $this->controller->data;
-			$layout = $this->controller->layout;
+			$response = $this->controller->get_response();
+			$data = $response->get('data');
+			$layout = $response->get('layout');
 
-			$this->registry->set('subview', $this->controller->view);
+			$this->registry->set('subview', $response->get('subview'));
 
 			$this->view = $this->create_view($modul_name, $data);
-			$this->content = $this->view->render_layout($layout);
+			$this->contents = $this->view->render_layout($layout);
 		} else {
 			$this->controller->alternate();
 		}

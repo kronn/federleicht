@@ -102,7 +102,7 @@ class federleicht {
 			$dispatcher->add_route( $route );
 		}
 
-		$request = $this->functions->structures->get(
+		$request = $this->functions->factory->get_structure(
 			'request', 
 			$dispatcher->analyse(
 				$this->registry->get('url')
@@ -145,7 +145,8 @@ class federleicht {
 		require_once  $path['lib'] . 'tools/autoload.php';
 
 		$interfaces = array(
-			'data_access'
+			'data_access',
+			'data_wrapper'
 		);
 
 		foreach ($interfaces as $interface) {
