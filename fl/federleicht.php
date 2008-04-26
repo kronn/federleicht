@@ -18,9 +18,9 @@ class federleicht {
 	/**
 	 * Objektreferenzen
 	 */
-	var $datamodel;
-	var $functions;
-	var $registry;
+	public $datamodel;
+	public $functions;
+	protected $registry;
 
 	/**
 	 * Federleicht erstellen
@@ -73,7 +73,7 @@ class federleicht {
 			$data = new fl_data_access($this->registry->get('config', 'database'));
 		}
 
-		$this->datamodel = $data->get_data_souce();
+		$this->datamodel = $data->get_data_source();
 		$this->functions->set_data_access($this->datamodel);
 	}
 

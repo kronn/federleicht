@@ -41,7 +41,7 @@ class fl_data_access {
 	 *
 	 * @return data_access
 	 */
-	public function get_data_souce() {
+	public function get_data_source() {
 		return $this->data_source;
 	}
 }

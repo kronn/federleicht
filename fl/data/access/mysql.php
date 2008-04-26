@@ -15,16 +15,11 @@
  *
  * @version 0.2.1
  */
-class fl_data_access_mysql implements data_access {
+class fl_data_access_mysql extends fl_data_access_database implements data_access {
 	protected $connection;
 	public $database;
 
-	public $lastSQL = '';
-	public $allSQL = array();
-	public $query_count = 0;
 	public $table_prefix = '';
-
-	public $show_errors = FALSE;
 
 	public $true_value = 1;
 	public $false_value = 0;
@@ -65,7 +60,7 @@ class fl_data_access_mysql implements data_access {
 			break;
 		}
 	
-		$sql = $type . " INTO ".$this->table_prefix.$table." SET ";
+		$sql = $type . " INTO ".$this->get_table_name($table)." SET ";
 		foreach ($data as $field=>$content) {
 			$this->_secureFieldContent($content);
 
@@ -73,7 +68,6 @@ class fl_data_access_mysql implements data_access {
 			if ( ( $data_length - 1 ) > $i++ )
 				$sql .= ",";
 		}
-		$sql .= ";";
 
 		$result = $this->query($sql);
 		return $result;
@@ -101,7 +95,7 @@ class fl_data_access_mysql implements data_access {
 			$sql_limit = $limit;
 		}
 
-		$sql = "SELECT ".$field." FROM ".$this->table_prefix.$table;
+		$sql = "SELECT ".$field." FROM ".$this->get_table_name($table);
 		if ( !empty($condition) )
 			$sql .= " WHERE ".$condition;
 		if ( !empty($order) )
@@ -132,7 +126,7 @@ class fl_data_access_mysql implements data_access {
 		$data_length = count($data);
 		$i = 0;
 
-		$sql = "UPDATE ".$this->table_prefix.$table." SET".PHP_EOL;
+		$sql = "UPDATE ".$this->get_table_name($table)." SET".PHP_EOL;
 		foreach ($data as $field=>$content) {
 			$this->_secureFieldContent($content);
 
@@ -141,9 +135,7 @@ class fl_data_access_mysql implements data_access {
 				$sql .= ",";
 		}
 		if ( !$all ) {
-			$sql .= " WHERE ".$id_field."='".$id."' ;";
-		} else {
-			$sql .= ';';
+			$sql .= " WHERE ".$id_field."='".$id."'";
 		}
 
 		$result = $this->query($sql);
@@ -165,8 +157,8 @@ class fl_data_access_mysql implements data_access {
 			return FALSE;
 		}
 
-		$sql = "DELETE FROM ".$this->table_prefix.$table."
-		 WHERE id='".$id."' LIMIT 1;";
+		$sql = "DELETE FROM ".$this->get_table_name($table)."
+		 WHERE id='".$id."' LIMIT 1";
 
 		$result = $this->query($sql);
 		return $result;
@@ -183,7 +175,7 @@ class fl_data_access_mysql implements data_access {
 	public function convert_result($table, $result) {
 		return $result;
 
-		$table = $this->table_prefix . $table;
+		$table = $this->get_table_name($table);
 		$converted = $result;
 
 		$sql = <<<SQL
@@ -215,7 +207,7 @@ SQL;
 	 * @return boolean
 	 */
 	public function clear_table($table) {
-		$sql = 'TRUNCATE TABLE '.$this->table_prefix.$table;
+		$sql = 'TRUNCATE TABLE '.$this->get_table_name($table);
 
 		$result = (boolean) $this->query($sql);
 		return $result;
@@ -228,36 +220,10 @@ SQL;
 	 * @return boolean
 	 */
 	public function optimize_table($table) {
-		$sql = 'OPTIMIZE TABLE ' . $this->table_prefix.$table;
+		$sql = 'OPTIMIZE TABLE ' . $this->get_table_name($table);
 
 		$result = (boolean) $this->query($sql);
 		return $result;
-	}
-
-	/**
-	 * Anzahl der Datensätze mit bestimmter Bedingung zurückgeben
-	 *
-	 * @param string $table		Tabelle in der DB
-	 * @param string $condition Bedingung, die überprüft werden soll, optional
-	 * @return integer
-	 */
-	public function count($table, $condition='') {
-		$result = $this->retrieve($table, 'COUNT(*) AS anzahl', $condition);
-		$anzahl = (integer) $result['anzahl'];
-		return $anzahl;
-	}
-
-	/**
-	 * ID holen
-	 *
-	 * @param string $table		Tabelle in der DB
-	 * @param string $condition Bedingung, mit der gesucht werden
-	 * @return integer
-	 */
-	public function find_id($table, $condition) {
-		$result = $this->retrieve($table, 'id', $condition);
-		$id = (integer) $result['id'];
-		return $id;
 	}
 
 	/**
@@ -268,6 +234,26 @@ SQL;
 	 */
 	public function query($sql) {
 		return $this->_query_db($sql);
+	}
+
+	/**
+	 * Zuletzt eingefügte ID zurückgeben
+	 *
+	 * @param string $table
+	 * @return integer
+	 */
+	public function last_insert_id($table) {
+		return mysql_insert_id($this->connection);
+	}
+
+	/**
+	 * Eindeutigen Bezeichner für eine Tabelle zurückgeben
+	 *
+	 * @param string $table
+	 * @return string
+	 */
+	public function get_table_name($table) {
+		return $this->table_prefix . $table;
 	}
 
 	// interne Funktionen
@@ -285,10 +271,10 @@ SQL;
 		}
 
 		$this->connection = @mysql_connect( $host, $user, $pass) 
-			OR die("Keine Verbindung zur Datenbank m&ouml;glich. Fehlermeldung: ".mysql_error());
+			OR die("Keine Verbindung zur Datenbank m&ouml;glich. Fehlermeldung: ".mysql_error($this->connection));
 		$this->database = $db;
 
-		mysql_query('SET NAMES "utf8";');
+		mysql_query('SET NAMES "utf8"', $this->connection);
 
 		$this->_select_db();
 	}
@@ -317,22 +303,21 @@ SQL;
 			}
 
 		} else {
-			$this->_logSQL($sql);
+			$this->log_query($sql);
 
 			$output = array();
 			$aktionen = array('UPDATE','DELETE', 'ALTER ', 'CREATE', 'DROP T', 'TRUNCA', 'REPLAC', 'OPTIMI');
 
-			$abfrage = is_string($sql) ? trim($sql) :  $this->_error('Fehlerhafte Daten', $sql);
+			$abfrage = is_string($sql) ? trim($sql) :  $this->error('Fehlerhafte Daten', $sql);
 
-			$result = mysql_query($abfrage) OR $this->_error(mysql_error(), $sql);
-			$this->query_count++;
+			$result = mysql_query($abfrage, $this->connection) OR $this->error(mysql_error($this->connection), $sql);
 
 			$abfragetyp = strtoupper(substr($abfrage,0,6));
 
 			if ( ( in_array($abfragetyp,$aktionen) ) ) {
 				$output = ( $result )? TRUE: FALSE;
 			} elseif ( ($abfragetyp == 'INSERT') ) {
-				$output = ( $result )? mysql_insert_id(): FALSE;
+				$output = ( $result )? $this->last_insert_id(): FALSE;
 			} else {
 				while($row = mysql_fetch_assoc($result)) {
 					$output[] = $row;
@@ -355,33 +340,9 @@ SQL;
 	private function _secureFieldContent(&$var){
 		if ( is_array($var) ) {
 			$varvalue = var_export($var, TRUE);
-			$this->_error('Array sollte gespeichert werden.', $varvalue );
+			$this->error('Array sollte gespeichert werden.', $varvalue );
 		}
 		$var = mysql_real_escape_string($var, $this->connection);
-	}
-
-	/**
-	 * Datenbankabfragen loggen
-	 */
-	private function _logSQL($sql) {
-		$this->lastSQL = $sql;
-		$this->allSQL[] = $sql;
-	}
-
-	/**
-	 * Fehlermeldungen ausgeben und Ausführung stoppen
-	 *
-	 * @todo in Fehlerbehandlungsklasse auslagern
-	 */
-	private function _error($error, $sql) {
-		if ( $this->show_errors OR 
-			( error_reporting() > 0 AND ini_get('display_errors') == 1 ) ) {
-			require_once ABSPATH . 'app/helper/var_dump.php';
-			$err = new varDumper('data-access', 'Fehler');
-			$err->sql($sql, 'Datenbankabfrage, die zu Fehler gefuehrt hat'); 
-		}
-
-		trigger_error($error, E_USER_ERROR);
 	}
 }
 ?>
