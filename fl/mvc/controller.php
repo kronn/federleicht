@@ -12,10 +12,11 @@ class fl_controller {
 	 * Instanzvariablen
 	 */
 	protected $data = array();
-	protected $flash_text = '';
 
 	protected $layout = 'default';
 	protected $view;
+
+	protected $responder;
 
 	/**
 	 * Referenzen auf externe Objekte und Daten
@@ -35,8 +36,8 @@ class fl_controller {
 	 * ausgeführt. Diese wird von jedem Controller selbst festgelegt.
 	 *
 	 * @param data_access  $data_access
-	 * @param functions    $functions
-	 * @param model        $model
+	 * @param fl_functions $functions
+	 * @param fl_model     $model
 	 */
 	public function __construct(data_access $data_access, $functions, $model) {
 		$this->datamodel = $data_access;
@@ -45,13 +46,14 @@ class fl_controller {
 
 		$this->model = $model;
 
-		$registry =& fl_registry::getInstance();
+		$registry = fl_registry::getInstance();
 		$this->request = $registry->get('request');
 		$this->cap = $this->request->route;
 		$this->modulepath = $registry->get('path', 'module');
 
+		$this->responder = $this->factory->create('responder');
+
 		$this->view = $this->cap['action'];
-		$this->flash_text = ( isset($_SESSION['flash'] ) )? $_SESSION['flash']: '';
 	}
 
 	/**
@@ -71,6 +73,15 @@ class fl_controller {
 		);
 
 		return $response;
+	}
+
+	/**
+	 * Verwaltungsobjekt für Antwortobjekte holen
+	 *
+	 * @return fl_responder Iterator data_wrapper
+	 */
+	public function get_responses() {
+		return $this->responder;
 	}
 
 	/**

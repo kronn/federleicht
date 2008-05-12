@@ -107,6 +107,52 @@ class fl_modul {
 	 *
 	 * @pattern "Template Method"
 	 */
+	final public function start_execution() {
+		$modul_name = str_replace('_modul', '', get_class($this));
+
+		// Modul vorbereiten
+		$this->prepare();
+
+		$action = $this->cap['action'];
+		$params = $this->cap['param'];
+
+		// Standardablauf ausführen
+		$this->controller = $this->create_controller($modul_name);
+		$this->model = $this->create_model($modul_name);
+
+		try {
+			$this->controller->common();
+			if ( !isset($action) OR !method_exists($this->controller, $action) ) {
+				$action = 'defaultAction';
+			}
+			$this->controller->$action($params);
+
+			foreach( $this->controller->get_response() as $response ) {
+				$view = $this->factory->create_view($response->get_type());
+				/**
+				 * Der folgende Code muss von view übernommen und
+				 * mit $view->execute($response) ausgeführt werden
+				 
+					$data = $response->get('data');
+					$layout = $response->get('layout');
+
+					$this->registry->set('subview', $response->get('subview'));
+
+					$this->view = $this->create_view($modul_name, $data);
+					$this->contents = $this->view->render_layout($layout);
+					$this->output_contents();
+
+				 */
+				$view->execute($response);
+			}
+		} catch ( Exception $e ) {
+			$this->controller->alternate();
+		}
+		$this->clean_up();
+
+		/*
+		 * alte funktion
+	}
 	public function start_execution() {
 		$modul_name = str_replace('_modul', '', get_class($this));
 
@@ -138,6 +184,7 @@ class fl_modul {
 		}
 		$this->output_contents();
 		$this->clean_up();
+		 */
 	}
 
 	/**

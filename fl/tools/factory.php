@@ -38,17 +38,32 @@ class fl_factory {
 	}
 
 	/**
+	 * Eine Federleicht-interne Klasse erzeugen und zurückgeben
+	 *
+	 * @todo verbessern, indem die verschiedenen Klassen mit den entsprechenden Parametern versorgt werden oder an passende Methoden deligiert wird...
+	 * @param string $class_name
+	 * @return mixed
+	 */
+	public function create($class_name) {
+		$class = 'fl_$classname';
+		return new $class();
+	}
+
+	/**
 	 * Weiteres Model holen
 	 *
 	 * Nach Möglichkeit wird das Model aus der Registry geholt.
+	 * @pattern IdentityMap
+	 *
+	 * @throws LogicException   Wenn keine Datenzugriffsklasse gesetzt wurde.
 	 *
 	 * @param string $modul     Name des Moduls, aus dem das Model geholt wird.
-	 * @return model
+	 * @return fl_model
 	 */
 	public function get_model($modul) {
 		if (  $this->registry->get('loaded_model_'.$modul) === FALSE ) {
-			if ( $this->data_access == NULL ) { 
-				return FALSE;
+			if ( $this->data_access == null ) { 
+				throw new LogicException('Der Factory ist keine Datenzugriffsklasse bekannt: Mit set_data_access(data_access) setzen!');
 			}
 
 			$this->load_module($modul);
@@ -74,7 +89,7 @@ class fl_factory {
 	 */
 	public function get_class($class) {
 		if ( strpos($class, '/') === false) {
-			return false;
+			throw new InvalidArgumentException('Klassenname muss in der Form modul/class angegeben werden.');
 		} else {
 			list($modul, $class_name) = explode('/', $class, 2);
 		}
@@ -96,14 +111,19 @@ class fl_factory {
 	/**
 	 * Activerecord-Klasse holen
 	 *
+	 * Nach Möglichkeit wird der Record aus der Registry geholt.
+	 * @pattern IdentityMap
+	 *
+	 * @throws InvalidArgumentException  Wenn der erste Parameter keinen Slash enthält
+	 *
 	 * @param string $class
 	 * @param int $id
 	 * @param array $data
-	 * @return active_record
+	 * @return fl_data_structures_activerecord
 	 */
 	public function get_ar_class($class, $id = 0, array $data = array()) {
 		if ( strpos($class, '/') === false) {
-			return false;
+			throw new InvalidArgumentException('Klassenname muss in der Form modul/class angegeben werden.');
 		} else {
 			list($modul, $class_name) = explode('/', $class, 2);
 		}
@@ -125,15 +145,21 @@ class fl_factory {
 			$data_structure = $this->get_structure('data', $data);
 		}
 
-		$instance = new $class_name(
-			$this->data_access, 
-			$this->inflector->plural($class_name),
-			$id, 
-			$data_structure,
-			$loaded
-		);
+		$identifier = "{$class_name}_{$id}";
 
-		return $instance;
+		if ( !$this->registry->is_set('loaded_record_'.$identifier) === FALSE ) {
+			$instance = new $class_name(
+				$this->data_access, 
+				$this->inflector->plural($class_name),
+				$id, 
+				$data_structure,
+				$loaded
+			);
+
+			$this->registry->set('loaded_record_'.$identifier, $instance);
+		}
+		
+		return $this->registry->get('loaded_record_'.$identifier);
 	}
 
 	/**
@@ -141,7 +167,7 @@ class fl_factory {
 	 *
 	 * @param string $wanted_structure
 	 * @param array  $data
-	 * @return data_structure
+	 * @return data_wrapper
 	 */
 	public function get_structure($wanted_structure, $data = null) {
 		return $this->structures->get($wanted_structure, $data);
@@ -153,7 +179,7 @@ class fl_factory {
 	 * @param string $wanted_helper
 	 * Weitere Parameter werden übernommen und an den Konstruktor weitergegeben.
 	 *
-	 * @return mixed
+	 * @return object
 	 */
 	public function get_helper($wanted_helper) {
 		$this->load_helper($wanted_helper);
@@ -211,12 +237,14 @@ class fl_factory {
 	 * Der Quellcode eines namentlich benannten
 	 * Helfermoduls wird eingelesen.
 	 *
+	 * @throws OutOfRangeException  Wenn die gewünschte Helperklasse nicht existiert
+	 *
 	 * @param string $wanted Name des gewünschten Helfermoduls
 	 * @return boolean
 	 */
 	public function load_helper($wanted) {
 		if ( !in_array( $wanted, $this->registry->get('helpers') ) ) {
-			return FALSE;
+			throw new OutOfRangeException("Helperklasse {$wanted} nicht gefunden");
 		}
 
 		include_once $this->registry->get('path', 'helper') . $wanted . '.php';
@@ -227,6 +255,7 @@ class fl_factory {
 	/**
 	 * Moduldatei einlesen
 	 *
+	 * @throws OutOfRangeException  Wenn die passende Moduldatei nicht existiert
 	 * @param string $modul
 	 */
 	public function load_module($modul) {
@@ -238,7 +267,7 @@ class fl_factory {
 			if ( file_exists( $common_path ) ) {
 				$modul_path = $common_path;
 			} else {
-				return FALSE;
+				throw new OutOfRangeException("Modul {$modul} wurde nicht gefunden");
 			}
 		}
 
