@@ -42,6 +42,7 @@ class fl_functions {
 	 * Federleicht anhalten
 	 */
 	public function stop($message='') {
+		ob_flush();
 		echo $message;
 		exit();
 	}

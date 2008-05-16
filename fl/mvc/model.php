@@ -37,7 +37,8 @@ class fl_model {
 		$this->factory = $factory;
 		$this->modulepath = $path;
 
-		$this->modul = array_shift(explode('_', get_class($this)));
+		$class = explode('_', get_class($this));
+		$this->modul = $class[1];
 
 		# $this->translator = $this->get_translator();
 	}

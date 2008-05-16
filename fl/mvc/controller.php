@@ -143,10 +143,13 @@ class fl_controller {
 	 * @param string $namespace Gültigkeitsbereich
 	 */
 	protected function flash($text, $type='', $namespace='') {
-		$added = $this->functions->flash->add_message($text, $namespace, $type);
-		$saved = $this->functions->flash->save_messages();
+		$flash = $this->functions->flash;
 
-		trigger_error('debug', E_USER_ERROR);
+		$added = $flash->add_message($text, $namespace, $type);
+		$saved = $flash->save_messages();
+		$content = ob_get_contents();
+		#flush();
+		return ( $added AND $saved );
 	}
 
 	/**
@@ -163,9 +166,12 @@ class fl_controller {
 		}
 		
 		$zieladresse = 'http://'.$_SERVER['HTTP_HOST'].'/'.$target;
+		$this->functions->flash->save_messages();
 
+		#if ( headers_sent($file, $line) AND strlen(ob_get_contents()) > 0) {
 		if ( headers_sent($file, $line) ) {
 			if ( error_reporting() > 0 ) {
+				$backtrace = debug_backtrace();
 				$html = <<<HTML
 <h2>HTTP-Header wurden bereits gesandt</h2>
 <p>Die Ausgabe startete hier:</p>
@@ -177,18 +183,20 @@ Zeile: {$line}
 <pre>
 Anfrage: {$_SERVER['REQUEST_URI']}
 Zieladresse: {$zieladresse}
+Backtrace: 
+{$backtrace}
 </pre>
 HTML;
 				echo $html;
-
-				trigger_error('Header bereits gesandt', E_USER_WARNING);
 			}
 
+			ob_flush();
 			$this->functions->stop(
 				'<a href="'.$zieladresse.'">'.$zieladresse.'</a>'
 			);
 		} else {
 			header('Location: '.$zieladresse);
+			ob_flush();
 		}
 	}
 

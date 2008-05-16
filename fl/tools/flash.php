@@ -210,4 +210,3 @@ class fl_flash {
 		return $msg;
 	}
 }
-?>
