@@ -85,6 +85,9 @@ class fl_modul {
 	 * @return object
 	 */
 	protected function create_view($name, array $data) {
+		// @todo unsauber! verbessern!!!
+		require_once ABSPATH . 'fl/mvc/view.php';
+
 		require_once $this->modulepath . $name . '/view.php';
 		$view_name = $name . '_view';
 
@@ -127,6 +130,24 @@ class fl_modul {
 			}
 			$this->controller->$action($params);
 
+			/**
+			 * Übergangsweise
+			 */
+					$response = $this->controller->get_response();
+					$data = $response->get('data');
+					$layout = $response->get('layout');
+
+					$this->registry->set('subview', $response->get('subview'));
+
+					$this->view = $this->create_view($modul_name, $data);
+					$this->contents = $this->view->render_layout($layout);
+					$this->output_contents();
+			/**
+			 * Ende Übergangsweise Code
+			 */
+
+
+
 			foreach( $this->controller->get_response() as $response ) {
 				$view = $this->factory->create_view($response->get_type());
 				/**
@@ -146,7 +167,7 @@ class fl_modul {
 				$view->execute($response);
 			}
 		} catch ( Exception $e ) {
-			$this->controller->alternate();
+			$this->controller->alternate($e);
 		}
 		$this->clean_up();
 

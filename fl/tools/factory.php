@@ -45,7 +45,7 @@ class fl_factory {
 	 * @return mixed
 	 */
 	public function create($class_name) {
-		$class = 'fl_$classname';
+		$class = "fl_{$class_name}";
 		return new $class();
 	}
 
@@ -147,7 +147,7 @@ class fl_factory {
 
 		$identifier = "{$class_name}_{$id}";
 
-		if ( !$this->registry->is_set('loaded_record_'.$identifier) === FALSE ) {
+		if ( !$this->registry->is_set('loaded_record_'.$identifier) ) {
 			$instance = new $class_name(
 				$this->data_access, 
 				$this->inflector->plural($class_name),

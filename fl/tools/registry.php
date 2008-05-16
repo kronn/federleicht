@@ -81,4 +81,18 @@ class fl_registry {
 
 		$this->values[$key] = $value;
 	}
+
+	/**
+	 * Prüfung, ob Wert existiert
+	 *
+	 */
+	public function is_set($key) {
+		$available = false;
+
+		if ( isset($this->values[$key]) ) {
+			$available = true;
+		}
+
+		return $available;
+	}
 }

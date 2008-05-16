@@ -101,8 +101,11 @@ class fl_controller {
 	/**
 	 * Alternative Abläufe
 	 */
-	public function alternate() {
-		echo 'controller->common() fehlgeschlagen';
+	public function alternate($e = null) {
+		if ( $e instanceof Exception ) {
+			$registry = fl_registry::getInstance();
+			throw $e;
+		}
 	}
 
 	/**
