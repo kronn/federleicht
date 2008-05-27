@@ -127,7 +127,7 @@ class fl_controller {
 		/**
 		 * richtigen Wert in Registry speichern
 		 */
-		$reg =& registry::getInstance();
+		$reg =& fl_registry::getInstance();
 		$request = $reg->get('request');
 		$request->route['action'] = $this->defaultAction;
 		$reg->set('request', $request);
