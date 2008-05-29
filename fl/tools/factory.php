@@ -316,4 +316,3 @@ class fl_factory {
 		return $result;
 	}
 }
-?>

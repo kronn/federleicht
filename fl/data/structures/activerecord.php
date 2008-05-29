@@ -7,10 +7,11 @@
  * @package federleicht
  * @subpackage data
  * @todo $fields automatisch aus Datenbank auslesen
- * @todo validator in Basisklasse instanziieren
+ * @todo validator in Basisklasse instanziieren?
  * @todo active_record als Datenzugriffsklasse (und nicht als Datenstruktur) im richtigen Verzeichnis ablegen und von dort laden lassen.
+ * @todo active_record sollte auch das Interface data_access und data_wrapper implementieren, da es sowohl Datenzugriff wie Daten selbst darstellt.
  */
-abstract class fl_data_structures_activerecord {
+abstract class fl_data_structures_activerecord implements data_wrapper {
 	/**
 	 * Instanzvariablen
 	 */
@@ -27,7 +28,7 @@ abstract class fl_data_structures_activerecord {
 	 * @param data_access $db
 	 * @param string $table
 	 * @param int $id
-	 * @param data_structure $data
+	 * @param data_wrapper $data
 	 * @param boolean $loaded
 	 */
 	public function __construct(data_access $db, $table, $id, data_wrapper $data, $loaded=false) {
@@ -45,7 +46,7 @@ abstract class fl_data_structures_activerecord {
 	/**
 	 * Daten setzen
 	 */
-	public function set_data($data) {
+	public function set_data(array $data) {
 		foreach ( $data as $key => $value ) {
 			if ( empty($value) ) continue;
 			
@@ -106,6 +107,25 @@ abstract class fl_data_structures_activerecord {
 	 */
 	public function set($key, $value) {
 		return $this->data->set($key, $value);
+	}
+
+	/**
+	 * Prüfung, ob Datenfeld existiert
+	 *
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function is_set($key) {
+		return $this->data->is_set($key);
+	}
+
+	/**
+	 * Einzelnes Datenfeld löschen
+	 *
+	 * @param string $key
+	 */
+	public function remove($key) {
+		return $this->data->remove($key);
 	}
 
 	/**
