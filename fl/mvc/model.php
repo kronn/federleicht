@@ -125,12 +125,11 @@ class fl_model {
 	 * @todo ins Datenbank-Objekt!
 	 */
 	public function find_one(array $result, $field='id') {
-
 		while ( !isset($result[$field]) AND is_array($result) ) {
 			$result = array_shift($result);
 		}
 
-		return $result;
+		return (array) $result;
 	}
 
 	/**
