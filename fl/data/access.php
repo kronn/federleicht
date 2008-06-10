@@ -22,8 +22,8 @@ class fl_data_access {
 	 *
 	 * @param array $config
 	 */
-	public function __construct($config = null ) {
-		if ( $config === null ) {
+	public function __construct(array $config = array() ) {
+		if ( $config['type'] == null ) {
 			$type = 'null';
 		} else {
 			$type =  strtolower($config['type']);

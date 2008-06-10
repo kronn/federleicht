@@ -67,11 +67,7 @@ class federleicht {
 			$this->functions->stop('<h2>Fehler</h2><p>Keine Module installiert</p>');
 		}
 
-		if ( NO_DATABASE ) {
-			$data = new fl_data_access( null );
-		} else {
-			$data = new fl_data_access($this->registry->get('config', 'database'));
-		}
+		$data = new fl_data_access($this->registry->get('config', 'database'));
 
 		$this->datamodel = $data->get_data_source();
 		$this->functions->set_data_access($this->datamodel);
