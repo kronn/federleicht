@@ -148,11 +148,7 @@ class fl_controller {
 	protected function flash($text, $type='', $namespace='') {
 		$flash = $this->functions->flash;
 
-		$added = $flash->add_message($text, $namespace, $type);
-		$saved = $flash->save_messages();
-		$content = ob_get_contents();
-		#flush();
-		return ( $added AND $saved );
+		return $flash->add_message($text, $namespace, $type);
 	}
 
 	/**

@@ -192,6 +192,8 @@ class fl_flash {
 		$_SESSION['flash_messages'] = $msg;
 		$saved = TRUE;
 
+		session_write_close();
+
 		return $saved;
 	}
 
