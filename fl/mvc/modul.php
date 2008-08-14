@@ -88,8 +88,12 @@ class fl_modul {
 		// @todo unsauber! verbessern!!!
 		require_once ABSPATH . 'fl/mvc/view.php';
 
-		require_once $this->modulepath . $name . '/view.php';
-		$view_name = $name . '_view';
+		if ( file_exists($this->modulepath . $name . '/view.php') ) {
+			require_once $this->modulepath . $name . '/view.php';
+			$view_name = $name . '_view';
+		} else {
+			$view_name = 'fl_view';
+		}
 
 		$view = new $view_name($data, $this->datamodel, $this->functions, $name);
 		return $view;
