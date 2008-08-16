@@ -46,12 +46,41 @@ class fl_route {
 	}
 
 	/**
-	 * Route zu regulärem Asudruck umwandeln
+	 * Vereinfachte Objekterzeugung
+	 *
+	 * @pattern facade
 	 *
 	 * @param string $route
+	 * @param string $defaults
+	 * @param int    $priority
+	 * @param array  $partial_regex
+	 * @return fl_route
+	 */
+	public static function get_instance($route, $defaults, $priority, array $partial_regex=array()) {
+		$route_object = new self($route);
+		
+		$defaults = is_string($defaults)? 
+			fl_converter::string_to_array($defaults): 
+			$defaults;
+		$route_object->set_defaults($defaults);
+
+		$route_object->set_priority((int) $priority);
+		$route_object->set_language_key('lang');
+
+		foreach ( $partial_regex as $part ) {
+			$route_object->set_partial_regex($part['key'], $part['regex']);
+		}
+
+		return $route_object;
+	}
+
+	/**
+	 * Route zu regulärem Asudruck umwandeln
+	 * 
+	 * @param string $route 
 	 * @return $string
 	 */
-	public function compile($route) {
+	protected function compile($route) {
 		$elements = explode('/', $route);
 		$group_count = 0;
 
@@ -229,10 +258,10 @@ class fl_route {
 	 * Teilregel für eine Routenbestandteil holen
 	 *
 	 * @param string  $key
-	 * @param boolean $id_last
+	 * @param boolean $is_last
 	 * @return string
 	 */
-	public function get_partial_regex($key, $is_last=FALSE) {
+	public function get_partial_regex($key, $is_last = false) {
 		if ( isset( $this->partial_regex[$key] ) ) { 
 			$regex = $this->partial_regex[$key];
 		} elseif ( $is_last ) {
@@ -319,11 +348,11 @@ class fl_route {
 	 * Kann mit usort($array_of_routes, array('route', 'compare_routes');
 	 * verwendet werden.
 	 *
-	 * @param route $a
-	 * @param route $b
+	 * @param fl_route $a
+	 * @param fl_route $b
 	 * @return integer
 	 */
-	public function compare_routes($a, $b) {
+	public function compare_routes(fl_route $a, fl_route $b) {
 		$ap = $a->get_priority();
 		$bp = $b->get_priority();
 
