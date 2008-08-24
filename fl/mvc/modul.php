@@ -128,7 +128,7 @@ class fl_modul {
 		$this->model = $this->create_model($modul_name);
 
 		try {
-			$this->controller->common();
+			$this->controller->common($params);
 			if ( !isset($action) OR !method_exists($this->controller, $action) ) {
 				$action = 'defaultAction';
 			}
@@ -149,7 +149,6 @@ class fl_modul {
 			/**
 			 * Ende Übergangsweise Code
 			 */
-
 
 
 			foreach( $this->controller->get_response() as $response ) {
