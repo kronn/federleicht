@@ -121,22 +121,29 @@ class fl_view {
 	 * @param array  $vars   Assoziatives Array mit Variablen fuer das Element.
 	 */
 	protected function get_element($name, array $vars = array() ) {
-		require_once $this->elementpath . $name . '.php';
+		if ( strpos($class, '/') === false) {
+			$path = $this->elementpath;
+			$file = $name;
+		} else {
+			list($modul, $file) = explode('/', $name, 2);
+			$path = $this->modulepath . '/' . $modul . '/elements/';
+		}
+
+		if ( file_exists($path . $file . '.php') ) {
+			require_once $path . $file . '.php';
+		}
 	}
 
 	/**
 	 * Teilbereich eines Subview holen
 	 *
 	 * @param string $name  Name des Teilbereichs
+	 * @deprecated
 	 */
 	protected function get_partial($name, $forgiving=FALSE) {
-		$file = $this->modulepath . $this->cap['controller'] . '/partials/' . $name . '.php';
+		trigger_error('veraltet: $this->get_element() verwenden.');
 
-		if ( $forgiving AND !file_exists($file) ) {
-			return;
-		} else {
-			require_once $file;
-		}
+		return $this->get_element($this->cap['controller'].'/'.$name);
 	}
 
 	/**
