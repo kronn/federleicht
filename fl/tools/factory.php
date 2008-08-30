@@ -218,6 +218,9 @@ class fl_factory {
 	public function load_structure($wanted_structure) {
 		if ( strpos($wanted_structure, '/') === false ) {
 			$this->structures->load_structure($this->structures->built_in, $wanted_structure);
+		} else {
+			list($modul, $structure) = explode('/', $wanted_structure, 2);
+			$this->structures->load_structure($modul, $structure);
 		}
 	}
 

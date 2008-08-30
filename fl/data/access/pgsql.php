@@ -16,6 +16,7 @@
  */
 class fl_data_access_pgsql extends fl_data_access_database implements data_access {
 	protected $connection;
+	protected $database;
 
 	public $table_prefix = '';
 	public $schema = '';
@@ -28,6 +29,8 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 		$this->schema = ( isset($config['schema']) )?
 			$config['schema']:
 			'public';
+
+		$this->database = $config['database'];
 
 		$this->_open_db($config['host'], $config['database'], $config['user'], $config['pass']);
 	}
@@ -244,8 +247,21 @@ SQL;
 	 * @return integer
 	 */
 	public function last_insert_id($table) {
-		$result = $this->query('SELECT last_value FROM '.$this->_tableName($table).'_id_seq;');
-		return $result[0]['last_value'];
+		$index = $this->query($sql = "SELECT column_default FROM information_schema.columns 
+			WHERE table_catalog='{$this->database}' AND table_name='{$this->table_prefix}{$table}' AND column_name='id';");
+		$index_result = $index[0]['column_default'];
+		$index_name = substr(
+			$index_result, 
+			strpos($index_result, "'") + 1 , 
+			strrpos($index_result, "'") - strlen($index_result)
+		);
+		
+		try {
+			$result = $this->query('SELECT last_value FROM '.$index_name.';');
+			return $result[0]['last_value'];
+		} catch ( Exception $e ) {
+			return 0;
+		}
 	}
 
 	/**

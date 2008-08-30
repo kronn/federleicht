@@ -40,6 +40,9 @@ class fl_inflector {
 				'cover',
 				'musiktitel',
 				'titel',
+				'merchandise',
+				'poster',
+				'kleidung'
 			);
 
 			$this->irregular = array(
