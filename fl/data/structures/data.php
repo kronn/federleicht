@@ -10,69 +10,6 @@
  */
 class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	/**
-	 * Daten direkt ausgeben
-	 *
-	 * @param string $key
-	 */
-	public function say($key) {
-		echo $this->get($key);
-	}
-
-	/**
-	 * Daten zurückgeben
-	 * 
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function get($key) {
-		return $this->_get_field($key);
-	}
-
-	/**
-	 * Daten in Datenstruktur setzen
-	 *
-	 * @param string $key
-	 * @param mixed  $value
-	 */
-	public function set($key, $value) {
-		$this->_set_field($key, $value);
-	}
-
-	/**
-	 * Daten in Datenstruktur loeschen
-	 *
-	 * @param string $key
-	 */
-	public function remove($key) {
-		$this->_unset_field($key);
-	}
-
-	/**
-	 * Ein assoziatives Array als Daten übernehmen
-	 *
-	 * @param array $data
-	 */
-	public function set_data(array $data) {
-		foreach ($data as $key => $value ) {
-			$this->set($key, $value);
-		}
-	}
-
-	/**
-	 * Pruefen, ob eine Datenfeld existiert
-	 * 
-	 * @param string $key
-	 * @return boolean
-	 */
-	public function is_set($key) {
-		return $this->_isset_field($key);
-	}
-
-	public function get_data() {
-		throw new Exception('Funktion nicht mehr unterstuetzt. "foreach($data_structure as $key=>value) { $data[$key] = $value }" verwenden!');
-	}
-	
-	/**
 	 * Konstruktor
 	 *
 	 * @param array $data
@@ -87,6 +24,34 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	public function __toString() {
 		return 'Datenobjekt: ' . get_class($this);
 	}
+
+	/**
+	 * Methoden des Interface data_wrapper
+	 */
+	public function set($key, $value) {
+		$this->_set_field($key, $value);
+	}
+	public function get($key) {
+		return $this->_get_field($key);
+	}
+	public function say($key) {
+		echo $this->get($key);
+	}
+
+	public function set_data(array $data) {
+		foreach ($data as $key => $value ) {
+			$this->set($key, $value);
+		}
+	}
+	public function is_set($key) {
+		return $this->_isset_field($key);
+	}
+	public function remove($key) {
+		$this->_unset_field($key);
+	}
+	/**
+	 * data_wrapper Ende
+	 */
 
 	/**
 	 * Methoden des Interface ArrayAccess
@@ -115,16 +80,14 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 * @return mixed
 	 */
 	protected function _get_field($key) {
-		if ( $this->_isset_field($key) ) {
+		$fallback_method = 'get_'.$key;
+
+		if ( method_exists( $this, $fallback_method ) ) {
+			$value = $this->$fallback_method();
+		} elseif ( $this->_isset_field($key) ) {
 			$value = $this->$key;
 		} else {
-			$fallback_method = 'get_'.$key;
-
-			if ( method_exists( $this, $fallback_method ) ) {
-				$value = $this->$fallback_method();
-			} else {
-				$value = ( isset($this->_default) )? $this->_default: '';
-			}
+			$value = ( isset($this->_default) )? $this->_default: '';
 		}
 
 		return $value;
