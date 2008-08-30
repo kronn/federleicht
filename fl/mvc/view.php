@@ -121,7 +121,7 @@ class fl_view {
 	 * @param array  $vars   Assoziatives Array mit Variablen fuer das Element.
 	 */
 	protected function get_element($name, array $vars = array() ) {
-		if ( strpos($class, '/') === false) {
+		if ( strpos($name, '/') === false) {
 			$path = $this->elementpath;
 			$file = $name;
 		} else {
