@@ -4,10 +4,15 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 	define('PHPUnit_MAIN_METHOD', 'fl_responderTest::main');
 }
 
+if ( !defined('ABSPATH') ) {
+	$abspath = realpath(dirname(__FILE__) . '/../../../');
+	define('ABSPATH', $abspath . '/');
+}
+
 require_once 'PHPUnit/Framework.php';
 
-require_once '../../../fl/interfaces/data_wrapper.php';
-require_once '../../../fl/tools/responder.php';
+require_once ABSPATH . 'fl/interfaces/data_wrapper.php';
+require_once ABSPATH . 'fl/tools/responder.php';
 
 /**
  * Test class for fl_responder.

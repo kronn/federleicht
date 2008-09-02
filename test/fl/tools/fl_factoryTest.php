@@ -4,9 +4,16 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 	define('PHPUnit_MAIN_METHOD', 'fl_factoryTest::main');
 }
 
+if ( !defined('ABSPATH') ) {
+	$abspath = realpath(dirname(__FILE__) . '/../../../');
+	define('ABSPATH', $abspath . '/');
+}
+
 require_once 'PHPUnit/Framework.php';
 
-require_once '../../../fl/tools/factory.php';
+require_once ABSPATH . 'fl/data/structures.php';
+require_once ABSPATH . 'fl/data/structures/data.php';
+require_once ABSPATH . 'fl/tools/factory.php';
 
 /**
  * Test class for fl_factory.

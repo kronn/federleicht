@@ -4,9 +4,14 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 	define('PHPUnit_MAIN_METHOD', 'fl_flashTest::main');
 }
 
+if ( !defined('ABSPATH') ) {
+	$abspath = realpath(dirname(__FILE__) . '/../../../');
+	define('ABSPATH', $abspath . '/');
+}
+
 require_once 'PHPUnit/Framework.php';
 
-require_once '../../../fl/tools/flash.php';
+require_once ABSPATH . 'fl/tools/flash.php';
 
 /**
  * Test class for fl_flash.
