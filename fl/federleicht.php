@@ -13,14 +13,20 @@
  * klasse, das aktuelle Modul (sobald es als Objekt existiert) und die
  * Funktionenklasse, die an die meisten nachfolgenden Objekte weiter-
  * gegeben wird.
+ *
+ * öffentliche Schnittstelle:
+ *
+ *   federleicht->__construct($url)
+ *   federleicht->start()
+ *   federleicht->stop()
  */
 class federleicht {
 	/**
 	 * Objektreferenzen
 	 */
-	public $datamodel;
-	public $functions;
-	protected $registry;
+	private $datamodel;
+	private $functions;
+	private $registry;
 
 	/**
 	 * Federleicht erstellen
@@ -32,7 +38,7 @@ class federleicht {
 	 *
 	 * @param string $url
 	 */
-	function __construct($url='') {
+	public function __construct($url='') {
 		if ( !defined('ABSPATH') ) {
 			$abspath = realpath(dirname(__FILE__) . '/../');
 			define('ABSPATH', $abspath . '/');
@@ -54,16 +60,15 @@ class federleicht {
 		$this->registry->set('path', $path);
 
 		$config = $this->read_config();
-		$modules = $this->search_modules();
-		$helpers = $this->search_helpers();
-
 		$this->registry->set('config', $config);
-		$this->registry->set('modules', $modules);
-		$this->registry->set('helpers', $helpers);
 
 		$this->functions = new fl_functions();
+		$classes = $this->functions->factory->search_application_classes();
 
-		if ( count($modules) == 0 ) {
+		$this->registry->set('modules', $classes['modules']);
+		$this->registry->set('helpers', $classes['helpers']);
+
+		if ( count($classes['modules']) == 0 ) {
 			$this->functions->stop('<h2>Fehler</h2><p>Keine Module installiert</p>');
 		}
 
@@ -79,11 +84,16 @@ class federleicht {
 	 * Der Dispatcher geladen. Nach der URL-Analyse wird das
 	 * entsprechende Modul geladen und gestartet.
 	 */
-	function start() {
+	public function start() {
 		$this->start_session();
 
 		$this->functions->start_flash();
 
+		/**
+		 * @deprecated
+		 * @todo entfernen, sobald das config-verzeichnis im svn ist
+		 * @todo jede Referenz auf die Konstante DEFAULTSECTION entfernen
+		 */
 		if ( !defined('DEFAULTSECTION') ) {
 			$result = $this->datamodel->retrieve(
 				ADMINMODULE.'_options','value',
@@ -91,7 +101,10 @@ class federleicht {
 			define('DEFAULTSECTION', $result['value']);
 		}
 
-		$dispatcher = new fl_dispatcher($this->registry->get('config', 'lang'));
+		$lang = $this->registry->get('config', 'lang'));
+		$dispatcher = new fl_dispatcher(
+			new fl_lang($lang['default'], $lang['all'])
+		);
 		$dispatcher->modules = $this->registry->get('modules');
 		$dispatcher->set_default_controller(DEFAULTSECTION);
 		foreach( $this->registry->get('config', 'routes') as $route ) {
@@ -118,7 +131,7 @@ class federleicht {
 	/**
 	 * Session starten
 	 */
-	function start_session() {
+	private function start_session() {
 		// Einstellungen vornehmen
 		// 7 * 24 * 60 * 60 = 604800
 		//          40 * 60 =   2400
@@ -137,7 +150,7 @@ class federleicht {
 	 *
 	 * @param array $path
 	 */
-	function import_classes(array $path) {
+	private function import_classes(array $path) {
 		require_once  $path['lib'] . 'tools/autoload.php';
 
 		$interfaces = array(
@@ -153,53 +166,6 @@ class federleicht {
 	}
 
 	/**
-	 * Nach Modulen suchen und diese einbinden
-	 *
-	 * Das Verzeichnis modulepath wird auf entsprechende Dateien
-	 * untersucht. Die Liste der gefundenen Module wird zurück-
-	 * gegeben.
-	 *
-	 * @return array
-	 * @todo in Factory verschieben
-	 */
-	function search_modules() {
-		$modules = glob( $this->registry->get('path', 'module') . '*/modul.php');
-		$installed_modules = array();
-
-		if ( !is_array($modules) ) return $installed_modules;
-
-
-		foreach ($modules as $module) {
-			$installed_modules[] = preg_replace('#'.addslashes( $this->registry->get('path', 'module') ).'([-_a-z0-9]+)/modul.php#','$1',$module);
-		}
-
-		return $installed_modules;
-	}
-
-	/**
-	 * Nach Helfermodulen suchen und diese einbinden
-	 *
-	 * Das Verzeichnis helper wird auf entsprechende Dateien
-	 * untersucht. Die Liste der gefundenen Helfer wird zurück-
-	 * gegeben.
-	 *
-	 * @return array
-	 * @todo in Factory verschieben
-	 */
-	function search_helpers() {
-		$helpers = glob( $this->registry->get('path', 'helper') . '*.php');
-		$installed_helpers = array();
-
-		if ( !is_array($helpers) ) return $installed_helpers;
-
-		foreach ($helpers as $helper) {
-			$installed_helpers[] = preg_replace('#'.addslashes($this->registry->get('path', 'helper')).'([-_a-z0-9]+)\.php#','$1',$helper);
-		}
-
-		return $installed_helpers;
-	}
-
-	/**
 	 * Konfiguration einlesen
 	 * 
 	 * Die Konfigurationsdateien werden eingelesen und deren 
@@ -207,7 +173,7 @@ class federleicht {
 	 *
 	 * @return array
 	 */
-	function read_config() {
+	private function read_config() {
 		$configfiles = glob( ABSPATH . 'config/*.ini');
 
 		if ( empty($configfiles) ) {
@@ -237,9 +203,10 @@ class federleicht {
 
 		// Wenn keine Datenbankkonfiguration angegeben ist und auch nicht
 		// gesagt wurde, dass keine Datenbank verwendet wird, abbrechen.
-		if ( !in_array(ABSPATH.'config/database.ini', $configfiles) AND 
-			( !defined('NO_DATABASE') OR NO_DATABASE === false ) ) {
-			die('Keine Datenbankkonfiguration angegeben.');
+		if ( !in_array(ABSPATH.'config/database.ini', $configfiles) ) {
+			die('Keine Datenbankkonfiguration angegeben. 
+				
+				Mit type=null kann auf eine Datenbank verzichtet werden.');
 		}
 
 		/**
@@ -253,7 +220,7 @@ class federleicht {
 	/**
 	 * Federleicht anhalten
 	 */
-	function stop() {
+	public function stop() {
 		$this->functions->stop();
 	}
 }

@@ -34,9 +34,9 @@ class fl_dispatcher {
 	 *
 	 * @param array  $lang   Sprachkonfiguration
 	 */
-	public function __construct(array $lang) {
+	public function __construct(fl_lang $lang) {
 		$this->clean_superglobals();
-		$this->lang = new fl_lang($lang['default'], $lang['all']);
+		$this->lang = $lang;
 	}
 
 	/**

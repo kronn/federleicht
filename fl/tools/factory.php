@@ -38,6 +38,19 @@ class fl_factory {
 	}
 
 	/**
+	 * Module und Helper-Klassen suchen
+	 *
+	 * return array
+	 */
+	public function search_application_classes() {
+		$classes = array(
+			'helpers'=>$this->search_helpers(),
+			'modules'=>$this->search_modules()
+		);
+
+		return $classes;
+	}
+	/**
 	 * Eine Federleicht-interne Klasse erzeugen und zurückgeben
 	 *
 	 * @todo verbessern, indem die verschiedenen Klassen mit den entsprechenden Parametern versorgt werden oder an passende Methoden deligiert wird...
@@ -317,5 +330,50 @@ class fl_factory {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Nach Modulen suchen und diese einbinden
+	 *
+	 * Das Verzeichnis modulepath wird auf entsprechende Dateien
+	 * untersucht. Die Liste der gefundenen Module wird zurück-
+	 * gegeben.
+	 *
+	 * @return array
+	 */
+	protected function search_modules() {
+		$modules = glob( $this->registry->get('path', 'module') . '*/modul.php');
+		$installed_modules = array();
+
+		if ( !is_array($modules) ) return $installed_modules;
+
+
+		foreach ($modules as $module) {
+			$installed_modules[] = preg_replace('#'.addslashes( $this->registry->get('path', 'module') ).'([-_a-z0-9]+)/modul.php#','$1',$module);
+		}
+
+		return $installed_modules;
+	}
+
+	/**
+	 * Nach Helfermodulen suchen und diese einbinden
+	 *
+	 * Das Verzeichnis helper wird auf entsprechende Dateien
+	 * untersucht. Die Liste der gefundenen Helfer wird zurück-
+	 * gegeben.
+	 *
+	 * @return array
+	 */
+	protected function search_helpers() {
+		$helpers = glob( $this->registry->get('path', 'helper') . '*.php');
+		$installed_helpers = array();
+
+		if ( !is_array($helpers) ) return $installed_helpers;
+
+		foreach ($helpers as $helper) {
+			$installed_helpers[] = preg_replace('#'.addslashes($this->registry->get('path', 'helper')).'([-_a-z0-9]+)\.php#','$1',$helper);
+		}
+
+		return $installed_helpers;
 	}
 }
