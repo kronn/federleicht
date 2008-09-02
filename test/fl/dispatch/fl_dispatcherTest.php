@@ -19,76 +19,69 @@ require_once ABSPATH . 'fl/dispatch/dispatcher.php';
  */
 class fl_dispatcherTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var    fl_dispatcher
-     * @access protected
-     */
-    protected $object;
+	/**
+	 * @var    fl_dispatcher
+	 * @access protected
+	 */
+	protected $object;
 
-    /**
-     * Runs the test methods of this class.
-     *
-     * @access public
-     * @static
-     */
-    public static function main()
-    {
-        require_once 'PHPUnit/TextUI/TestRunner.php';
+	/**
+	 * Runs the test methods of this class.
+	 *
+	 * @access public
+	 * @static
+	 */
+	public static function main() {
+		require_once 'PHPUnit/TextUI/TestRunner.php';
 
-        $suite  = new PHPUnit_Framework_TestSuite('fl_dispatcherTest');
-        $result = PHPUnit_TextUI_TestRunner::run($suite);
-    }
+		$suite  = new PHPUnit_Framework_TestSuite('fl_dispatcherTest');
+		$result = PHPUnit_TextUI_TestRunner::run($suite);
+	}
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     *
-     * @access protected
-     */
-    protected function setUp()
-    {
-        $this->object = new fl_dispatcher( new fl_lang('de', array('de')) );
-    }
+	/**
+	 * Sets up the fixture, for example, opens a network connection.
+	 * This method is called before a test is executed.
+	 *
+	 * @access protected
+	 */
+	protected function setUp() {
+		$this->object = new fl_dispatcher( new fl_lang('de', array('de')) );
+	}
 
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     *
-     * @access protected
-     */
-    protected function tearDown()
-    {
-    }
+	/**
+	 * Tears down the fixture, for example, closes a network connection.
+	 * This method is called after a test is executed.
+	 *
+	 * @access protected
+	 */
+	protected function tearDown()
+	{
+	}
 
-    /**
-     * @todo Implement testAdd_route().
-     */
-    public function testAdd_route() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
+	public function testAdd_route() {
+		$route = new fl_route('/');
+		$this->assertTrue($this->object->add_route($route));
+	}
 
-    /**
-     * @todo Implement testSet_default_controller().
-     */
-    public function testSet_default_controller() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
+	/**
+	 * @todo Implement testSet_default_controller().
+	 */
+	public function testSet_default_controller() {
+		// Remove the following lines when you implement this test.
+		$this->markTestIncomplete(
+			'This test has not been implemented yet.'
+		);
+	}
 
-    /**
-     * @todo Implement testAnalyse().
-     */
-    public function testAnalyse() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
+	/**
+	 * @todo Implement testAnalyse().
+	 */
+	public function testAnalyse() {
+		// Remove the following lines when you implement this test.
+		$this->markTestIncomplete(
+			'This test has not been implemented yet.'
+		);
+	}
 }
 
 // Call fl_dispatcherTest::main() if this source file is executed directly.

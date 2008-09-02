@@ -45,7 +45,10 @@ class fl_dispatcher {
 	 * @param object $route
 	 */
 	public function add_route($route) {
+		$prev_count = count($this->routes);
 		$this->routes[] = $route;
+
+		return ( $prev_count < count($this->routes) )? true: false;
 	}
 
 	/**
