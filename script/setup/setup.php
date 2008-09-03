@@ -37,7 +37,7 @@ zu importieren und dann dem Verzeichnis fl/ einen Verweis auf das
 Federleicht-Repository hinzuzufügen.
 
 URL des Frameworks: http://svn2.assembla.com/svn/federleicht
-EOT;
+EOT
 		);
 	}
 
@@ -60,8 +60,10 @@ EOT;
 		foreach ( $dirs as $dir ) {
 			$dirname = $this->target_path . $dir;
 
-			if ( is_dir( $dirname )
-			mkdir( $dirname, 0755 );
+			if ( is_dir( $dirname ) ) {
+			} else {
+				mkdir( $dirname, 0755 );
+			}
 		}
 	}
 

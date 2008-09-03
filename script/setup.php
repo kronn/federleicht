@@ -29,3 +29,4 @@ if ( $setup->svn_available ) {
 }
 
 echo $setup->welcome_message;
+
