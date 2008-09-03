@@ -56,8 +56,7 @@ class fl_registryTest extends PHPUnit_Framework_TestCase
 	 *
 	 * @access protected
 	 */
-	protected function tearDown()
-	{
+	protected function tearDown() {
 	}
 
 	public function testIsSingleton() {
@@ -77,6 +76,23 @@ class fl_registryTest extends PHPUnit_Framework_TestCase
 		$this->assertTrue( is_numeric($time) );
 		$this->assertTrue( is_string($string) );
 		$this->assertTrue( $string === "ein kleiner Teststring" );
+	}
+
+	public function testTestingForSetKeysPossible() {
+		$key = 'RegistryKey';
+		$value = 'some Value';
+
+		$this->assertFalse($this->object->is_set($key));
+
+		$this->object->set($key, $value);
+
+		$this->assertTrue($this->object->is_set($key));
+	}
+
+	public function testUnknownKeysReturnFalse() {
+		$key = 'unknkownKey';
+		
+		$this->assertFalse($this->object->get($key));
 	}
 
 	/**

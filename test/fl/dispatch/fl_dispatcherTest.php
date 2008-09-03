@@ -58,25 +58,32 @@ class fl_dispatcherTest extends PHPUnit_Framework_TestCase
 	{
 	}
 
-	public function testAdd_route() {
+	/**
+	 * @covers add_route
+	 */
+	public function testRoutesCanBeAdded() {
 		$route = new fl_route('/');
 		$this->assertTrue($this->object->add_route($route));
 	}
 
 	/**
-	 * @todo Implement testSet_default_controller().
+	 * @covers set_default_controller
+	 * @covers get_default_controller
 	 */
-	public function testSet_default_controller() {
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-			'This test has not been implemented yet.'
+	public function testSetAndGetDefaultController() {
+		$testcontroller = 'testcontroller';
+
+		$this->object->set_default_controller($testcontroller);
+		$this->assertEquals(
+			$this->object->get_default_controller(),
+			$testcontroller
 		);
 	}
 
 	/**
-	 * @todo Implement testAnalyse().
+	 * @todo Implement testURLsCanBeAnalysed().
 	 */
-	public function testAnalyse() {
+	public function testURLsCanBeAnalysed() {
 		// Remove the following lines when you implement this test.
 		$this->markTestIncomplete(
 			'This test has not been implemented yet.'

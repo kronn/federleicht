@@ -1,4 +1,8 @@
 <?php
+if (!defined('PHPUnit_MAIN_METHOD')) {
+    define('PHPUnit_MAIN_METHOD', 'flTest::main');
+}
+
 if ( !defined('ABSPATH') ) {
 	$abspath = realpath(dirname(__FILE__) . '/../../');
 	define('ABSPATH', $abspath . '/');
@@ -24,8 +28,14 @@ require_once ABSPATH . 'test/fl/tools/fl_inflectorTest.php';
 require_once ABSPATH . 'test/fl/tools/fl_registryTest.php';
 require_once ABSPATH . 'test/fl/tools/fl_responderTest.php';
 
-
+// @codeCoverageIgnoreStart
 class flTest extends PHPUnit_Framework_TestSuite { 
+	public static function main() {
+		require_once 'PHPUnit/TextUI/TestRunner.php';
+
+		$result = PHPUnit_TextUI_TestRunner::run(self::suite());
+	}
+
 	public static function suite() { 
 		$suite =  new flTest('Federleicht Framework Tests');
 
@@ -42,10 +52,14 @@ class flTest extends PHPUnit_Framework_TestSuite {
 
 		return $suite;
 	} 
-	
 	protected function setUp() { 
 	} 
-	
 	protected function tearDown() { 
 	}
 }	
+// @codeCoverageIgnoreEnd
+
+if (PHPUnit_MAIN_METHOD == 'flTest::main') {
+    flTest::main();
+}
+?>
