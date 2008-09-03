@@ -15,9 +15,9 @@ RewriteRule ^(app|cache|config|fl|log|script)(.*)$ / [L]
 # Daten auf oeffentliches Verzeichnis umleiten
 #   Wenn kein öffentliches test-Verzeichnis mehr benötigt wird, sollte 
 #   test in die Liste der Federleichtverzeichnisse aufgenommen werden.
-RewriteRule ^(ajax|css|img|js|php|pdf|swf|test)/(.*)$ /public/$1/$2 [L]
+RewriteRule ^(ajax|css|img|js|php|pdf|swf)/(.*)$ /public/$1/$2 [L]
 
 # installierte Module von Federleicht verarbeiten lassen.
 #RewriteRule ^(account|basecontent|search|start|pages|register|user|)(.*)$ - [C] 
-RewriteRule !^(public|phpmyadmin|ajax|css|img|js|php|swf|test)/(.*)$ - [C]
+RewriteRule !^(public|phpmyadmin|test)/(.*)$ - [C]
 RewriteRule ^(.*)$ index.php [L]
