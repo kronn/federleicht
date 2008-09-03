@@ -101,7 +101,7 @@ class federleicht {
 			define('DEFAULTSECTION', $result['value']);
 		}
 
-		$lang = $this->registry->get('config', 'lang'));
+		$lang = $this->registry->get('config', 'lang');
 		$dispatcher = new fl_dispatcher(
 			new fl_lang($lang['default'], $lang['all'])
 		);
