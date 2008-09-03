@@ -10,9 +10,8 @@
  *
  * Die Klasse federleicht enthält die vorbereitenden Funktionen für den
  * Anwendungsablauf. Außerdem hält es Referenzen auf die Datenzugriffs-
- * klasse, das aktuelle Modul (sobald es als Objekt existiert) und die
- * Funktionenklasse, die an die meisten nachfolgenden Objekte weiter-
- * gegeben wird.
+ * klasse und die Funktionenklasse, die an die meisten nachfolgenden 
+ * Objekte weitergegeben wird.
  *
  * öffentliche Schnittstelle:
  *
@@ -24,9 +23,9 @@ class federleicht {
 	/**
 	 * Objektreferenzen
 	 */
-	private $datamodel;
-	private $functions;
-	private $registry;
+	public $datamodel;
+	public $functions;
+	public $registry;
 
 	/**
 	 * Federleicht erstellen
