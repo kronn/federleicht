@@ -27,7 +27,7 @@ class fl_dispatcher {
 	/**
 	 * Standardcontroller
 	 */
-	protected $default_controller;
+	protected $default_controller = null;
 
 	/**
 	 * Dispatcher
@@ -58,6 +58,13 @@ class fl_dispatcher {
 	 */
 	public function set_default_controller($default_controller) {
 		$this->default_controller = (string) $default_controller;
+	}
+
+	/**
+	 * Default-Controller abfragen
+	 */
+	public function get_default_controller() {
+		return $this->default_controller;
 	}
 
 	/**

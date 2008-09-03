@@ -16,8 +16,16 @@ class fl_registry {
 		$this->values = array();
 	}
 
-	private function __clone() {
-	}
+	/**
+	 * fl_registry ist ein Singleton, folglich darf es nicht geklont (kopiert) werden.
+	 *
+	 * Da die Funktion nicht getestet werden kann, ohne einen Fatal Error auszuloesen, 
+	 * wird sie bei Testcoverage-Analyse ausgespart.
+	 *
+	 * @codeCoverageIgnoreStart
+	 */
+	private function __clone() {}
+	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Instanz holen

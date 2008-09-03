@@ -106,6 +106,9 @@ class federleicht {
 			new fl_lang($lang['default'], $lang['all'])
 		);
 		$dispatcher->modules = $this->registry->get('modules');
+		/**
+		 * @deprecated, siehe oben, zeile 93
+		 */
 		$dispatcher->set_default_controller(DEFAULTSECTION);
 		foreach( $this->registry->get('config', 'routes') as $route ) {
 			$dispatcher->add_route( $route );
@@ -224,4 +227,3 @@ class federleicht {
 		$this->functions->stop();
 	}
 }
-?>
