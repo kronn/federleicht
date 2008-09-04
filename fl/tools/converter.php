@@ -50,6 +50,25 @@ class fl_converter {
 	}
 
 	/**
+	 * Ein Array zu einem Dropdown-Array machen
+	 *
+	 * @param array $array
+	 * @return array
+	 */
+	public static function array_to_dropdown_array(array $array) {
+		$dd = array();
+
+		foreach ( $array as $key=>$value ) {
+			$dd[] = array(
+				'id'=>$key,
+				'name'=>$value,
+			);
+		}
+
+		return $dd;
+	}
+
+	/**
 	 * Dropdown-Array zu String machen
 	 *
 	 * @param array $data
