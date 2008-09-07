@@ -25,21 +25,14 @@ class fl_route {
 	 * Konstruktor
 	 *
 	 * @param string $route
-	 * @param string $regex
 	 */
-	public function __construct($route, $regex='') {
+	public function __construct($route) {
 		$this->route = (string) $route;
 
-		$this->default_regex = array(
-			'normal_item'=>'[-_0-9a-z\.]+',
-			'last_item'=>'[-_/0-9a-zA-Z%\.]+'
-		);
+		$this->default_regex['normal_item']='[-_0-9a-z\.]+';
+		$this->default_regex['last_item']='[-_/0-9a-zA-Z%\.]+';
 
-		if ( $route === 'regex' AND $regex != '' ) {
-			$this->regex = $regex;
-		} else {
-			$this->regex = $this->compile($route);
-		}
+		$this->regex = $this->compile($route);
 
 		$this->set_priority( 1 );
 		$this->set_defaults( array() );
@@ -345,7 +338,7 @@ class fl_route {
 	/**
 	 * Vergleichsfunktion zur Sortierung von Routen
 	 *
-	 * Kann mit usort($array_of_routes, array('route', 'compare_routes');
+	 * Kann mit usort($array_of_routes, array('fl_route', 'compare_routes');
 	 * verwendet werden.
 	 *
 	 * @param fl_route $a
