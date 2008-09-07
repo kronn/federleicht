@@ -32,11 +32,13 @@ class fl_dispatcher {
 	/**
 	 * Dispatcher
 	 *
-	 * @param array  $lang   Sprachkonfiguration
+	 * @param fl_lang  $lang    Sprachkonfiguration
+	 * @param array    $modules Liste der vorhanden Module
 	 */
-	public function __construct(fl_lang $lang) {
+	public function __construct(fl_lang $lang, array $modules) {
 		$this->clean_superglobals();
 		$this->lang = $lang;
+		$this->modules = $modules;
 	}
 
 	/**
@@ -161,4 +163,3 @@ class fl_dispatcher {
 		}
 	}
 }
-?>

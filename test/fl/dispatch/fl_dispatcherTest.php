@@ -45,7 +45,10 @@ class fl_dispatcherTest extends PHPUnit_Framework_TestCase
 	 * @access protected
 	 */
 	protected function setUp() {
-		$this->object = new fl_dispatcher( new fl_lang('de', array('de')) );
+		$this->object = new fl_dispatcher( 
+			new fl_lang('de', array('de')),
+			array('testing')
+		);
 	}
 
 	/**
@@ -59,7 +62,7 @@ class fl_dispatcherTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers add_route
+	 * @covers fl_dispatcher::add_route
 	 */
 	public function testRoutesCanBeAdded() {
 		$route = new fl_route('/');
@@ -67,8 +70,8 @@ class fl_dispatcherTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers set_default_controller
-	 * @covers get_default_controller
+	 * @covers fl_dispatcher::set_default_controller
+	 * @covers fl_dispatcher::get_default_controller
 	 */
 	public function testSetAndGetDefaultController() {
 		$testcontroller = 'testcontroller';
@@ -84,10 +87,28 @@ class fl_dispatcherTest extends PHPUnit_Framework_TestCase
 	 * @todo Implement testURLsCanBeAnalysed().
 	 */
 	public function testURLsCanBeAnalysed() {
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-			'This test has not been implemented yet.'
+		$route = fl_route::get_instance(
+			'/test/:action', 'controller=testing,action=route,params=,lang=de', 1
 		);
+		$url = 'http://localhost/test';
+
+		$this->object->add_route($route);
+		$result = $this->object->analyse($url);
+
+		$expected = array(
+			'controller'=>'testing',
+			'action'=>'route',
+			'params'=>'',
+			'lang'=>'de',
+			'query'=>'',
+			'modul'=>'testing',
+		);
+
+		$this->assertType('array', $result);
+		$this->assertEquals($result, $expected);
+
+		// Remove the following lines when you implement this test.
+		$this->markTestIncomplete( 'This test has not been fully implemented yet.');
 	}
 }
 
