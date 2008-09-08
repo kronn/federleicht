@@ -5,7 +5,7 @@
  * @author Matthias Viehweger <kronn@kronn.de>
  * @version 0.2
  * @package federleicht
- * @subpackage data
+* @subpackage data
  * @todo $fields automatisch aus Datenbank auslesen
  * @todo validator in Basisklasse instanziieren?
  * @todo active_record als Datenzugriffsklasse (und nicht als Datenstruktur) im richtigen Verzeichnis ablegen und von dort laden lassen.
@@ -137,7 +137,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 				$this->table,
 				$this->db->retrieve($this->table, '*', 'id='.$this->id)
 			);
-			$data = $result[0];
+			$data = (array) $result[0];
 		} else {
 			$data = array();
 		}

@@ -256,8 +256,17 @@ SQL;
 			strrpos($index_result, "'") - strlen($index_result)
 		);
 		
+		/**
+		 * Wenn kein Index gefunden wurde, muss die Funktion lastval verwendet werden.
+		 * solange keine persistenten Verbindungen verwendeten werden, sollte das auch
+		 * ohne Probleme funktionieren.
+		 */
+		$query = empty($index_name)? 
+			'SELECT lastval() as last_value;':
+			'SELECT last_value FROM '.$index_name.';';
+
 		try {
-			$result = $this->query('SELECT last_value FROM '.$index_name.';');
+			$result = $this->query($query);
 			return $result[0]['last_value'];
 		} catch ( Exception $e ) {
 			return 0;

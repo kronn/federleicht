@@ -12,14 +12,29 @@ class fl_data_structures_image extends fl_data_structures_data {
 	protected $height;
 	protected $width;
 
+	public function __construct(array $data = array()) {
+		parent::__construct($data);
+		$this->set_image_data();
+	}
+
+	/**
+	 * Dateipfad ausgeben
+	 *
+	 * @return string
+	 */
+	public function get_imagepath() {
+		return (string) $this->_imagepath;
+	}
+
 	/**
 	 * Metadaten einer Bilddatei einlesen und speichern
 	 *
 	 * @param int $id
 	 * @return void
 	 */
-	protected function set_image_data($id) {
+	protected function set_image_data() {
 		$path = $this->_imagepath;
+		$id = (int) $this->get('id'); 
 
 		$files = glob(ABSPATH . $path . $id . '*');
 		if ( $files === false OR !isset($files[0]) ) {
@@ -32,11 +47,15 @@ class fl_data_structures_image extends fl_data_structures_data {
 
 		list($width, $height) = getimagesize($file);
 
-		$this->set_data(array(
-			'src'=>$path . $id . $extension,
-			'height'=>$height,
-			'width'=>$width,
-		));
+		if ( !$this->is_set('height') ) {
+			$this->set('height', $height);
+		}
+
+		if ( !$this->is_set('width') ) {
+			$this->set('width', $width);
+		}
+
+		$this->set('src', $path . $id . $extension);
 	}
 
 	/**
@@ -45,7 +64,17 @@ class fl_data_structures_image extends fl_data_structures_data {
 	 * @return string
 	 */
 	public function get_image_html() {
-		$html = '<img src="/'.$this->get('src').'" width="'.$this->get('width').'" height="'.$this->get('height').'" alt="'.$this->get('alt').'" title="'.$this->get('title').'" />';
+		foreach ( array('height', 'width') as $attr ) {
+			$$attr = (($value = $this->get($attr)) > 0 )?
+				$attr.'="'.$value.'" ': '';
+		}
+
+		$alt = 'alt="'.$this->get('alt').'" ';
+		$title = 'title="'.$this->get('title').'" ';
+
+		$attributes = $height.$width.$alt.$title;
+
+		$html = '<img src="/'.$this->get('src').'" '.$attributes.'/>';
 		return $html;
 	}
 

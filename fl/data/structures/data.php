@@ -14,8 +14,8 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 *
 	 * @param array $data
 	 */
-	public function __construct($data = null) {
-		$this->set_data((array) $data);
+	public function __construct(array $data = array()) {
+		$this->set_data($data);
 	}
 
 	/**
