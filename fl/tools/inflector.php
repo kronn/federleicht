@@ -25,12 +25,16 @@ class fl_inflector {
 			$this->plural = array(
 				'/^([a-z]*)(ung|heit|schaft|ion)$/i'=>'\1\2en',
 				'/^([a-z]*)(probe)$/i'=>'\1\2n',
+				'/^([a-z]*)([ei])(ld)$/i'=>'\1\2\3er',
+				'/^([a-z]*)([auo])(ld|ch|nd)$/i'=>'\1\2e\3er',
 				'/^([a-z]*[^aoieukgh])$/i' =>'\1e',
 			);
 
 			$this->singular = array(
 				'/^([a-z]*)(ung|heit|schaft|ion)en$/i'=>'\1\2',
 				'/^([a-z]*)(probe)n$/i'=>'\1\2',
+				'/^([a-z]*)([ei])(ld)er$/i'=>'\1\2\3',
+				'/^([a-z]*)([auo])e(ld|ch|nd)er$/i'=>'\1\2\3',
 				'/^([a-z]*)e/i' => '\1',
 			);
 
