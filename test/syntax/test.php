@@ -6,6 +6,7 @@ class syntax_checker {
 	private $register;
 	private $count = 0;
 	private $error = array();
+	private $line_length = 60;
 
 	public function __construct() {
 		$this->register = array();
@@ -45,6 +46,8 @@ class syntax_checker {
 	}
 
 	public function check_syntax() {
+		$total = count($this->register);
+
 		foreach($this->register as $file) {
 			$output = array();
 			exec(
@@ -62,8 +65,9 @@ class syntax_checker {
 				echo '.';
 			}
 			$this->count++;
-			if ( ($this->count % 40) === 0 ) {
-				echo PHP_EOL;
+			if ( ($this->count % $this->line_length) === 0 ) {
+				$formatted_count = str_pad($this->count, strlen($total) + 1, ' ', 0);
+				echo "$formatted_count / $total".PHP_EOL;
 			}
 		}
 		echo PHP_EOL;
@@ -125,4 +129,5 @@ echo PHP_EOL;
 $linter->show_errors();
 echo PHP_EOL;
 $linter->show_stats();
+echo PHP_EOL;
 ?>
