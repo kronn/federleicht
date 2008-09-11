@@ -10,10 +10,7 @@ if ( !defined('ABSPATH') ) {
 }
 
 require_once 'PHPUnit/Framework.php';
-
-require_once ABSPATH . 'fl/data/structures.php';
-require_once ABSPATH . 'fl/data/structures/data.php';
-require_once ABSPATH . 'fl/tools/factory.php';
+require_once ABSPATH . 'test/fl/test.php';
 
 /**
  * Test class for fl_factory.

@@ -11,6 +11,7 @@ if ( !defined('ABSPATH') ) {
 
 require_once 'PHPUnit/Framework.php';
 
+require_once ABSPATH . 'test/fl/test.php';
 require_once ABSPATH . 'fl/dispatch/lang.php';
 
 /**
