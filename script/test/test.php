@@ -1,30 +1,20 @@
 <?php
 /**
- * System testen
- */
-
-/**
- * Absoluten Pfad setzen, wenn noch nicht vorhanden
- */
-if ( !defined('ABSPATH') ) {
-	$abspath = realpath( dirname(__FILE__) . '/../../' ) . '/';
-	define('ABSPATH', $abspath);
-}
-
-/**
  * Tests aufzählen
+ *
+ * Testskripte sind einfache PHP-Dateien im Ordner test 
+ * (z.B. /test/syntax/test.php)
+ *
+ * Unittests sind Testsuiten, die auf PHPUnit aufbauen.
  */
-$tests = array(
-	'syntax/test',
-	'fl/flTest',
+$testscripts = array(
+	'syntax',
 );
 
-/**
- * Vorhandene Tests ausführen
- */
-foreach ( $tests as $test ) {
-	$filename = ABSPATH . 'test/'.$test.'.php';
-	if ( file_exists($filename) ) {
-		require_once $filename;
-	}
-}
+$unittests = array(
+	'fl',
+	'app',
+);
+
+
+require_once 'runner.php';
