@@ -74,7 +74,7 @@ class fl_converter {
 	 * @param array $data
 	 * @return string
 	 */
-	public static function dropdown_array_to_string($data) {
+	public static function dropdown_array_to_string(array $data) {
 		foreach( $data as $value) {
 			$string[] = $value['id'].'='.$value['name'];
 		}
@@ -82,5 +82,21 @@ class fl_converter {
 		$string = implode(',', $string);
 
 		return $string;
+	}
+
+	/**
+	 * Dropdown-Array zu einfachem Array machen
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	public static function dropdown_array_to_array(array $data) {
+		$array = array();
+
+		foreach( $data as $value ) {
+			$array[$value['id']] = $value['name'];
+		}
+
+		return $array;
 	}
 }

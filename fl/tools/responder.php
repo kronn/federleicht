@@ -9,7 +9,9 @@ class fl_responder implements data_wrapper, Iterator {
 	protected $response_list = array();
 	private $key = 0;
 
-	public function __construct() {}
+	public function __construct(fl_factory $factory) {
+		$this->factory = $factory;
+	}
 
 	/**
 	 * Neue Response hinzufügen
@@ -21,8 +23,7 @@ class fl_responder implements data_wrapper, Iterator {
 	 * @return int $response_key
 	 */
 	public function add_response($type) {
-		$class_name = 'fl_mvc_response_'.$type;
-		$this->response_list[] = new $class_name();
+		$this->response_list[] = $this->factory->create('mvc_response_'.$type);
 
 		$response_key = count($this->response_list) - 1;
 		$this->set_current_response($response_key);

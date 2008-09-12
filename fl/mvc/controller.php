@@ -51,7 +51,7 @@ class fl_controller {
 		$this->cap = $this->request->route;
 		$this->modulepath = $registry->get('path', 'module');
 
-		$this->responder = $this->factory->create('responder');
+		$this->responder = $this->factory->create('responder', $this->factory);
 
 		$this->view = $this->cap['action'];
 	}

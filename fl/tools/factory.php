@@ -59,7 +59,22 @@ class fl_factory {
 	 */
 	public function create($class_name) {
 		$class = "fl_{$class_name}";
-		return new $class();
+
+		if ( !class_exists($class) ) {
+			throw new LogicException("Klasse $class nicht gefunden");
+		}
+
+		// Retrieve arguments list
+		$args = func_get_args();
+		// Delete the first argument which is the class name
+		array_shift($args);
+				
+		// Create Reflection object
+		// See : http://www.php.net/manual/en/language.oop5.reflection.php
+		$reflection = new ReflectionClass($class);
+
+		// Use the Reflection API
+		return $reflection->newInstanceArgs($args); 
 	}
 
 	/**
