@@ -21,6 +21,7 @@ foreach ( array_merge($testscripts, $unittests) as $test ) {
 	}
 }
 
+if ( isset($syntax_error_state) and $syntax_error_state == true ) exit();
 if ( count($unittests) == 0 ) exit();
 
 require_once 'PHPUnit/Framework.php';

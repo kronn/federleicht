@@ -93,6 +93,10 @@ class syntax_checker {
 		echo $this->count . ' Dateien wurden ueberprueft.'. PHP_EOL;
 		echo count($this->error) . ' Fehler gefunden'.PHP_EOL;
 	}
+
+	public function count() {
+		return count($this->error);
+	}
 }
 
 /**
@@ -121,6 +125,13 @@ $linter->find_files($patterns);
  * Durchfuehrung der Syntaxpruefung
  */
 $linter->check_syntax();
+
+/**
+ * Fehlerstatus für andere Skripte bekanntgeben
+ */
+if ( $linter->count() > 0 ) {
+	$syntax_error_state = true;
+}
 
 /**
  * Ausgabe von Meldungen
