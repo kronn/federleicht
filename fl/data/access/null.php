@@ -16,11 +16,11 @@ class fl_data_access_null implements data_access {
 	}
 
 	public function create($table, array $data) {
-		return true;
+		return 1;
 	}
 
 	public function retrieve($table, $field='*', $condition='', $order='', $limit='') {
-		return true;
+		return array();
 	}
 
 	public function update($table, array $data, $id, $id_field='id', $all=FALSE) {
