@@ -63,6 +63,18 @@ class fl_converterTest extends PHPUnit_Framework_TestCase {
 		$this->assertType('array', $result);
 		$this->assertEquals($expected, $result);
 	}
+	public function testStringToDropdownArray2() {
+		$string = 'eins,zwei,drei';
+		$result = fl_converter::string_to_dropdown_array($string);
+		$expected = array(
+			array('id'=>'eins', 'name'=>'eins'),
+			array('id'=>'zwei', 'name'=>'zwei'),
+			array('id'=>'drei', 'name'=>'drei')
+		);
+
+		$this->assertType('array', $result);
+		$this->assertEquals($expected, $result);
+	}
 	public function testDropdownArrayToString() {
 		$input = array(
 			array('id'=>'1', 'name'=>'eins'),
@@ -73,6 +85,23 @@ class fl_converterTest extends PHPUnit_Framework_TestCase {
 		$result = fl_converter::dropdown_array_to_string($input);
 
 		$this->assertEquals($expected, $result);
+	}
+
+	public function testDropdownArrayToArray() {
+		$input = array(
+			array('id'=>'1', 'name'=>'eins'),
+			array('id'=>'2', 'name'=>'zwei'),
+			array('id'=>'3', 'name'=>'drei')
+		);
+		$array = array(
+			'1'=>'eins',
+			'2'=>'zwei',
+			'3'=>'drei'
+		);
+
+		$result = fl_converter::dropdown_array_to_array($input);
+
+		$this->assertEquals($array, $result);
 	}
 }
 

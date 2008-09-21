@@ -1,6 +1,6 @@
 <?php
 if (!defined('PHPUnit_MAIN_METHOD')) {
-    define('PHPUnit_MAIN_METHOD', 'fl_test::main');
+	define('PHPUnit_MAIN_METHOD', 'fl_test::main');
 }
 
 require_once 'PHPUnit/Framework.php';
@@ -28,6 +28,8 @@ class fl_test extends PHPUnit_Framework_TestSuite {
 		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_registryTest.php');
 		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_responderTest.php');
 		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_converterTest.php');
+
+		// $suite->addTestFile(ABSPATH . 'test/fl/data/structures/activerecordTest.php');
 
 		return $suite;
 	} 
@@ -60,6 +62,9 @@ class fl_test extends PHPUnit_Framework_TestSuite {
 		$null_db = new fl_data_access(array('type'=>'null'));
 		fl_registry::getInstance()->set('data_access', $null_db->get_data_source());
 
+		fl_registry::getInstance()->set('helpers', array(
+			'validation'
+		));
 		fl_registry::getInstance()->set('modules', array(
 		));
 	} 

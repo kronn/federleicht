@@ -44,8 +44,7 @@ class fl_factoryTest extends PHPUnit_Framework_TestCase
 	 *
 	 * @access protected
 	 */
-	protected function setUp()
-	{
+	protected function setUp() {
 		$this->object = new fl_factory;
 	}
 
@@ -177,6 +176,27 @@ class fl_factoryTest extends PHPUnit_Framework_TestCase
 		$this->markTestIncomplete(
 		  'This test has not been implemented yet.'
 		);
+	}
+
+	public function testParse_class_name() {
+		$fixture = 'modul/klasse';
+		$expected = array(
+			'modul',
+			'klasse'
+		);
+		$result = $this->object->parse_class_name($fixture);
+
+		$this->assertType('array', $result);
+		$this->assertEquals($expected, $result);
+	}
+
+	public function testListParsedClassname() {
+		$fixture = 'mein_modul/meine_klasse';
+
+		list($modul, $class) = $this->object->parse_class_name($fixture);
+
+		$this->assertEquals('mein_modul', $modul);
+		$this->assertEquals('meine_klasse', $class);
 	}
 }
 
