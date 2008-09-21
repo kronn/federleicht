@@ -18,6 +18,11 @@ class fl_factory {
 	protected $inflector = null;
 
 	/**
+	 * Klassenkonstanten
+	 */
+	const ONLY_MODULES = 'only_modules';
+
+	/**
 	 * Konstruktor
 	 */
 	public function __construct() {
@@ -37,6 +42,13 @@ class fl_factory {
 		$this->data_access = $data_access;
 	}
 
+	public function get_inflector() {
+		return $this->inflector;
+	}
+	public function get_data_access() {
+		return $this->data_access;
+	}
+	
 	/**
 	 * Module und Helper-Klassen suchen
 	 *
@@ -53,7 +65,6 @@ class fl_factory {
 	/**
 	 * Eine Federleicht-interne Klasse erzeugen und zurückgeben
 	 *
-	 * @todo verbessern, indem die verschiedenen Klassen mit den entsprechenden Parametern versorgt werden oder an passende Methoden deligiert wird...
 	 * @param string $class_name
 	 * @return mixed
 	 */
@@ -61,19 +72,20 @@ class fl_factory {
 		$class = "fl_{$class_name}";
 
 		if ( !class_exists($class) ) {
-			throw new LogicException("Klasse $class nicht gefunden");
+			// Der Autoloader wird von class_exists in diesem Fall aufgerufen.
+			// Wenn wir also hier sind, wurde die Klassendate nicht gefunden.
+			throw new LogicException("Klasse '$class' nicht gefunden");
 		}
 
-		// Retrieve arguments list
 		$args = func_get_args();
-		// Delete the first argument which is the class name
+
+		// Den erste Parameter "löschen", da er den Klassennamen selbst enthält
+		// und folglich keinen Parameter zur Erzeugung dieser Klasse darstellt.
 		array_shift($args);
 				
-		// Create Reflection object
-		// See : http://www.php.net/manual/en/language.oop5.reflection.php
+		// Reflection-Eigenschaften von PHP5 nutzen...
+		// Mehr: http://www.php.net/manual/en/language.oop5.reflection.php
 		$reflection = new ReflectionClass($class);
-
-		// Use the Reflection API
 		return $reflection->newInstanceArgs($args); 
 	}
 
@@ -116,12 +128,7 @@ class fl_factory {
 	 * @return object
 	 */
 	public function get_class($class) {
-		if ( strpos($class, '/') === false) {
-			throw new InvalidArgumentException('Klassenname muss in der Form modul/class angegeben werden.');
-		} else {
-			list($modul, $class_name) = explode('/', $class, 2);
-		}
-
+		list($modul, $class_name) = $this->parse_class_name($class);
 		$this->load_class($modul, $class_name);
 
 		$instance = new $class_name();
@@ -134,6 +141,28 @@ class fl_factory {
 		}
 
 		return $instance;
+	}
+
+	/**
+	 * ActiveRecord-Loader holen
+	 *
+	 * @pattern LazyLoad
+	 * @param string $type
+	 * @param string $class
+	 * @param array  $keys
+	 * @param array  $data
+	 * @param array  $options
+	 * @return data_loader
+	 */
+	public function get_loader($type, $class, array $keys, array $data = array(), array $options = array() ) {
+		$loader = $this->create(
+			'data_loader_'.$type['loader'].'_'.$type['relation'], 
+			$class, $keys, $data, $options
+		);
+
+		$loader->set_factory($this);
+
+		return $loader;
 	}
 
 	/**
@@ -150,32 +179,29 @@ class fl_factory {
 	 * @return fl_data_structures_activerecord
 	 */
 	public function get_ar_class($class, $id = 0, array $data = array()) {
-		if ( strpos($class, '/') === false) {
-			throw new InvalidArgumentException('Klassenname muss in der Form modul/class angegeben werden.');
-		} else {
-			list($modul, $class_name) = explode('/', $class, 2);
-		}
-
-		$this->load_structure('activerecord');
-		$this->load_class($modul, $class_name);
-
-		$data = (array) $data;
-		if (!empty($data)) {
-			$loaded = true;
-		} else {
-			$loaded = false;
-			$data += array('id'=>$id);
-		}
-
-		if ( $this->is_structure($modul, $class_name) ) {
-			$data_structure = $this->get_structure($modul.'/'.$class_name, $data);
-		} else {
-			$data_structure = $this->get_structure('data', $data);
-		}
+		list($modul, $class_name) = $this->parse_class_name($class, self::ONLY_MODULES);
 
 		$identifier = "{$class_name}_{$id}";
 
 		if ( !$this->registry->is_set('loaded_record_'.$identifier) ) {
+
+			// $this->load_structure('activerecord');
+			$this->load_class($modul, $class_name);
+
+			$data = (array) $data;
+			if (!empty($data)) {
+				$loaded = true;
+			} else {
+				$loaded = false;
+				$data += array('id'=>$id);
+			}
+
+			if ( $this->is_structure($modul, $class_name) ) {
+				$data_structure = $this->get_structure($modul.'/'.$class_name, $data);
+			} else {
+				$data_structure = $this->get_structure('data', $data);
+			}
+
 			$instance = new $class_name(
 				$this->data_access, 
 				$this->inflector->plural($class_name),
@@ -259,7 +285,13 @@ class fl_factory {
 	 * @param string $class
 	 */
 	public function load_class($modul, $class) {
-		require_once $this->registry->get('path', 'module') . $modul . '/classes/'.$class.'.php';
+		$file = $this->registry->get('path', 'module') . $modul . '/classes/'.$class.'.php';
+
+		if ( file_exists($file) ) {
+			require_once $file;
+		} else {
+			throw new Exception('Klassendatei konnte nicht gefunden werden.');
+		}
 	}
 
 	/**
@@ -330,15 +362,18 @@ class fl_factory {
 	/**
 	 * Klassenidentifikator parsen
 	 *
-	 * @param string $class
+	 * @param string  $class
+	 * @param mixed $only_modules  sollte fl_factory::ONLY_MODULES sein
 	 * @return array
-	 * @access private
 	 */
-	protected function parse_class_name($class) {
+	public function parse_class_name($class, $only_modules = null) {
 		$common = 'common';
 		$builtin = 'builtin';
 
 		if ( strpos($class, '/') === false) {
+			if ( $only_modules == self::ONLY_MODULES ) {
+				throw new InvalidArgumentException('Klassenname muss in der Form modul/class angegeben werden.');
+			}
 			$result = array($common, $class);
 		} else {
 			$result = explode('/', $class, 2);
@@ -348,7 +383,7 @@ class fl_factory {
 	}
 
 	/**
-	 * Nach Modulen suchen und diese einbinden
+	 * Nach Modulen suchen
 	 *
 	 * Das Verzeichnis modulepath wird auf entsprechende Dateien
 	 * untersucht. Die Liste der gefundenen Module wird zurück-
@@ -362,7 +397,6 @@ class fl_factory {
 
 		if ( !is_array($modules) ) return $installed_modules;
 
-
 		foreach ($modules as $module) {
 			$installed_modules[] = preg_replace('#'.addslashes( $this->registry->get('path', 'module') ).'([-_a-z0-9]+)/modul.php#','$1',$module);
 		}
@@ -371,7 +405,7 @@ class fl_factory {
 	}
 
 	/**
-	 * Nach Helfermodulen suchen und diese einbinden
+	 * Nach Helfermodulen suchen
 	 *
 	 * Das Verzeichnis helper wird auf entsprechende Dateien
 	 * untersucht. Die Liste der gefundenen Helfer wird zurück-

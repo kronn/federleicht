@@ -5,7 +5,8 @@
  * @author Matthias Viehweger <kronn@kronn.de>
  * @version 0.2
  * @package federleicht
-* @subpackage data
+ * @subpackage data
+ *
  * @todo $fields automatisch aus Datenbank auslesen
  * @todo validator in Basisklasse instanziieren?
  * @todo active_record als Datenzugriffsklasse (und nicht als Datenstruktur) im richtigen Verzeichnis ablegen und von dort laden lassen.
@@ -23,6 +24,12 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	public $error_messages = array();
 
 	/**
+	 * Relationen zu anderen ActiveRecord-Objekten/Datensätzen
+	 */
+	protected $has_one = array();
+	protected $has_many = array();
+
+	/**
 	 * Konstruktor
 	 *
 	 * @param data_access $db
@@ -32,7 +39,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	 * @param boolean $loaded
 	 */
 	public function __construct(data_access $db, $table, $id, data_wrapper $data, $loaded=false) {
-		$this->db =& $db;
+		$this->db = $db;
 		$this->table = ( empty($table) ) ? $this->table : $table;
 		$this->id = $id;
 
@@ -44,20 +51,36 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	}
 
 	/**
-	 * Daten setzen
+	 * Interface data_wrapper
+	 *
+	 * Weiterleitungen auf das Datenobjekt
 	 */
-	public function set_data(array $data) {
-		foreach ( $data as $key => $value ) {
-			if ( empty($value) ) continue;
-			
-			$this->data->set($key, $value);
-		}
+	public function set($key, $value) {
+		return $this->data->set($key, $value);
 	}
+	public function say($key) {
+		return $this->data->say($key);
+	}
+	public function get($key) {
+		return $this->data->get($key);
+	}
+	public function set_data(array $data) {
+		$this->data->set_data($data);
+	}
+	public function is_set($key) {
+		return $this->data->is_set($key);
+	}
+	public function remove($key) {
+		return $this->data->remove($key);
+	}
+	/**
+	 * Interface data_wrapper ENDE
+	 */
 
 	/**
 	 * Daten holen
 	 *
-	 * @return data_structure
+	 * @return data_wrapper
 	 */
 	public function get_data() {
 		return clone $this->data;
@@ -81,62 +104,18 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	}
 
 	/**
-	 * Einzelnes Datenfeld ausgeben
-	 *
-	 * @param string $key
-	 */
-	public function say($key) {
-		return $this->data->say($key);
-	}
-
-	/**
-	 * Einzelnes Datenfeld holen
-	 *
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function get($key) {
-		return $this->data->get($key);
-	}
-
-	/**
-	 * Einzelnes Datenfeld setzen
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 */
-	public function set($key, $value) {
-		return $this->data->set($key, $value);
-	}
-
-	/**
-	 * Prüfung, ob Datenfeld existiert
-	 *
-	 * @param string $key
-	 * @return boolean
-	 */
-	public function is_set($key) {
-		return $this->data->is_set($key);
-	}
-
-	/**
-	 * Einzelnes Datenfeld löschen
-	 *
-	 * @param string $key
-	 */
-	public function remove($key) {
-		return $this->data->remove($key);
-	}
-
-	/**
 	 * Daten aus Datenbank laden
 	 */
 	public function load() {
 		if ( $this->id > 0 ) {
-			$result = $this->db->convert_result(
-				$this->table,
-				$this->db->retrieve($this->table, '*', 'id='.$this->id)
-			);
+			$unconverted_result = $this->db->retrieve($this->table, '*', 'id='.$this->id);
+
+			if ( $this->db instanceof fl_data_access_database ) {
+				$result = $this->db->convert_result($this->table, $unconverted_result);
+			} else {
+				$result = $converted_result;
+			}
+
 			$data = (array) $result[0];
 		} else {
 			$data = array();
@@ -189,7 +168,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	}
 
 	/**
-	 * Objekt als String verwenbar machen
+	 * Objekt als String verwendbar machen
 	 */
 	public function __toString() {
 		return (string) $this->data;
@@ -203,7 +182,85 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	/**
 	 * zusätzliche Daten laden
 	 */
-	protected function load_additional_data_parts() {}
+	protected function load_additional_data_parts() {
+		$factory = new fl_factory();
+		$factory->set_data_access($this->db);
+
+		$relations = array(
+			'has_one' => array(
+				'type' => array(
+					'loader' => 'activerecord',
+					'relation' => 'hasone'
+				),
+				'standards' => array(
+					'class'=>get_class($this).'/%s',
+					'key_name'=>'%s_id',
+					'key'=>'%s_id'
+				)
+			),
+			'has_many' => array(
+				'type' => array(
+					'loader' => 'activerecord',
+					'relation' => 'hasmany'
+				),
+				'standards' => array(
+					'class'=>get_class($this).'/%s',
+					'key_name'=>get_class($this).'_id',
+					'key'=>'id'
+				)
+			)
+		);
+
+		foreach ($relations as $key => $relation ) {
+			$this->load_relations($key, $relation['type'], $relation['standards'], $factory);
+		}
+	}
+
+	private function load_relations($relation_data_key, $type, $standards, $factory) {
+		$relation_data = (array) $this->$relation_data_key;
+
+		foreach ( $relation_data as $name => $information ) {
+			if ( is_string($information) and is_numeric($name) ) {
+				$name = $information;
+				$information = array();
+			}
+
+			$class = ( isset($information['class']) )?  $information['class']:
+				strtolower(sprintf($standards['class'], $name));
+
+			list($modul, $class_name) = $factory->parse_class_name($class, fl_factory::ONLY_MODULES);
+
+			$key_name = ( isset($information['key_name']) )? $information['key_name']:
+				strtolower(sprintf($standards['key_name'], $class_name));
+
+			$key_value = ( isset($information['key']) )? $this->get($information['key']):
+				$this->get(strtolower(sprintf($standards['key'], $class_name)));
+
+			$data = ( isset($information['data']) )? $information['data']:
+				array();
+
+			$keys = array(
+				'key_name' => $key_name,
+				'key' => $key_value
+			);
+
+			$options = array_combine(
+				array_keys($information),
+				array_values($information)
+			);
+			unset(
+				$options['class'],
+				$options['key_name'],
+				$options['key'],
+				$options['data']
+			);
+
+			$this->set(
+				$name, 
+				$factory->get_loader($type, $class, $keys, $data, $options)
+			);
+		}
+	}
 
 	/**
 	 * Datenprüfung

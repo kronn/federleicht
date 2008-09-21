@@ -85,7 +85,12 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 		if ( method_exists( $this, $fallback_method ) ) {
 			$value = $this->$fallback_method();
 		} elseif ( $this->_isset_field($key) ) {
-			$value = $this->$key;
+			if ( $this->$key instanceof data_loader ) {
+				$this->set($key, $this->$key->execute());
+				$value = $this->$key;
+			} else {
+				$value = $this->$key;
+			}
 		} else {
 			$value = ( isset($this->_default) )? $this->_default: '';
 		}
