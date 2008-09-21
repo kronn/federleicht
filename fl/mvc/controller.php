@@ -101,11 +101,16 @@ class fl_controller {
 	/**
 	 * Alternative Abläufe
 	 */
-	public function alternate($e = null) {
-		if ( $e instanceof Exception ) {
-			$registry = fl_registry::getInstance();
-			throw $e;
+	public function alternate($message = null) {
+		if ( $message instanceof Exception ) {
+			if ( error_reporting() == 0 ) {
+				$message = $message->getMessage();
+			} else {
+				$message = '<h2>'.$message->getMessage().'</h2><pre>'.$message.'</pre>';
+			}
 		}
+
+		$this->functions->stop($message);
 	}
 
 	/**
