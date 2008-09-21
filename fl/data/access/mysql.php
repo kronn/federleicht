@@ -172,7 +172,7 @@ class fl_data_access_mysql extends fl_data_access_database implements data_acces
 	 * @return array
 	 * @todo Funktion fuer MySQL umarbeiten
 	 */
-	public function convert_result($table, $result) {
+	public function convert_result($table, array $result) {
 		return $result;
 
 		$table = $this->get_table_name($table);

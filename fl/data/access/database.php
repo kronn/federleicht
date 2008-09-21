@@ -54,6 +54,15 @@ abstract class fl_data_access_database {
 	abstract public function get_table_name($table);
 
 	/**
+	 * Datenbank-Ergebnisse in richtige Typen umwandeln
+	 *
+	 * @param string table
+	 * @param array $result
+	 * @return array
+	 */
+	abstract public function convert_result($table, array $result);
+
+	/**
 	 * Datenbankabfragen loggen
 	 */
 	protected function log_query($sql) {

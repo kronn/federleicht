@@ -175,7 +175,7 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 	 * @param array $result
 	 * @return array
 	 */
-	public function convert_result($table, $result) {
+	public function convert_result($table, array $result) {
 		$table = $this->table_prefix . $table;
 		$converted = $result;
 
