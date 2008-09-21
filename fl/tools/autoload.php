@@ -26,13 +26,12 @@ function __autoload($class) {
 	}
 
 	foreach ( $paths as $path ) {
-		$file = ABSPATH . $path . str_replace('_', '/', $class) . '.php';
-
-		if ( file_exists($file) ) {
+		if ( file_exists($file = ABSPATH.$path.str_replace('_', '/', $class).'.php') ) {
 			require_once $file;
 			return;
-		} else {
-
+		} elseif ( file_exists($file = ABSPATH . $path . $class . '.php') ) {
+			require_once $file;
+			return;
 		}
 	}
 
