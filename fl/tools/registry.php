@@ -29,8 +29,16 @@ class fl_registry {
 
 	/**
 	 * Instanz holen
+	 * @deprecated
 	 */
 	public static function getInstance() {
+		return self::get_instance();
+	}
+
+	/**
+	 * Instanz holen
+	 */
+	public static function get_instance() {
 		if ( self::$instance === null ) {
 			self::$instance = new self();
 		}
