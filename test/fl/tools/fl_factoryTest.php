@@ -189,7 +189,6 @@ class fl_factoryTest extends PHPUnit_Framework_TestCase
 		$this->assertType('array', $result);
 		$this->assertEquals($expected, $result);
 	}
-
 	public function testListParsedClassname() {
 		$fixture = 'mein_modul/meine_klasse';
 
@@ -197,6 +196,27 @@ class fl_factoryTest extends PHPUnit_Framework_TestCase
 
 		$this->assertEquals('mein_modul', $modul);
 		$this->assertEquals('meine_klasse', $class);
+	}
+	public function testCommonClassName() {
+		$fixture = 'klassenname';
+		$expected = array(
+			'common',
+			'klassenname'
+		);
+
+		$result = $this->object->parse_class_name($fixture);
+
+		$this->assertEquals($expected, $result);
+	}
+	public function testParse_class_nameThrowsInvalidArgumentException() {
+		$fixture = 'klassenname';
+
+		try {
+			$this->object->parse_class_name($fixture, fl_factory::ONLY_MODULES);
+			$this->fail();
+		} catch( InvalidArgumentException $e ) {
+			return true;
+		}
 	}
 }
 

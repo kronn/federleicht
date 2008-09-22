@@ -25,10 +25,7 @@ class fl_responderTest extends PHPUnit_Framework_TestCase {
 		$result = PHPUnit_TextUI_TestRunner::run($suite);
 	}
 	protected function setUp() {
-		/**
-		 * TestDouble der Factory erstellen und diese dem Responder übergeben
-		 */
-		$this->factory = $this->getMock('fl_factory', array('create'));
+		$this->factory = new fl_factory;
 		$this->object = new fl_responder($this->factory);
 	}
 	protected function tearDown() {
@@ -38,7 +35,8 @@ class fl_responderTest extends PHPUnit_Framework_TestCase {
 	 * Hilfsmethode um komplexe Fixture aufzubauen
 	 */
 	protected function addSomeResponses() {
-		# $this->object->add_response('view');
+		$this->object->add_response('http');
+		$this->object->add_response('http');
 	}
 
 	public function testAdd_response() {
@@ -47,10 +45,16 @@ class fl_responderTest extends PHPUnit_Framework_TestCase {
 		$this->assertType('integer', $result);
 	}
 	public function testFactoryIsCalled() {
+		/**
+		 * TestDouble der Factory erstellen und diese dem Responder übergeben
+		 */
+		$factory = $this->getMock('fl_factory', array('create'));
+		$this->object = new fl_responder($factory);
+
 		// erwartetes Verhalten
 		// Es wird hier geprüft, dass die Factory-Methode "create" einmal aufgerufen 
 		// wird, und zwar mit dem Parameter "mvc_response_http"
-		$this->factory->expects($this->once())
+		$factory->expects($this->once())
 			->method('create')
 			->with($this->equalTo('mvc_response_http'));
 
@@ -69,118 +73,14 @@ class fl_responderTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @todo Implement testSet().
+	 *
 	 */
-	public function testSet() {
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
-
-	/**
-	 * @todo Implement testGet().
-	 */
-	public function testGet() {
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
-
-	/**
-	 * @todo Implement testSay().
-	 */
-	public function testSay() {
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
-
-	/**
-	 * @todo Implement testSet_data().
-	 */
-	public function testSet_data() {
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
-
-	/**
-	 * @todo Implement testIs_set().
-	 */
-	public function testIs_set() {
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
-
-	/**
-	 * @todo Implement testRemove().
-	 */
-	public function testRemove() {
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
-
-	/**
-	 * @todo Implement testCurrent().
-	 */
-	public function testCurrent() {
+	public function testInterfaceIterator() {
 		$this->addSomeResponses();
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
 
-	/**
-	 * @todo Implement testKey().
-	 */
-	public function testKey() {
-		$this->addSomeResponses();
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
-
-	/**
-	 * @todo Implement testNext().
-	 */
-	public function testNext() {
-		$this->addSomeResponses();
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
-
-	/**
-	 * @todo Implement testRewind().
-	 */
-	public function testRewind() {
-		$this->addSomeResponses();
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
-	}
-
-	/**
-	 * @todo Implement testValid().
-	 */
-	public function testValid() {
-		$this->addSomeResponses();
-		// Remove the following lines when you implement this test.
-		$this->markTestIncomplete(
-		  'This test has not been implemented yet.'
-		);
+		foreach($this->object as $k => $r) {
+			$this->assertType('fl_mvc_response_http', $r);
+		}
 	}
 
 	public function testImplementsIterator() {

@@ -30,6 +30,7 @@ class fl_test extends PHPUnit_Framework_TestSuite {
 		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_converterTest.php');
 
 		// $suite->addTestFile(ABSPATH . 'test/fl/data/structures/activerecordTest.php');
+		$suite->addTestFile(ABSPATH . 'test/fl/data/accessTest.php');
 
 		return $suite;
 	} 
