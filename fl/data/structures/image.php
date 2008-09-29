@@ -50,10 +50,12 @@ class fl_data_structures_image extends fl_data_structures_data {
 		if ( !$this->is_set('height') ) {
 			$this->set('height', $height);
 		}
+		$this->set('physical_height', $height);
 
 		if ( !$this->is_set('width') ) {
 			$this->set('width', $width);
 		}
+		$this->set('physical_width', $width);
 
 		$this->set('src', $path . $id . $extension);
 	}

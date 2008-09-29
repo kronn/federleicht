@@ -9,6 +9,8 @@
  * @todo Datenstruktur "abschliessbar" machen, also hinzufuegen neuer Werte verhindern.
  */
 class fl_data_structures_data implements ArrayAccess, data_wrapper {
+	protected $_default_value;
+
 	/**
 	 * Konstruktor
 	 *
@@ -16,6 +18,15 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 */
 	public function __construct(array $data = array()) {
 		$this->set_data($data);
+	}
+
+	/**
+	 * Standardwert setzen
+	 *
+	 * @param mixed $default
+	 */
+	public function default_value($default = null) {
+		$this->_default_value = $default;
 	}
 
 	/**
@@ -92,7 +103,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 				$value = $this->$key;
 			}
 		} else {
-			$value = ( isset($this->_default) )? $this->_default: '';
+			$value = ( isset($this->_default_value) )? $this->_default_value: '';
 		}
 
 		return $value;
