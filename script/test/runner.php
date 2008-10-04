@@ -18,6 +18,10 @@ foreach ( array_merge($testscripts, $unittests) as $test ) {
 	$filename = ABSPATH . 'test/'.$test.'/test.php';
 	if ( file_exists($filename) ) {
 		require_once $filename;
+
+		if ( in_array($test, $unittests) ) {
+			$available_tests[] = $test;
+		}
 	}
 }
 
@@ -50,6 +54,6 @@ class complete_test extends PHPUnit_Framework_TestSuite {
 // @codeCoverageIgnoreEnd
 
 if (PHPUnit_MAIN_METHOD == 'complete_test::main') {
-    complete_test::main($unittests);
+    complete_test::main($available_tests);
 }
 ?>
