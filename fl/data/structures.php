@@ -30,7 +30,7 @@ class fl_data_structures {
 	 * Datenstrukturdatei zurueckgeben
 	 *
 	 * @param string $wanted_structure
-	 * @param array  $initial_data
+	 * @param mixed  $initial_data
 	 * @return data_structure
 	 */
 	public function get($wanted_structure, $initial_data = array()) {
@@ -46,7 +46,7 @@ class fl_data_structures {
 
 		$this->load_structure($modul, $name);
 
-		return new $structure_name((array) $initial_data);
+		return new $structure_name($initial_data);
 	}
 
 	/**

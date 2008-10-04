@@ -233,7 +233,10 @@ class fl_route {
 	 * @return array
 	 */
 	public function get_request() {
-		$request = array_merge($this->request, array('modul'=>$this->modul));
+		$request = array_merge(
+			$this->request, 
+			array('modul'=>$this->modul)
+		);
 
 		return $request;
 	}
@@ -303,7 +306,10 @@ class fl_route {
 		$elements = array_values($elements);
 
 		foreach( $elements as $key => $value ) {
+
 			if ( empty($value) ) continue;
+
+			$url .= '/';
 
 			if ( strpos($value, ':') === 0 ) {
 				$name = substr($value, 1);
@@ -318,9 +324,9 @@ class fl_route {
 			} else {
 				$url = $value;
 			}
-
-			$url .= '/';
 		}
+
+		// $url = preg_replace('@[/]{2,}$@', '/', $url); // gegen leere Felder am Ende
 
 		return $url;
 	}

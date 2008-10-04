@@ -18,7 +18,8 @@ class fl_view {
 	 * extern eingebundene Objekte und Variablen
 	 */
 	protected $datamodel;
-	protected $cap; // zu route umbennenen
+	protected $cap; // array( c a p )
+	protected $route; // fl_route
 	protected $functions;
 
 	protected $headers;
@@ -53,7 +54,10 @@ class fl_view {
 		$this->data = $this->factory->get_structure('view', $data);
 
 		$registry = fl_registry::getInstance();
-		$this->cap = $registry->get('request', 'route');
+		$this->cap = $registry->get('request', 'request');
+		$this->route = $registry->get('request', 'route');
+		trigger_error('debug', 256);
+
 		$this->subview = $registry->get('subview');
 
 		$this->modulepath = $registry->get('path', 'module');
@@ -74,7 +78,7 @@ class fl_view {
 	 * @return string
 	 */
 	public function render_layout($layout) {
-		if ( strpos($layout, '/') === FALSE ) {
+		if ( strpos($layout, '/') === false ) {
 			$path = $this->modulepath . $this->cap['controller'] . '/layouts/';
 		} else {
 			list($prefix, $layout) = explode('/', $layout, 2);
@@ -240,10 +244,14 @@ class fl_view {
 	 * URL zur aktuellen Seite ausgeben
 	 *
 	 * @todo Routen so erweitern, das die aktuelle URL ausgegeben werden kann.
+	 * @todo Federleicht so umstellen, dass das erfolgreiche fl_route-Objekt in der Registry ist und vorrangig verwendet wird.
 	 */
 	protected function current_url() {
-		$registry =& fl_registry::getInstance();
+		return $this->route->get_current_url();
+
+		$registry = fl_registry::get_instance();
 		$cap = $registry->get('request', 'route');
+
 		$url = 'http://'.$_SERVER['HTTP_HOST'].'/'.$cap['controller'].'/'.$cap['action'].'/'.$cap['param'];
 		return $url;
 	}

@@ -88,52 +88,42 @@ class fl_dispatcher {
 	public function analyse($url){
 		$url = preg_replace('@[/]{2,}@', '/', $url); // gegen Unsinn
 
-		$route_success = FALSE;
+		$route_success = false;
 		usort( $this->routes, array('fl_route', 'compare_routes'));
-
-		$request = array();
 
 		foreach ( $this->routes as $route ) {
 			if ( $route->try_route($url) ) {
-				$request = $route->get_request();
-				$route_success = $route;
+				$request = $route;
+				$route_success = true;
 				break;
 			} else {
 				continue;
 			}
 		}
-		if ( $route_success === FALSE ) {
+
+		if ( $route_success === false ) {
 			$last_route = array_pop($this->routes);
-			$last_route->try_route($url, TRUE);
+			$last_route->try_route($url, true);
 
-			$request = $last_route->get_request();
-			$route_success = $last_route;
+			$request = $last_route;
+			$route_success = true;
 		}
 
-		if ( isset( $request['lang'] ) ) {
-			$this->lang->set($request['lang']);
+		// Für Vergleichszwecke wird die Route in ein Array exportiert
+		$tmp_req = $request->get_request();
+
+		if ( isset( $tmp_req['lang'] ) ) {
+			$this->lang->set( $tmp_req['lang'] );
 		} else {
-			$this->lang->set( $route_success->get_language_key() );
+			$this->lang->set( $request->get_language_key() );
 		}
 
-		# $request['_url'] = $route_success->get_current_url();
-
-		if ( $request['controller'] === 'defaultController' ) {
-			$request['controller'] = $this->default_controller;
-			# $request['_url'] = str_replace('defaultController', $this->default_controller, $_url);
+		if ( $tmp_req['controller'] === 'defaultController' ) {
+			$request->set_defaults(array('controller'=>$this->default_controller));
 		}
 
-		if ( $request['modul'] === 'defaultController' ) {
-			$request['modul'] = $request['controller'];
-		}
-
-		if ( !in_array($request['modul'], $this->modules) ) {
-			$request = array(
-				'modul'=>$this->default_controller,
-				'controller'=>$this->default_controller,
-				'action'=>'defaultAction',
-				'param'=>''
-			);
+		if ( $tmp_req['modul'] === 'defaultController' ) {
+			$request->set_modul($this->default_controller);
 		}
 
 		return $request;

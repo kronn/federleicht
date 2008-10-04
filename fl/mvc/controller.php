@@ -48,7 +48,7 @@ class fl_controller {
 
 		$registry = fl_registry::getInstance();
 		$this->request = $registry->get('request');
-		$this->cap = $this->request->route;
+		$this->cap = $this->request->get('request');
 		$this->modulepath = $registry->get('path', 'module');
 
 		$this->responder = $this->factory->create('responder', $this->factory);
@@ -134,7 +134,7 @@ class fl_controller {
 		 */
 		$reg =& fl_registry::getInstance();
 		$request = $reg->get('request');
-		$request->route['action'] = $this->defaultAction;
+		$request->request['action'] = $this->defaultAction;
 		$reg->set('request', $request);
 
 		$this->$action($param);

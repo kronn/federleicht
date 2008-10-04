@@ -15,16 +15,15 @@ class fl_data_structures_request extends fl_data_structures_data {
 	 *
 	 * Es werden die Postdaten und die gewählte Route in das Objekt übernommen
 	 *
-	 * @param route $route
+	 * @param fl_route $route
 	 */
-	public function __construct($route) {
-		$data = array(
+	public function __construct(fl_route $route) {
+		parent::__construct(array(
 			'route'=>$route,
+			'request'=>$route->get_request(),
 			'all_post'=>$_POST,
-			'post'=>(isset($_POST['fl'])? $_POST['fl']: null)
-		);
-
-		parent::__construct($data);
+			'post'=>(isset($_POST['fl'])? $_POST['fl']: null),
+		));
 	}
 
 	/**
@@ -37,6 +36,6 @@ class fl_data_structures_request extends fl_data_structures_data {
 	}
 
 	public function get_modul() {
-		return $this['route']['modul'];
+		return $this['request']['modul'];
 	}
 }

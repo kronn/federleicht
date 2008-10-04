@@ -104,8 +104,8 @@ class fl_dispatcherTest extends PHPUnit_Framework_TestCase
 			'modul'=>'testing',
 		);
 
-		$this->assertType('array', $result);
-		$this->assertEquals($result, $expected);
+		$this->assertType('fl_route', $result);
+		$this->assertEquals($result, $route);
 
 		// Remove the following lines when you implement this test.
 		$this->markTestIncomplete( 'This test has not been fully implemented yet.');

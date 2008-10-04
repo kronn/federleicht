@@ -43,7 +43,7 @@ class fl_modul {
 		$this->factory = $functions->factory;
 		$this->registry = fl_registry::getInstance();
 
-		$this->cap = $this->registry->get('request', 'route');
+		$this->cap = $this->registry->get('request', 'request');
 		$this->modulepath = $this->registry->get('path', 'module');
 		$this->apppath = $this->registry->get('path', 'app');
 
