@@ -233,12 +233,7 @@ class fl_route {
 	 * @return array
 	 */
 	public function get_request() {
-		$request = array_merge(
-			$this->request, 
-			array('modul'=>$this->modul)
-		);
-
-		return $request;
+		return $this->request;
 	}
 
 	/**

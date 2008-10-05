@@ -122,7 +122,9 @@ class fl_dispatcher {
 			$request->set_defaults(array('controller'=>$this->default_controller));
 		}
 
-		if ( $tmp_req['modul'] === 'defaultController' ) {
+		if ( $tmp_req['modul'] === '&controller' ) {
+			$request->set_modul($tmp->req['controller']);
+		} elseif ( $tmp_req['modul'] === 'defaultController' ) {
 			$request->set_modul($this->default_controller);
 		}
 
