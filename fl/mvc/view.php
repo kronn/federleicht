@@ -56,7 +56,6 @@ class fl_view {
 		$registry = fl_registry::getInstance();
 		$this->cap = $registry->get('request', 'request');
 		$this->route = $registry->get('request', 'route');
-		trigger_error('debug', 256);
 
 		$this->subview = $registry->get('subview');
 
