@@ -132,7 +132,7 @@ class fl_controller {
 		/**
 		 * richtigen Wert in Registry speichern
 		 */
-		$reg =& fl_registry::getInstance();
+		$reg = fl_registry::getInstance();
 		$request = $reg->get('request');
 		$request->request['action'] = $this->defaultAction;
 		$reg->set('request', $request);
@@ -159,17 +159,20 @@ class fl_controller {
 	/**
 	 * Ruft eine andere URL auf.
 	 *
-	 * @param string $target
-	 * @todo externes Template fuer Weiterleitungsfehler verwenden
+	 * @param string  $target
+	 * @param boolean $external
+	 * @todo externes Template fuer Weiterleitungsfehler verwenden, anstatt hier direkt HTML auszugeben
 	 */
-	protected function redirect($target='') {
+	protected function redirect($target='', $external = false) {
 		$target = ltrim($target, '/');
 
 		if ( defined('SUBDIR') ) {
 			$target = SUBDIR.'/'.$target;
 		}
 		
-		$zieladresse = 'http://'.$_SERVER['HTTP_HOST'].'/'.$target;
+		$zieladresse = ( $external )?
+			$target:
+			'http://'.$_SERVER['HTTP_HOST'].'/'.$target;
 		$this->functions->flash->save_messages();
 
 		#if ( headers_sent($file, $line) AND strlen(ob_get_contents()) > 0) {
@@ -202,6 +205,9 @@ HTML;
 			header('Location: '.$zieladresse);
 			ob_flush();
 		}
+	}
+	protected function external_redirect($target=''){
+		return $this->redirect($target, true);
 	}
 
 	/**
