@@ -30,6 +30,19 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	}
 
 	/**
+	 * Daten als Array exportieren
+	 */
+	public function export() {
+		$export = array();
+
+		foreach( $this as $key => $value ) {
+			$export[$key] = $value;
+		}
+
+		return $export;
+	}
+
+	/**
 	 * Datenobjekte als String verwendbar machen
 	 */
 	public function __toString() {
