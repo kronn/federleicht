@@ -284,12 +284,11 @@ class fl_route {
 	/**
 	 * URL erzeugen, die der aktuellen Route entspricht
 	 *
-	 * @param  string $route
 	 * @param  array  $parts
 	 * @return string
 	 */
-	public function make_url($route, array $parts) {
-		$elements = explode('/', $route);
+	public function make_url(array $parts) {
+		$elements = explode('/', $this->route);
 
 		$url = '';
 
@@ -321,7 +320,8 @@ class fl_route {
 			}
 		}
 
-		// $url = preg_replace('@[/]{2,}$@', '/', $url); // gegen leere Felder am Ende
+		$url = preg_replace('@[/]{2,}$@', '/', $url); // gegen leere Felder am Ende
+		$url = preg_replace('@^[/]@', '', $url); // gegen leere Felder am Anfang
 
 		return $url;
 	}
@@ -332,9 +332,8 @@ class fl_route {
 	 * @return string
 	 */
 	public function get_current_url() {
-		return $this->make_url($this->route, $this->request);
+		return $this->make_url($this->request);
 	}
-
 
 	/**
 	 * Vergleichsfunktion zur Sortierung von Routen

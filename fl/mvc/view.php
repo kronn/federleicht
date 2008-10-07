@@ -241,18 +241,9 @@ class fl_view {
 
 	/**
 	 * URL zur aktuellen Seite ausgeben
-	 *
-	 * @todo Routen so erweitern, das die aktuelle URL ausgegeben werden kann.
-	 * @todo Federleicht so umstellen, dass das erfolgreiche fl_route-Objekt in der Registry ist und vorrangig verwendet wird.
 	 */
 	protected function current_url() {
 		return $this->route->get_current_url();
-
-		$registry = fl_registry::get_instance();
-		$cap = $registry->get('request', 'route');
-
-		$url = 'http://'.$_SERVER['HTTP_HOST'].'/'.$cap['controller'].'/'.$cap['action'].'/'.$cap['param'];
-		return $url;
 	}
 }
 ?>

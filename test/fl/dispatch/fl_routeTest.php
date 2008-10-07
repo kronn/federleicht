@@ -136,14 +136,76 @@ class fl_routeTest extends PHPUnit_Framework_TestCase {
 			);
 	}
 
-	/**
-	 * @todo Implement testMake_url().
-	 */
 	public function testMake_url() {
-			// Remove the following lines when you implement this test.
-			$this->markTestIncomplete(
-				'This test has not been implemented yet.'
-			);
+		$route = fl_route::get_instance(
+			'/city/:action/:lang',
+			'controller=cities,action=index,lang=',
+			10
+		);
+
+		$parts = array(
+			'controller'=>'cities',
+			'action'=>'show',
+			'lang'=>'de'
+		);
+
+		$expected = 'city/show/de';
+		$result = $route->make_url($parts);
+
+		$this->assertEquals($expected, $result);
+	}
+	public function testMake_url2() {
+		$route = fl_route::get_instance(
+			'/city/:action/:lang',
+			'controller=cities,action=index,lang=',
+			10
+		);
+
+		$parts = array(
+			'controller'=>'cities',
+			'action'=>'',
+			'lang'=>''
+		);
+
+		$expected = 'city/index/';
+		$result = $route->make_url($parts);
+
+		$this->assertEquals($expected, $result);
+	}
+	public function testMake_url3() {
+		$route = fl_route::get_instance(
+			'/city/:action/:lang',
+			'controller=cities,action=index,lang=',
+			10
+		);
+
+		$parts = array(
+			'controller'=>'cities',
+			'action'=>'show',
+			'lang'=>''
+		);
+
+		$expected = 'city/show/';
+		$result = $route->make_url($parts);
+
+		$this->assertEquals($expected, $result);
+	}
+	public function testMake_url4() {
+		$route = fl_route::get_instance(
+			'/city/:action/:lang',
+			'controller=cities,action=index,lang=',
+			10
+		);
+
+		$parts = array(
+			'action'=>'show',
+			'lang'=>'de'
+		);
+
+		$expected = 'city/show/de';
+		$result = $route->make_url($parts);
+
+		$this->assertEquals($expected, $result);
 	}
 
 	/**
