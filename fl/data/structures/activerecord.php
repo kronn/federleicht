@@ -28,6 +28,12 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	 */
 	protected $has_one = array();
 	protected $has_many = array();
+	protected $belongs_to = array();
+
+	/**
+	 * Hilfsklassen
+	 */
+	protected $factory = null;
 
 	/**
 	 * Konstruktor
@@ -46,6 +52,9 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 		$this->data = $data;
 
 		if ( !$loaded ) {
+			$this->factory = new fl_factory();
+			$this->factory->set_data_access($this->db);
+
 			$this->load();
 		}
 	}
@@ -96,6 +105,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 
 		foreach ( $this->data as $key => $value ) {
 			if ( empty($value) OR $value === null ) continue;
+			if ( in_array($key, $this->relation_keys()) ) continue;
 
 			$data[$key] = $value;
 		}
@@ -113,7 +123,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 			if ( $this->db instanceof fl_data_access_database ) {
 				$result = $this->db->convert_result($this->table, $unconverted_result);
 			} else {
-				$result = $converted_result;
+				$result = $unconverted_result;
 			}
 
 			$data = (array) $result[0];
@@ -140,10 +150,12 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 
 		if ( $this->id > 0 ) {
 			$result = $this->db->update($this->table, $this->get_data_as_array(), $this->id);
+			$this->save_additional_data_parts();
 		} else {
 			$result = $this->db->create($this->table, $this->get_data_as_array());
 			if ( is_numeric($result) ) {
 				$this->id = $result;
+				$this->save_additional_data_parts();
 				$this->load();
 				$result = true;
 			}
@@ -181,11 +193,44 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 
 	/**
 	 * zusätzliche Daten laden
+	 *
+	 * Die zusätzlichen Daten können im ActiveRecord-Objekt einstellt werden:
+	 *
+	 * activerecord::has_one = [ name => info, name2 = info2, ... ]
+	 * activerecord::has_many = [ name => info, name2 = info2, ... ]
+	 *
+	 * info ist dabei ein Array mit den Schlüsseln:
+	 *      class     für den Klassen-Identifier
+	 *      key_name  für den Namen zu verwenden Tabellen-Fremdschlüssel
+	 *      key       für den Namen des Wertes auf den sich der Fremdschlüssel bezieht
+	 *      data      für immer zu übergebende Daten (z.B. für nicht datenbankgestütze Klassen)
+	 * 
+	 * Beispielsweise
+	 * account::has_one = array( 
+	 *   'picture' => array(
+	 *     'class' => 'account/picture',
+	 *     'key' => 'picture_id',
+	 *   )
+	 * ) 
+	 * Bei has_one wird als ID für die Klasse account/picture
+	 * der Wert des Schlüssels 'picture_id' aus der Tabelle account
+	 * verwendet
+	 *
+	 * account::has_may = array( 
+	 *   'bankaccounts' => array(
+	 *     'class' => 'account/financial',
+	 *     'key_name' => 'account_id',
+	 *     'key' => 'id'
+	 *   )
+	 * )
+	 * Bei has_many wird die ID der Klasse financial/account so ermittelt:
+	 * Der Wert des Schlüssel 'id' aus der Tabelle 'account' mit dem Wert
+	 * des Schlüssel 'account_id' aus der Tabelle 'financial' verglichen.
+	 *
+	 * Die Tabellen der Klassen können in den jeweilgen Klassen angegeben werden,
+	 * daher reicht der Verweis auf die Klasse.
 	 */
-	protected function load_additional_data_parts() {
-		$factory = new fl_factory();
-		$factory->set_data_access($this->db);
-
+	protected function relation_definitions() {
 		$relations = array(
 			'has_one' => array(
 				'type' => array(
@@ -196,6 +241,17 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 					'class'=>get_class($this).'/%s',
 					'key_name'=>'%s_id',
 					'key'=>'%s_id'
+				)
+			),
+			'belongs_to' => array(
+				'type' => array(
+					'loader' => 'activerecord',
+					'relation' => 'hasone'
+				),
+				'standards' => array(
+					'class'=>'%1$s/%1$s',
+					'key_name'=>'id',
+					'key'=>'%_id'
 				)
 			),
 			'has_many' => array(
@@ -211,12 +267,84 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 			)
 		);
 
-		foreach ($relations as $key => $relation ) {
-			$this->load_relations($key, $relation['type'], $relation['standards'], $factory);
+		return $relations;
+	}
+
+	protected function load_additional_data_parts() {
+		foreach ($this->relation_definitions() as $key => $relation ) {
+			$this->load_relations($key, $relation['type'], $relation['standards']);
+		}
+	}
+	protected function save_additional_data_parts() {
+		foreach ($this->relation_definitions() as $key => $relation ) {
+			$this->save_relations($key, $relation['type'], $relation['standards']);
 		}
 	}
 
-	private function load_relations($relation_data_key, $type, $standards, $factory) {
+	protected function relation_keys() {
+		$relation_keys = array();
+
+		foreach( array_keys($this->relation_definitions()) as $rkey ) {
+			foreach( $this->$rkey as $key => $content ) {
+				if ( is_numeric($key) ) { 
+					$relation_keys[] = (string) $content; 
+				} else {
+					$relation_keys[] = $key;
+				}
+			}
+		}
+
+		return $relation_keys;
+	}
+
+	/**
+	 * Relationen parsen
+	 */
+	private function parse_relations($name, $information, $standards) {
+		$class = ( isset($information['class']) )?  $information['class']:
+			strtolower(sprintf($standards['class'], $name));
+
+		list($modul, $class_name) = $this->factory->parse_class_name($class, fl_factory::ONLY_MODULES);
+
+		$key_name = ( isset($information['key_name']) )? $information['key_name']:
+			strtolower(sprintf($standards['key_name'], $class_name));
+
+		$key_value = ( isset($information['key']) )? $this->get($information['key']):
+			$this->get(strtolower(sprintf($standards['key'], $class_name)));
+
+		$data = ( isset($information['data']) )? $information['data']:
+			array();
+
+		$keys = array(
+			'key_name' => $key_name,
+			'key' => $key_value
+		);
+
+		if ( count($information) > 0 ) {
+			$options = array_combine(
+				array_keys($information),
+				array_values($information)
+			);
+		} else {
+			$options = array();
+		}
+		if ( isset($options['class']) ) unset($options['class']);
+		if ( isset($options['key_name']) ) unset($options['key_name']);
+		if ( isset($options['key']) ) unset($options['key']);
+		if ( isset($options['data']) ) unset($options['data']);
+
+		return array(
+			'class'=>$class,
+			'keys'=>$keys,
+			'data'=>$data,
+			'options'=>$options
+		);
+	}
+
+	/**
+	 * Relationen laden
+	 */
+	private function load_relations($relation_data_key, $type, $standards) {
 		$relation_data = (array) $this->$relation_data_key;
 
 		foreach ( $relation_data as $name => $information ) {
@@ -225,43 +353,76 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 				$information = array();
 			}
 
-			$class = ( isset($information['class']) )?  $information['class']:
-				strtolower(sprintf($standards['class'], $name));
-
-			list($modul, $class_name) = $factory->parse_class_name($class, fl_factory::ONLY_MODULES);
-
-			$key_name = ( isset($information['key_name']) )? $information['key_name']:
-				strtolower(sprintf($standards['key_name'], $class_name));
-
-			$key_value = ( isset($information['key']) )? $this->get($information['key']):
-				$this->get(strtolower(sprintf($standards['key'], $class_name)));
-
-			$data = ( isset($information['data']) )? $information['data']:
-				array();
-
-			$keys = array(
-				'key_name' => $key_name,
-				'key' => $key_value
-			);
-
-			$options = array_combine(
-				array_keys($information),
-				array_values($information)
-			);
-			unset(
-				$options['class'],
-				$options['key_name'],
-				$options['key'],
-				$options['data']
-			);
-
+			$loader_args = $this->parse_relations($name, $information, $standards);
 			$this->set(
 				$name, 
-				$factory->get_loader($type, $class, $keys, $data, $options)
+				$this->factory->get_loader(
+					$type, 
+					$loader_args['class'], 
+					$loader_args['keys'], 
+					$loader_args['data'], 
+					$loader_args['options']
+				)
 			);
 		}
 	}
 
+	/**
+	 * Relationen speichern
+	 */
+	private function save_relations($relation_data_key, $type, $standards) {
+		if ( !in_array($relation_data_key, array('has_one', 'has_many')) ) {
+			return; // nur Speichern, wenn es sich um Kinder handelt
+		}
+
+		$relation_data = (array) $this->$relation_data_key;
+
+		foreach ( $relation_data as $name => $information ) {
+			if ( is_string($information) and is_numeric($name) ) {
+				$name = $information;
+				$information = array();
+			}
+
+			$saver_args = $this->parse_relations($name, $information, $standards);
+			$data = $this->get($name);
+			
+			// nur, wenn es ein Array ist, handelt es sich um geänderte Daten
+			if ( is_array($data) ) {
+				if ( isset($data['deleted']) ) {
+					if ( !empty($data['deleted']) ) {
+						foreach( explode(',', $data['deleted']) as $del_id ) {
+							// $this->factory->get_ar_class($saver_args['class'], $del_id)->delete();
+						}
+					}
+					unset($data['deleted']);
+				}
+
+
+				foreach ( $data as $key => $values ) {
+					if ( !is_array($values) ) continue;
+					
+					if ( substr($key, 0, 3) == 'new' ) {
+						$id = null;
+					} else {
+						$id = substr($key, strrpos($key, '_'));
+					}
+
+					$data_object = $this->factory->get_ar_class(
+						$saver_args['class'], $id
+					);
+					$data_object->set( 
+						$saver_args['keys']['key_name'],
+						$saver_args['keys']['key']
+					);
+					$data_object->set_data($values);
+					$data_object->save();
+				}
+			}
+
+			$this->remove($name);
+		}
+	}
+	
 	/**
 	 * Datenprüfung
 	 *
