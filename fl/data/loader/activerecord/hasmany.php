@@ -31,7 +31,7 @@ class fl_data_loader_activerecord_hasmany extends fl_data_loader_activerecord im
 				$ar_class->set($key, $value);
 			}
 
-			$objects[] = $ar_class;
+			$objects[$result['id']] = $ar_class;
 		}
 
 		return $objects;
