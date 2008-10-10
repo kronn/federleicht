@@ -11,6 +11,9 @@ class fl_data_structures_image extends fl_data_structures_data {
 	protected $src;
 	protected $height;
 	protected $width;
+	protected $physical_height;
+	protected $physical_width;
+
 
 	public function __construct(array $data = array()) {
 		parent::__construct($data);
