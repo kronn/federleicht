@@ -44,6 +44,10 @@ class fl_data_structures {
 			$structure_name = $name . '_data';
 		}
 
+		if ( $initial_data == null ) {
+			$initial_data = array();
+		}
+
 		$this->load_structure($modul, $name);
 
 		return new $structure_name($initial_data);
