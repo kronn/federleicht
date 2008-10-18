@@ -13,7 +13,8 @@ class fl_data_structures_image extends fl_data_structures_data {
 	protected $width;
 	protected $physical_height;
 	protected $physical_width;
-
+	protected $dummy_image = 'dummy.jpg';
+	protected $_image_exists;
 
 	public function __construct(array $data = array()) {
 		parent::__construct($data);
@@ -41,10 +42,12 @@ class fl_data_structures_image extends fl_data_structures_data {
 
 		$files = glob(ABSPATH . $path . $id . '*');
 		if ( $files === false OR !isset($files[0]) ) {
-			$file = $path . 'dummy.jpg';
-			$id = 'dummy';
+			$file = $path . $this->dummy_image;
+			$id = substr($this->dummy_image, 0, strpos($this->dummy_image, '.'));
+			$this->set('_image_exists', false);
 		} else {
 			$file = $files[0];
+			$this->set('_image_exists', true);
 		}
 		$extension = substr($file, strrpos($file, '.'));
 
@@ -81,6 +84,13 @@ class fl_data_structures_image extends fl_data_structures_data {
 
 		$html = '<img src="/'.$this->get('src').'" '.$attributes.'/>';
 		return $html;
+	}
+
+	/**
+	 * Rückgabe, ob Bild wirklich exisiert
+	 */
+	public function image_exists() {
+		return $this->get('_image_exists');
 	}
 
 	/**
