@@ -46,7 +46,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	 */
 	public function __construct(data_access $db, $table, $id, data_wrapper $data, $loaded=false) {
 		$this->db = $db;
-		$this->table = ( empty($table) ) ? $this->table : $table;
+		$this->table = ( $this->table !== '' ) ? $this->table : $table;
 		$this->id = $id;
 
 		$this->data = $data;
