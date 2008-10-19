@@ -104,7 +104,8 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 		$data = array();
 
 		foreach ( $this->data as $key => $value ) {
-			if ( empty($value) OR $value === null ) continue;
+			// if ( empty($value) OR $value === null ) continue;
+			// Auch leere Werte sollten gespeichert und folglich hier geholt werden...
 			if ( in_array($key, $this->relation_keys()) ) continue;
 
 			$data[$key] = $value;
