@@ -81,7 +81,7 @@ class fl_view {
 			$path = $this->modulepath . $this->cap['controller'] . '/layouts/';
 		} else {
 			list($prefix, $layout) = explode('/', $layout, 2);
-			if ( $prefix == 'comon' ) {
+			if ( $prefix == 'common' ) {
 				$path = $this->layoutpath;
 			} else {
 				$path = $this->modulepath . $prefix . '/layouts/';
@@ -108,7 +108,13 @@ class fl_view {
 	 * Sucht den zur Action passenden Unterview heraus.
 	 */
 	protected function get_sub_view() {
-		require_once($this->modulepath . $this->cap['controller'] . '/views/' . $this->subview . '.php');
+		$file = $this->modulepath . $this->cap['controller'] . '/views/' . $this->subview . '.php';
+
+		if ( file_exists($file) ) {
+			require_once $file;
+		} else {
+			throw new Exception('Datei ' . $file . ' nicht gefunden');
+		}
 	}
 
 	/**
