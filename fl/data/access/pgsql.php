@@ -127,9 +127,13 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 
 		$sql = "UPDATE ".$this->table_prefix.$table." SET".PHP_EOL;
 		foreach ($data as $field=>$content) {
-			$this->_secureFieldContent($content);
+			if  ( $content === null ) {
+				$sql .= ' '.$field.'= NULL';
+			} else {
+				$this->_secureFieldContent($content);
+				$sql .= " ".$field."='".$content."'";
+			}
 
-			$sql .= " ".$field."='".$content."'";
 			if ( ( $data_length - 1 ) > $i++ )
 				$sql .= ",";
 		}
