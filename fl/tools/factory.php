@@ -15,7 +15,7 @@ class fl_factory {
 	protected $registry = null;
 	protected $data_access = null;
 	protected $structures = null;
-	protected $inflector = null;
+	public $inflector = null;
 
 	/**
 	 * Klassenkonstanten
@@ -180,6 +180,10 @@ class fl_factory {
 	 */
 	public function get_ar_class($class, $id = 0, array $data = array()) {
 		list($modul, $class_name) = $this->parse_class_name($class, self::ONLY_MODULES);
+
+		if (! $this->inflector->is_singular($class_name)) {
+			$class_name = $this->inflector->singular($class_name);
+		}
 
 		$identifier = "{$class_name}_{$id}";
 
