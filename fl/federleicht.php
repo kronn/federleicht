@@ -47,9 +47,9 @@ class federleicht {
 			'lib'=>ABSPATH . 'fl/',
 			'app'=>ABSPATH . 'app/',
 			'module'=>ABSPATH . 'app/modules/',
+			'layouts'=>ABSPATH . 'app/modules/common/layouts/',
 			'helper'=>ABSPATH . 'app/helper/',
 			'elements'=>ABSPATH . 'app/elements/',
-			'layouts'=>ABSPATH . 'app/layouts'
 		);
 
 		$this->import_classes($path);
