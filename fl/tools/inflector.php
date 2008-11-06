@@ -39,6 +39,7 @@ class fl_inflector {
 			);
 
 			$this->uncountable = array(
+				'audio',
 				'daten', 
 				'bankdaten', 
 				'cover',
