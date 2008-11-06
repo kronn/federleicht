@@ -121,6 +121,8 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	 * Daten aus Datenbank laden
 	 */
 	public function load() {
+		$this->before_load();
+
 		if ( $this->id > 0 ) {
 			$unconverted_result = $this->db->retrieve($this->table, '*', 'id='.$this->id);
 
@@ -139,6 +141,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 
 		if ( $this->id > 0 ) {
 			$this->load_additional_data_parts();
+			$this->after_load();
 		}
 
 		return $result;
@@ -150,16 +153,19 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	 * @return boolean
 	 */
 	public function save() {
+		$this->before_save();
 		$this->prepare_data();
 
 		if ( $this->id > 0 ) {
 			$result = $this->db->update($this->table, $this->get_data_as_array(), $this->id);
 			$this->save_additional_data_parts();
+			$this->after_save();
 		} else {
 			$result = $this->db->create($this->table, $this->get_data_as_array());
 			if ( is_numeric($result) ) {
 				$this->id = $result;
 				$this->save_additional_data_parts();
+				$this->after_save();
 				$this->load();
 				$result = true;
 			}
@@ -190,6 +196,11 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 		return (string) $this->data;
 	}
 
+	protected function before_save() {}
+	protected function after_save() {}
+	protected function before_load() {}
+	protected function after_load() {}
+
 	/**
 	 * Daten vorbereiten
 	 */
@@ -205,9 +216,13 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	 *
 	 * info ist dabei ein Array mit den Schlüsseln:
 	 *      class     für den Klassen-Identifier
+	 *                (modul/klasse)
 	 *      key_name  für den Namen zu verwenden Tabellen-Fremdschlüssel
+	 *                (Spaltenname aus der fremden Tabelle)
 	 *      key       für den Namen des Wertes auf den sich der Fremdschlüssel bezieht
-	 *      data      für immer zu übergebende Daten (z.B. für nicht datenbankgestütze Klassen)
+	 *                (Spaltenname aus der ursprünglichen Tabelle)
+	 *      data      für immer zu übergebende Daten 
+	 *                (z.B. für nicht datenbankgestütze Klassen)
 	 * 
 	 * Beispielsweise
 	 * account::has_one = array( 
@@ -220,7 +235,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	 * der Wert des Schlüssels 'picture_id' aus der Tabelle account
 	 * verwendet
 	 *
-	 * account::has_may = array( 
+	 * account::has_many = array( 
 	 *   'bankaccounts' => array(
 	 *     'class' => 'account/financial',
 	 *     'key_name' => 'account_id',
@@ -255,7 +270,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 				'standards' => array(
 					'class'=>'%1$s/%1$s',
 					'key_name'=>'id',
-					'key'=>'%_id'
+					'key'=>'%s_id'
 				)
 			),
 			'has_many' => array(
@@ -448,4 +463,81 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	 * @return validation
 	 */
 	abstract public function get_validator();
+
+	/**
+	 * Standardwert setzen
+	 *
+	 * @param string $key
+	 * @param string $value
+	 */
+	protected function default_value($key, $value) {
+		if (!$this->is_set($key) or $this->get($key) == '' ) {
+			$this->set($key, $this->get($value));
+		}
+	}
+
+	/**
+	 * number_format rueckgangig machen
+	 *
+	 * @param string $formatted
+	 * @return string $float_suitable
+	 */
+	protected function revert_number_format($formatted) {
+		if ( (float) $formatted === $formatted ) {
+			$float_suitable = (float) $formatted;
+		} else {
+			$float_suitable = (float) str_replace( ',', '.',
+				str_replace( '.', '',
+					$formatted
+				)
+			);
+		}
+
+		return $float_suitable;
+	}
+
+	/**
+	 * Checkboxen in Wahrheitswerte umwandeln
+	 *
+	 * Die Funktion verhält sich standardmäßig unauffälig und übergeht fehlende 
+	 * (also auch falschgeschriebene) Indizes. Diese Verhalten kann mit dem 
+	 * optionalen Parameter $strict so verändert werden, dass fehlende Checkboxen 
+	 * mit dem Wert false erzeugt werden. 
+	 *
+	 * @param string $checkboxes  CSV-String der umzuwandelnden Checkboxen
+	 * @param bool   $strict      nichtvorhandene Felder werden mit Wert false erzeugt
+	 */
+	protected function transform_checkboxes($checkboxes, $strict = false) {
+		$this->transform_from_checkboxes($checkboxes, $strict);
+	}
+	protected function transform_from_checkboxes($checkboxes, $strict = false) {
+		$checkboxes = explode(',', $checkboxes);
+
+		foreach( $checkboxes as $checkbox ) {
+			$checkbox = trim($checkbox);
+
+			if ( !$this->is_set($checkbox) ) {
+				if ( $strict ) {
+					$this->set( $checkbox, $this->db->false_value );
+				}
+
+				continue;
+			}
+
+			( $this->get($checkbox) === $checkbox )?
+				$this->set($checkbox, $this->db->true_value):
+				$this->set($checkbox, $this->db->false_value);
+		}
+	}
+	protected function transform_to_checkboxes($checkboxes) {
+		$checkboxes = explode(',', $checkboxes);
+
+		foreach( $checkboxes as $checkbox ) {
+			$checkbox = trim($checkbox);
+
+			( $this->get($checkbox) == $this->db->true_value )?
+				$this->set($checkbox, $checkbox):
+				$this->set($checkbox, '');
+		}
+	}
 }
