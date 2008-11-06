@@ -51,10 +51,10 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 
 		$this->data = $data;
 
-		if ( !$loaded ) {
-			$this->factory = new fl_factory();
-			$this->factory->set_data_access($this->db);
+		$this->factory = new fl_factory();
+		$this->factory->set_data_access($this->db);
 
+		if ( !$loaded ) {
 			$this->load();
 		}
 	}
