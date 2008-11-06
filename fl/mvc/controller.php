@@ -104,13 +104,21 @@ class fl_controller {
 	public function alternate($message = null) {
 		if ( $message instanceof Exception ) {
 			if ( error_reporting() == 0 ) {
-				$message = $message->getMessage();
+				echo $message->getMessage();
 			} else {
-				$message = '<h2>'.$message->getMessage().'</h2><pre>'.$message.'</pre>';
+				echo '<h2>'.$message->getMessage().'</h2><pre>'.$message.'</pre>';
+
+				echo '<h3>Anfrage</h3><pre>';
+				var_dump($this->request);
+				echo '</pre>';
+
+				echo '<h3>Datenbankabfragen</h3><table border="1"><pre>';
+				var_dump($this->datamodel->export_query_log());
+				echo '</pre>';
 			}
 		}
 
-		$this->functions->stop($message);
+		$this->functions->stop();
 	}
 
 	/**
