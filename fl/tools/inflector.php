@@ -54,6 +54,7 @@ class fl_inflector {
 				'land' => 'laender',
 				'beat' => 'beats',
 				'album' => 'alben',
+				'album_titel' => 'alben_titel',
 				'genre' => 'genres',
 				'hoerprobe' => 'hoerproben'
 			);
@@ -260,7 +261,7 @@ class fl_inflector {
 					}
 				}
 			} else {
-				throw new RuntimeException('Es kann nicht herausgefunden werden, ob "'.$word.'" Singular oder Plural ist. ' . PHP_EOL . $this);
+				throw new RuntimeException('Es kann nicht herausgefunden werden, ob "'.$word.'" Singular oder Plural ist.');
 			}
 		}
 	}
