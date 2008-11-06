@@ -180,6 +180,10 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 	 * @return array
 	 */
 	public function convert_result($table, array $result) {
+		if ( ! $this->convert_results ) {
+			return $result;
+		}
+
 		$table = $this->table_prefix . $table;
 		$converted = $result;
 

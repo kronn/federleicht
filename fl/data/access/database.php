@@ -10,6 +10,7 @@ abstract class fl_data_access_database {
 	protected $query_count = 0;
 
 	public $show_errors = false;
+	public $convert_results = false;
 
 	/**
 	 * Anzahl der Datensätze mit bestimmter Bedingung zurückgeben
@@ -69,6 +70,11 @@ abstract class fl_data_access_database {
 		$this->lastSQL = $sql;
 		$this->allSQL[] = $sql;
 		$this->query_count++;
+	}
+
+
+	public function export_query_log() {
+		return $this->allSQL;
 	}
 
 	/**

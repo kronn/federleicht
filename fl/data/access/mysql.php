@@ -177,27 +177,25 @@ class fl_data_access_mysql extends fl_data_access_database implements data_acces
 	 * @todo Funktion fuer MySQL umarbeiten
 	 */
 	public function convert_result($table, array $result) {
-		return $result;
+		if ( ! $this->convert_results ) {
+			return $result;
+		}
 
 		$table = $this->get_table_name($table);
 		$converted = $result;
 
 		$sql = <<<SQL
-SELECT column_name AS col, CASE
-	WHEN data_type = 'numeric' THEN 'float'
-	ELSE data_type
-END AS type
-FROM information_schema.columns
-WHERE table_name='{$table}'
-	AND data_type IN ('boolean', 'integer', 'numeric');
+SHOW COLUMNS FROM {$table};
 SQL;
 		$types = $this->query($sql);
 
 		foreach ( $result as $row_num => $rows ) {
 			foreach ( $types as $type ) {
-				$col = $type['col'];
-				$new_type = $type['type'];
-				$converted[$row_num][$col] = settype($row[$col], $new_type);
+				$col = $type['Field'];
+				$new_type = substr($type['Type'], 0, strpos($type['Type'], '('));
+				if ( !in_array($new_type, array('boolean', 'bool', 'integer', 'int', 'float', 'double', 'array', 'object', 'null')) ) 
+					continue;
+				$converted[$row_num][$col] = settype($converted[$row_num][$col], $new_type);
 			}
 		}
 
