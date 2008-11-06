@@ -20,6 +20,7 @@ class fl_data_loader_activerecord_hasmany extends fl_data_loader_activerecord im
 
 		list($own_table, $data_table) = $this->factory->parse_class_name($this->class_identifier);
 		$limit = isset($this->options['limit'])? $this->options['limit']: '';
+		$data_table = $this->factory->get_ar_class($this->class_identifier)->get_table();
 
 		$many_results = $this->factory->get_data_access()->retrieve(
 			$data_table, '*', "$this->key_name = '$this->key_value'", 'id ASC', $limit

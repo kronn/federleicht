@@ -60,6 +60,13 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	}
 
 	/**
+	 * verwendete Tabelle zurückgeben
+	 */
+	public function get_table() {
+		return $this->table;
+	}
+
+	/**
 	 * Interface data_wrapper
 	 *
 	 * Weiterleitungen auf das Datenobjekt
