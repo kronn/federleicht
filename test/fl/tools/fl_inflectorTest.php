@@ -26,62 +26,87 @@ class fl_inflectorTest extends PHPUnit_Framework_TestCase {
 		$result = PHPUnit_TextUI_TestRunner::run($suite);
 	}
 	protected function setUp() {
-		$this->object = new fl_inflector();
+		$definitions = array(
+			'plural' => array(
+				'/^([a-z]*)(ung|heit|schaft|ion|stik)$/i'=>'\1\2en',
+				'/^([a-z]*)([ei])(ld)$/i'=>'\1\2\3er',
+				'/^([a-z]*)([auo])(ld|ch|nd)$/i'=>'\1\2e\3er',
+				'/^([a-z]*[^aoieukgh])$/i' =>'\1e',
+			),
+
+			'singular' => array(
+				'/^([a-z]*)(ung|heit|schaft|ion|stik)en$/i'=>'\1\2',
+				'/^([a-z]*)([ei])(ld)er$/i'=>'\1\2\3',
+				'/^([a-z]*)([auo])e(ld|ch|nd)er$/i'=>'\1\2\3',
+				'/^([a-z]*)e/i' => '\1',
+			),
+
+			'uncountable' => array(
+				'audio',
+				'daten', 
+				'bankdaten', 
+				'cover',
+				'musiktitel',
+				'titel',
+				'merchandise',
+				'poster',
+				'kleidung'
+			),
+
+			'irregular' => array(
+				'account' => 'accounts',
+				'land' => 'laender',
+				'beat' => 'beats',
+				'album' => 'alben',
+				'album_titel' => 'alben_titel',
+				'genre' => 'genres',
+				'hoerprobe' => 'hoerproben'
+			)
+		);
+		$this->object = new fl_inflector($definitions);
 	}
-	protected function tearDown()
-	{
+	protected function tearDown() {
 	}
 
 	public function testPlural() {
-		$this->assertEquals('Mice', $this->object->plural('Mouse'));
-		$this->assertEquals('Messages', $this->object->plural('Message'));
-		$this->assertEquals('Queries', $this->object->plural('Query'));
+		$this->assertEquals('Buecher', $this->object->plural('Buch'));
+		$this->assertEquals('Produkte', $this->object->plural('Produkt'));
 	}
 	public function testSingular() {
-		$this->assertEquals('Mouse', $this->object->singular('Mice'));
-		$this->assertEquals('Message', $this->object->singular('Messages'));
-		$this->assertEquals('Query', $this->object->singular('Queries'));
+		$this->assertEquals('Buch', $this->object->singular('Buecher'));
+		$this->assertEquals('Produkt', $this->object->singular('Produkte'));
 	}
 
 	public function testIs_singular() {
-		$inflector = new fl_inflector('de');
-
-		$this->assertTrue($inflector->is_singular('genre'), 'Genre ist Singular');
+		$this->assertTrue($this->object->is_singular('genre'), 'Genre ist Singular');
 	}
 	public function testIs_singular2() {
-		$inflector = new fl_inflector('de');
-
-		$this->assertTrue($inflector->is_singular('merchandise'));
+		$this->assertTrue($this->object->is_singular('merchandise'));
 	}
 	public function testIs_singular3() {
-		$inflector = new fl_inflector('de');
 		$word = 'waelder';
 
 		$this->assertGreaterThan(0, preg_match('/^([a-z]*)([ei])(ld)er$/i', $word));
-		$this->assertFalse($inflector->is_singular($word), $inflector);
+		$this->assertFalse($this->object->is_singular($word), $this->object);
 	}
 	public function testIs_singular4() {
-		$inflector = new fl_inflector('de');
 		$word = 'hoerprobe';
 
 		$this->assertEquals(0, preg_match('/^([a-z]*)(probe)n$/i', $word));
 		$this->assertGreaterThan(0, preg_match('/^([a-z]*)(probe)$/i', $word));
-		$this->assertTrue($inflector->is_singular($word), $inflector);
+		$this->assertTrue($this->object->is_singular($word), $this->object);
 	}
 	public function testIs_singular5() {
-		$inflector = new fl_inflector('de');
-
-		$this->assertFalse($inflector->is_singular('genres'), 'Genres ist nicht Singular');
+		$this->assertFalse($this->object->is_singular('genres'), 'Genres ist nicht Singular');
 	}
 	public function testIs_singular6() {
-		$inflector = new fl_inflector('de');
-
-		$this->assertTrue($inflector->is_singular('bild'), 'Bild ist Singular');
+		$this->assertTrue($this->object->is_singular('bild'), 'Bild ist Singular');
 	}
 	public function testIs_singular7() {
-		$inflector = new fl_inflector('de');
-
-		$this->assertFalse($inflector->is_singular('hoerproben'), $inflector);
+		$this->assertFalse($this->object->is_singular('hoerproben'), $this->object);
+	}
+	public function testStatistik() {
+		$this->assertTrue($this->object->is_singular('statistik'));
 	}
 }
 
