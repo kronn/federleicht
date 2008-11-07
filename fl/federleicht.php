@@ -217,6 +217,11 @@ class federleicht {
 		 */
 		require_once ABSPATH . 'config/routes.conf.php';
 
+		/**
+		 * Inflector-Definitionen einlesen
+		 */
+		require_once ABSPATH. 'config/Inflector.conf.php';
+
 		return (array) $config;
 	}
 

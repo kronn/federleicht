@@ -29,8 +29,9 @@ class fl_factory {
 		$this->registry = fl_registry::getInstance();
 		$this->structures = new fl_data_structures();
 
-		$lang = $this->registry->get('config', 'lang');
-		$this->inflector = new fl_inflector($lang['application']);
+		$this->inflector = new fl_inflector(
+			$this->registry->get('config', 'inflections')
+		);
 	}
 
 	/**
