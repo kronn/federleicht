@@ -20,6 +20,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	protected $table = '';
 	protected $data = null;
 	public $id = null;
+	protected $filter_conditions = '';
 
 	public $error_messages = array();
 
@@ -125,13 +126,27 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	}
 
 	/**
+	 * Filterbedingungen zurückgeben
+	 *
+	 * @param string $conn
+	 * @return string
+	 */
+	protected function db_conditions($conn='AND') {
+		$db_conditions = ( $this->filter_conditions != '' )?
+			' '.$conn.' '.$this->filter_conditions:
+			'';
+
+		return $db_conditions;
+	}
+
+	/**
 	 * Daten aus Datenbank laden
 	 */
 	public function load() {
 		$this->before_load();
 
 		if ( $this->id > 0 ) {
-			$unconverted_result = $this->db->retrieve($this->table, '*', 'id='.$this->id);
+			$unconverted_result = $this->db->retrieve($this->table, '*', 'id='.$this->id.$this->db_conditions('AND'));
 
 			if ( $this->db instanceof fl_data_access_database ) {
 				$result = $this->db->convert_result($this->table, $unconverted_result);
