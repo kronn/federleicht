@@ -140,6 +140,7 @@ class federleicht {
 		//          40 * 60 =   2400
 		#ini_set('session.gc_maxlifetime', 2400);
 		#ini_set('session.use_only_cookies', '1');
+		#ini_set('session.cookie_httponly', true);
 		
 		// Session stored in Cookies
 		#$this->functions->needs('cookiesession'); 
