@@ -99,5 +99,9 @@ abstract class fl_data_access_database {
 
 		throw new Exception($error);
 	}
+
+	public function __toString() {
+		return 'Datenbank-Objekt: ' . get_class($this);
+	}
 }
 ?>

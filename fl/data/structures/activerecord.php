@@ -215,7 +215,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	 * Objekt als String verwendbar machen
 	 */
 	public function __toString() {
-		return (string) $this->data;
+		return 'ActiveRecord-Objekt: '.get_class($this). '#'.$this->id;
 	}
 
 	protected function before_save() {}
