@@ -38,4 +38,7 @@ class fl_data_structures_request extends fl_data_structures_data {
 	public function get_modul() {
 		return $this['request']['modul'];
 	}
+	public function get_current_url() {
+		return $this->route->get_current_url();
+	}
 }

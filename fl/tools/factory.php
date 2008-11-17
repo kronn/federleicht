@@ -295,7 +295,7 @@ class fl_factory {
 		if ( file_exists($file) ) {
 			require_once $file;
 		} else {
-			throw new Exception('Klassendatei konnte nicht gefunden werden.');
+			throw new Exception('Klassendatei "'.$modul.'/classes/'.$class.'" konnte nicht gefunden werden.');
 		}
 	}
 

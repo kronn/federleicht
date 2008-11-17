@@ -106,10 +106,21 @@ class fl_controller {
 			if ( error_reporting() == 0 ) {
 				echo $message->getMessage();
 			} else {
-				echo '<h2>'.$message->getMessage().'</h2><pre>'.$message.'</pre>';
+				echo '<h2>'.$message->getMessage().'</h2>';
+				echo '<h3>Fehler in '.substr($message->getFile(), strlen(ABSPATH)).'('.$message->getLine().') </h3>';
+				echo '<pre>';
+				$width = ( ceil(count($message->getTrace())/10) );
+				foreach ( $message->getTrace() as $num => $trace ) {
+					$file = substr($trace['file'], strlen(ABSPATH));
+					$args = ( !empty($trace['args']) )?  implode(', ', $trace['args']): '';
+					$num = str_pad($num, $width, ' ', STR_PAD_LEFT);
+
+					echo "#$num: $file({$trace['line']}) : {$trace['function']}($args)".PHP_EOL;
+				}
+				echo '</pre>';
 
 				echo '<h3>Anfrage</h3><pre>';
-				var_dump($this->request);
+				echo 'URL: ' . $this->request->get_current_url();
 				echo '</pre>';
 
 				echo '<h3>Datenbankabfragen</h3><table border="1"><pre>';
