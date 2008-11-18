@@ -357,7 +357,7 @@ SQL;
 			 */
 
 			/* Einzelne, synchrone Abfrage */
-			if ( ($result = pg_query($this->connection, $abfrage)) === false ) {
+			if ( ($result = @pg_query($this->connection, $abfrage)) === false ) {
 				$this->error(pg_last_error($this->connection), $abfrage);
 			} else {
 				$result_status = pg_result_status($result);

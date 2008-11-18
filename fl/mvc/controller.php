@@ -119,11 +119,20 @@ class fl_controller {
 				}
 				echo '</pre>';
 
+				$has_db_query = file_exists(ABSPATH.'public/php/db_query.php');
+
 				echo '<h3>Anfrage</h3><pre>';
-				echo 'URL: ' . $this->request->get_current_url();
+				$resolver = 'public/php/resolver.php';
+				$url = $this->request->get_current_url();
+				echo (file_exists(ABSPATH.$resolver))?
+					'URL: <a href="'.$resolver.'?request='.$url.'">'.$url.'</a>':
+					'URL: ' . $url;
+				if ( $this->request->has_postdata() ) {
+					var_dump($this->request->post);
+				}
 				echo '</pre>';
 
-				echo '<h3>Datenbankabfragen</h3><table border="1"><pre>';
+				echo '<h3>Datenbankabfragen</h3><pre>';
 				var_dump($this->datamodel->export_query_log());
 				echo '</pre>';
 			}

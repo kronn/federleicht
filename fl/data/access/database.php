@@ -86,9 +86,11 @@ abstract class fl_data_access_database {
 	protected function error($error, $sql) {
 		if ( $this->show_errors OR 
 			( error_reporting() > 0 AND ini_get('display_errors') == 1 ) ) {
+				/*
 			$factory = new fl_factory();
 			$err = $factory->get_helper('var_analyze', 'data-access', 'Fehler');
 			$err->sql($sql, 'Datenbankabfrage, die zu Fehler gefuehrt hat');
+				 */
 
 			/**
 			 * Um mehr Informationen mit xDebug erhalten zu koennen, 
