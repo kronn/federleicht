@@ -286,7 +286,7 @@ SQL;
 	 * @todo Funktion überarbeiten
 	 * @return mixed
 	 */
-	private function _query_db($sql) {
+	protected function _query_db($sql) {
 		$this->_select_db();
 
 		$output = array();

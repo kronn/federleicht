@@ -119,7 +119,7 @@ abstract class fl_data_access_database {
 	/**
 	 * Datendank nutzen
 	 */
-	abstract private function _query_db($sql);
+	abstract protected function _query_db($sql);
 
 	/**
 	 * Fehlermeldungen ausgeben und Ausführung stoppen

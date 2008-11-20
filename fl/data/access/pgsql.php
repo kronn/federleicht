@@ -302,7 +302,7 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 	 * @param mixed $sql String oder Array, das die SQL-Abfragen enthält
 	 * @return mixed
 	 */
-	private function _query_db($sql) {
+	protected function _query_db($sql) {
 		$output = array();
 
 		$abfrage = is_string($sql) ? trim($sql) :  $this->error('Fehlerhafte Daten', $sql);
