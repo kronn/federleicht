@@ -227,9 +227,10 @@ HTML;
 
 			ob_flush();
 			$this->functions->stop(
-				'<a href="'.$zieladresse.'">'.$zieladresse.'</a>'
+				'Redirect: <a href="'.$zieladresse.'">'.$zieladresse.'</a>'
 			);
 		} else {
+			$this->functions->log('Redirect: '.$zieladresse, fl_logger::WITHOUT_TIME);
 			header('Location: '.$zieladresse);
 			ob_flush();
 		}
@@ -285,6 +286,11 @@ HTML;
 		}
 
 		return $params;
+	}
+	protected function params_to_url($params) {
+		$pieces = explode('/', $params);
+		array_shift($pieces);
+		return ( implode('/', $pieces) );
 	}
 }
 ?>
