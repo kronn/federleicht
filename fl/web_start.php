@@ -52,14 +52,17 @@ function needs($wanted) {
 
 $federleicht->start();
 
-$federleicht->functions->stop();
+$end = getmicrotime();
+
+$federleicht->execution_time($end-$start);
+
+$federleicht->stop();
 
 
 
 /** 
  * Auswertung der Gesamtzeitmessung
  */
-$end = getmicrotime();
 $shit = $federleicht->functions->factory->get_helper(
 	'var_analyze', 
 	'Allgemein', 'index.php'
@@ -69,4 +72,4 @@ $shit->say('Anzahl der Datenbankabfragen: ' . ( $federleicht->datamodel->query_c
 $shit->sv($federleicht->datamodel->allSQL, 'Datenbankabfragen');
 
 trigger_error('end');
-$federleicht->functions->stop();
+$federleicht->stop();

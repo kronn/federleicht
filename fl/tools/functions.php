@@ -14,12 +14,15 @@ class fl_functions {
 	 */
 	public $flash = null;
 	public $factory = null;
+	protected $logger = null;
 
 	/**
 	 * Konstruktor
 	 */
 	public function __construct() {
 		$this->factory = new fl_factory();
+		$this->logger = new fl_logger(fl_registry::get_instance()->get('path', 'log') . 'federleicht.log');
+		fl_registry::get_instance()->set('logger', $this->logger);
 	}
 
 	/**
@@ -37,12 +40,21 @@ class fl_functions {
 	public function start_flash() {
 		$this->flash = new fl_flash();
 	}
+ 
+	/**
+	 * Nachricht in Log schreiben
+	 */
+	public function log($msg, $with_time = null) {
+		return $this->logger->log($msg, $with_time);
+	}
 
 	/**
 	 * Federleicht anhalten
 	 */
 	public function stop($message='') {
 		ob_flush();
+		if ( $message != '' ) $this->log($message);
+		$this->log(PHP_EOL, fl_logger::WITHOUT_TIME);
 		echo $message;
 		exit();
 	}

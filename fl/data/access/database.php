@@ -8,6 +8,7 @@ abstract class fl_data_access_database {
 	protected $lastSQL;
 	protected $allSQL = array();
 	protected $query_count = 0;
+	protected $total_db_time = 0.0;
 
 	public $show_errors = false;
 	public $convert_results = false;
@@ -66,16 +67,59 @@ abstract class fl_data_access_database {
 	/**
 	 * Datenbankabfragen loggen
 	 */
-	protected function log_query($sql) {
+	protected function log_query($sql, fl_timer $timer) {
 		$this->lastSQL = $sql;
 		$this->allSQL[] = $sql;
 		$this->query_count++;
+
+		$time = $timer->get_time();
+		$this->total_db_time += $time;
+		fl_registry::get_instance()->get('logger')->log(
+			'DB: '.$sql. ' ('. $timer->format_time($time).'s)',
+			fl_logger::WITHOUT_TIME
+		);
 	}
 
+	public function export_query_stats() {
+		return array(
+			'time'=>$this->total_db_time,
+			'count'=>$this->query_count
+		);
+	}
 
 	public function export_query_log() {
 		return $this->allSQL;
 	}
+
+	/**
+	 * SQL-Anfrage an Datenbank senden
+	 *
+	 * @param mixed $sql
+	 * @return mixed
+	 */
+	public function query($sql) {
+		if ( is_array($sql) ) {
+			foreach ( $sql as $nr => $query ) {
+				$output[$nr] = $this->query( $query );
+			}
+
+		} else {
+			$timer = new fl_timer();
+			$timer->start();
+
+			$output = $this->_query_db( $sql );
+
+			$timer->stop();
+			$this->log_query($sql, $timer);
+			unset($timer);
+		}
+		return $output;
+	}
+
+	/**
+	 * Datendank nutzen
+	 */
+	abstract private function _query_db($sql);
 
 	/**
 	 * Fehlermeldungen ausgeben und Ausführung stoppen

@@ -229,16 +229,6 @@ SQL;
 	}
 
 	/**
-	 * Datenbankabfrage als SQL abgeben
-	 *
-	 * @param string $sql
-	 * @return mixed
-	 */
-	public function query($sql) {
-		return $this->_query_db($sql);
-	}
-
-	/**
 	 * Zuletzt eingefügte ID zurückgeben
 	 *
 	 * @param string $table
@@ -299,36 +289,25 @@ SQL;
 	private function _query_db($sql) {
 		$this->_select_db();
 
-		if ( is_array($sql) ) {
-			foreach ( $sql as $nr => $query ) {
-				$output[$nr] = $this->query( $query );
-			}
+		$output = array();
+		$aktionen = array('UPDATE','DELETE', 'ALTER ', 'CREATE', 'DROP T', 'TRUNCA', 'REPLAC', 'OPTIMI');
 
+		$abfrage = is_string($sql) ? trim($sql) :  $this->error('Fehlerhafte Daten', $sql);
+
+		$result = mysql_query($abfrage, $this->connection) OR $this->error(mysql_error($this->connection), $sql);
+
+		$abfragetyp = strtoupper(substr($abfrage,0,6));
+
+		if ( ( in_array($abfragetyp,$aktionen) ) ) {
+			$output = ( $result )? TRUE: FALSE;
+		} elseif ( ($abfragetyp == 'INSERT') ) {
+			$output = ( $result )? $this->last_insert_id(): FALSE;
 		} else {
-			$this->log_query($sql);
-
-			$output = array();
-			$aktionen = array('UPDATE','DELETE', 'ALTER ', 'CREATE', 'DROP T', 'TRUNCA', 'REPLAC', 'OPTIMI');
-
-			$abfrage = is_string($sql) ? trim($sql) :  $this->error('Fehlerhafte Daten', $sql);
-
-			$result = mysql_query($abfrage, $this->connection) OR $this->error(mysql_error($this->connection), $sql);
-
-			$abfragetyp = strtoupper(substr($abfrage,0,6));
-
-			if ( ( in_array($abfragetyp,$aktionen) ) ) {
-				$output = ( $result )? TRUE: FALSE;
-			} elseif ( ($abfragetyp == 'INSERT') ) {
-				$output = ( $result )? $this->last_insert_id(): FALSE;
-			} else {
-				while($row = mysql_fetch_assoc($result)) {
-					$output[] = $row;
-				}
+			while($row = mysql_fetch_assoc($result)) {
+				$output[] = $row;
 			}
-			unset($abfragetyp);
-			unset($aktionen);
-
 		}
+
 		return $output;
 	}
 

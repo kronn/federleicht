@@ -187,15 +187,7 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 		$table = $this->table_prefix . $table;
 		$converted = $result;
 
-		$sql = <<<SQL
-SELECT column_name AS col, CASE
-	WHEN data_type = 'numeric' THEN 'float'
-	ELSE data_type
-END AS type
-FROM information_schema.columns
-WHERE table_name='{$table}'
-	AND data_type IN ('boolean', 'integer', 'numeric');
-SQL;
+		$sql = "SELECT column_name AS col, CASE WHEN data_type = 'numeric' THEN 'float' ELSE data_type END AS type FROM information_schema.columns WHERE table_name='{$table}' AND data_type IN ('boolean', 'integer', 'numeric');";
 		$types = $this->query($sql);
 
 		foreach ( $types as $type ) {
@@ -281,16 +273,6 @@ SQL;
 		}
 	}
 
-	/**
-	 * Datenbankabfrage als SQL abgeben
-	 *
-	 * @param string $sql
-	 * @return mixed
-	 */
-	public function query($sql) {
-		return $this->_query_db($sql);
-	}
-
 	// interne Funktionen
 	/**
 	 * Datenbankverbindung öffnen
@@ -321,63 +303,51 @@ SQL;
 	 * @return mixed
 	 */
 	private function _query_db($sql) {
-		if ( is_array($sql) ) {
-			foreach ( $sql as $nr => $query ) {
-				$output[$nr] = $this->query( $query );
-			}
+		$output = array();
 
+		$abfrage = is_string($sql) ? trim($sql) :  $this->error('Fehlerhafte Daten', $sql);
+		$abfragetyp = strtoupper(substr($abfrage,0,6));
+
+		/* Asynchrone Abfrage
+		if (!pg_connection_busy($this->connection)) {
+			pg_send_query($this->connection, $abfrage);
 		} else {
-			$this->log_query($sql);
-
-			$output = array();
-
-			$abfrage = is_string($sql) ? trim($sql) :  $this->error('Fehlerhafte Daten', $sql);
-			$abfragetyp = strtoupper(substr($abfrage,0,6));
-
-			/* Asynchrone Abfrage
-			if (!pg_connection_busy($this->connection)) {
-				pg_send_query($this->connection, $abfrage);
-			} else {
-				$this->_error('Verbindung ausgelastet');
-			}
-
-			$result = pg_get_result($this->connection);
-
-			// pg_result_error gibt einen String zurück, wenn ein Fehler 
-			// vorliegt und FALSE, wenn kein Fehler vorliegt.
-			// Es scheint aber auch einen leeren String zurückzugeben, wenn 
-			// kein Fehler vorliegt.
-			$error = pg_result_error($result);
-			if( is_string($error) AND trim($error) !== '' ) {
-				$this->_error($error, $abfrage);
-			} else {
-				$this->query_count++;
-				$result_status = pg_result_status($result);
-			}
-			 */
-
-			/* Einzelne, synchrone Abfrage */
-			if ( ($result = @pg_query($this->connection, $abfrage)) === false ) {
-				$this->error(pg_last_error($this->connection), $abfrage);
-			} else {
-				$result_status = pg_result_status($result);
-			}
-
-			
-			if ( $abfragetyp !== 'SELECT' ) {
-				$output = ( $result_status === PGSQL_COMMAND_OK )?  
-					true:
-					false;
-			} else {
-				$output = pg_fetch_all($result);
-
-				if ( count($output) > 100 ) {
-					pg_free_result($result);
-				}
-			}
-			unset($abfragetyp);
-
+			$this->_error('Verbindung ausgelastet');
 		}
+
+		$result = pg_get_result($this->connection);
+
+		// pg_result_error gibt einen String zurück, wenn ein Fehler 
+		// vorliegt und FALSE, wenn kein Fehler vorliegt.
+		// Es scheint aber auch einen leeren String zurückzugeben, wenn 
+		// kein Fehler vorliegt.
+		$error = pg_result_error($result);
+		if( is_string($error) AND trim($error) !== '' ) {
+			$this->_error($error, $abfrage);
+		} else {
+			$this->query_count++;
+			$result_status = pg_result_status($result);
+		}
+		 */
+
+		/* Einzelne, synchrone Abfrage */
+		if ( ($result = @pg_query($this->connection, $abfrage)) === false ) {
+			$this->error(pg_last_error($this->connection), $abfrage);
+		} else {
+			$result_status = pg_result_status($result);
+		}
+
+
+		if ( $abfragetyp !== 'SELECT' ) {
+			$output = ( $result_status === PGSQL_COMMAND_OK );
+		} else {
+			$output = pg_fetch_all($result);
+
+			if ( count($output) > 100 ) {
+				pg_free_result($result);
+			}
+		}
+
 		return $output;
 	}
 
