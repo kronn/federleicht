@@ -42,5 +42,9 @@ class fl_data_access_null implements data_access {
 	protected function _query_db($sql) {
 		return true;
 	}
+
+	public function query($sql) {
+		return true;
+	}
 }
 ?>
