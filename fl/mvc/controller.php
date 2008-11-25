@@ -125,7 +125,7 @@ class fl_controller {
 				$resolver = 'public/php/resolver.php';
 				$url = $this->request->get_current_url();
 				echo (file_exists(ABSPATH.$resolver))?
-					'URL: <a href="'.$resolver.'?request='.$url.'">'.$url.'</a>':
+					'URL: <a href="/'.$resolver.'?request='.$url.'">'.$url.'</a>':
 					'URL: ' . $url;
 				if ( $this->request->has_postdata() ) {
 					var_dump($this->request->post);
