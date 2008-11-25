@@ -53,7 +53,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 * Methoden des Interface data_wrapper
 	 */
 	public function set($key, $value) {
-		$this->_set_field($key, $value);
+		return $this->_set_field($key, $value);
 	}
 	public function get($key) {
 		return $this->_get_field($key);
@@ -71,7 +71,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 		return $this->_isset_field($key);
 	}
 	public function remove($key) {
-		$this->_unset_field($key);
+		return $this->_unset_field($key);
 	}
 	/**
 	 * data_wrapper Ende
@@ -125,13 +125,13 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	/**
 	 * Daten in Datenobjekt schreiben
 	 *
-	 * es wird eine Liste der hinzugefügten Schlüssel geführt.
-	 *
 	 * @param string $key
 	 * @param mixed  $value
+	 * @return boolean
 	 */
 	protected function _set_field($key, $value) {
 		$this->$key = $value;
+		return ( $this->$key == $value );
 	}
 
 	/**
@@ -143,6 +143,8 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 		if ( $this->_isset_field($key) ) {
 			unset($this->$key);
 		}
+
+		return ( !$this->_isset_field($key) );
 	}
 
 	/**
