@@ -43,6 +43,12 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	}
 
 	/**
+	 * Wert direkt holen
+	 */
+	protected function value_of($key) {
+		return $this->_get_value($key);
+	}
+	/**
 	 * Datenobjekte als String verwendbar machen
 	 */
 	public function __toString() {
@@ -98,7 +104,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 
 	/** ====== Zugriffsfunktionen auf die internen Daten ====== */
 	/**
-	 * Daten aus Objekt holen
+	 * Daten aus Objekt holen, vorrangig per entsprechender Methode
 	 *
 	 * @param string $key
 	 * @return mixed
@@ -108,7 +114,21 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 
 		if ( method_exists( $this, $fallback_method ) ) {
 			$value = $this->$fallback_method();
-		} elseif ( $this->_isset_field($key) ) {
+		} else {
+			$value = $this->_get_value($key);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Datenwert aus Objekt holen
+	 *
+	 * @param string $key
+	 * @return mixed
+	 */
+	protected function _get_value($key) {
+		if ( $this->_isset_field($key) ) {
 			if ( $this->$key instanceof data_loader ) {
 				$this->set($key, $this->$key->execute());
 				$value = $this->$key;
