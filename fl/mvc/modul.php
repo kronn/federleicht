@@ -95,7 +95,7 @@ class fl_modul {
 			$view_name = 'fl_view';
 		}
 
-		$view = new $view_name($data, $this->datamodel, $this->functions, $name);
+		$view = new $view_name($data, $this->functions, $name);
 		return $view;
 	}
 

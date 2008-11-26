@@ -17,7 +17,6 @@ class fl_view {
 	/**
 	 * extern eingebundene Objekte und Variablen
 	 */
-	protected $datamodel;
 	protected $cap; // array( c a p )
 	protected $route; // fl_route
 	protected $functions;
@@ -28,8 +27,6 @@ class fl_view {
 	protected $apppath;
 	protected $elementpath;
 	protected $layoutpath;
-
-	protected $translator = NULL;
 
 	/**
 	 * Daten
@@ -46,8 +43,7 @@ class fl_view {
 	 * @param functions $functions    Federleicht-Hilfsobjekt
 	 * @param string       $model_name   Name des in erster Linie verwendeten Models
 	 */
-	public function __construct($data, data_access $data_access, $functions, $model_name) {
-		$this->datamodel = $data_access;
+	public function __construct($data, $functions, $model_name) {
 		$this->functions = $functions;
 		$this->factory   = $functions->factory;
 
@@ -180,9 +176,7 @@ class fl_view {
 	 */
 	protected function get_site_title() {
 		if ( !defined('SEITENTITEL') ) {
-			$result = $this->datamodel->retrieve('optionen', '*', "optionname='seitentitel'", '', '1');
-			#define('SEITENTITEL', $result['value']);
-			$title = $result[0]['value'];
+			$title = '';
 		} else {
 			$title = SEITENTITEL;
 		}
@@ -222,27 +216,6 @@ class fl_view {
 	 */
 	public function get_data_object() {
 		return $this->data;
-	}
-
-	/**
-	 * Übersetzten Text ausgeben
-	 *
-	 * Es wird ein Text zurückgegeben, der entweder eine Übersetzung 
-	 * des übergebenen Textes ist oder der übergebene Text selbst.
-	 *
-	 * @todo Achtung: Funktion ist auch in fl/model.php definiert. Sollte besser nur dort sein. Entwurf verbessern!
-	 * @param string $text
-	 * @param string $lang
-	 * @return string
-	 */
-	protected function translate($text, $lang=LANG) {
-		if ( is_object($this->translator) ) { 
-			$translation = $this->translator->get($text, $lang);
-		} else {
-			$translation = $text;
-		}
-
-		return $translation;
 	}
 
 	/**

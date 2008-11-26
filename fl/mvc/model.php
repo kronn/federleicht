@@ -20,7 +20,6 @@ class fl_model {
 	protected $datamodel;
 	protected $factory;
 	protected $modulepath;
-	public $translator = NULL;
 
 	/**
 	 * Kontruktor des Models
@@ -39,34 +38,8 @@ class fl_model {
 
 		$class = explode('_', get_class($this));
 		$this->modul = $class[1];
-
-		# $this->translator = $this->get_translator();
 	}
 
-	/**
-	 * Übersetzungsobjekt holen
-	 *
-	 * @todo php4-Version des Ubersetzers erstellen und ggf. einbinden.
-	 * @return GetText
-	 */
-	protected function get_translator() {
-		$this->functions->needs('localization');
-		if ( class_exists('flGetText') AND class_exists('LocalizationDB') AND class_exists('RessourceManager') ) {
-			require ABSPATH . 'config/database.conf.php';
-			$db_config = $config['db']; 
-			$locale_db = new LocalizationDB(
-				'localization',
-				$db_config['mysql_host'],
-				$db_config['mysql_user'],
-				$db_config['mysql_pass']
-			);
-			$rm = new RessourceManager($locale_db);
-			$translator = new flGetText(LANG, $rm);
-		}
-
-		return $translator;
-	}
-	
 	/**
 	 * Daten holen
 	 *
@@ -220,51 +193,6 @@ class fl_model {
 	 */
 	public function get_error_messages() {
 		return implode('<br />', (array) $this->error_messages);
-	}
-
-	/**
-	 * Übersetzten Text ausgeben
-	 *
-	 * Es wird ein Text zurückgegeben, der entweder eine Übersetzung 
-	 * des übergebenen Textes ist oder der übergebene Text selbst.
-	 *
-	 * @todo Achtung: Funktion ist auch in fl/view.php definiert
-	 * @param string $text
-	 * @param string $lang
-	 * @return string
-	 */
-	public function translate($text, $lang=LANG) {
-		if ( is_object($this->translator) ) { 
-			$translation = $this->translator->get($text, $lang);
-		} else {
-			$translation = $text;
-		}
-
-		return $translation;
-	}
-
-	/**
-	 * Array übersetzen
-	 *
-	 * @param array  $array
-	 * @param string $lang
-	 * @param string $index
-	 * @return array
-	 */
-	public function translate_array(array $array, $lang=LANG, $index='') {
-		if ( $index !== '' AND isset($array[0][$index])) {
-			foreach ( $array as $key => $value ) {
-				$array[$key][$index] = $this->translate($value[$index], $lang);
-			}
-
-		} else {
-			foreach ( $array as $key => $value ) {
-				$array[$key] = $this->translate($value, $lang);
-			}
-
-		}
-
-		return $array;
 	}
 }
 ?>
