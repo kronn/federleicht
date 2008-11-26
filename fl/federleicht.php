@@ -96,27 +96,11 @@ class federleicht {
 
 		$this->functions->start_flash();
 
-		/**
-		 * @deprecated
-		 * @todo entfernen, sobald das config-verzeichnis im svn ist
-		 * @todo jede Referenz auf die Konstante DEFAULTSECTION entfernen
-		 */
-		if ( !defined('DEFAULTSECTION') ) {
-			$result = $this->datamodel->retrieve(
-				ADMINMODULE.'_options','value',
-				"optionname = 'DEFAULTSECTION'", '', '1');
-			define('DEFAULTSECTION', $result['value']);
-		}
-
 		$lang = $this->registry->get('config', 'lang');
 		$dispatcher = new fl_dispatcher(
 			new fl_lang($lang['default'], $lang['all']),
 			$this->registry->get('modules')
 		);
-		/**
-		 * @deprecated, siehe oben, zeile 93
-		 */
-		$dispatcher->set_default_controller(DEFAULTSECTION);
 
 		foreach( $this->registry->get('config', 'routes') as $route ) {
 			$dispatcher->add_route( $route );

@@ -4,7 +4,7 @@
  *
  * @package federleicht
  * @subpackage base
- * @version 0.2
+ * @version 0.3
  */
 /**
  * Dispatcher-Klasse
@@ -23,11 +23,6 @@ class fl_dispatcher {
 	 * Array mit der liste der installierten Module
 	 */
 	public $modules = array();
-
-	/**
-	 * Standardcontroller
-	 */
-	protected $default_controller = null;
 
 	/**
 	 * Dispatcher
@@ -53,20 +48,11 @@ class fl_dispatcher {
 		return ( $prev_count < count($this->routes) )? true: false;
 	}
 
-	/**
-	 * DefaultController setzen
-	 *
-	 * @param string $default_controller
-	 */
 	public function set_default_controller($default_controller) {
-		$this->default_controller = (string) $default_controller;
+		throw new Exception('Methode ist veraltet, nicht mehr verwenden.');
 	}
-
-	/**
-	 * Default-Controller abfragen
-	 */
 	public function get_default_controller() {
-		return $this->default_controller;
+		throw new Exception('Methode ist veraltet, nicht mehr verwenden.');
 	}
 
 	/**
@@ -119,13 +105,11 @@ class fl_dispatcher {
 		}
 
 		if ( $tmp_req['controller'] === 'defaultController' ) {
-			$request->set_defaults(array('controller'=>$this->default_controller));
+			throw new RuntimeException('Es konnte kein passender Controller gefunden werden');
 		}
 
 		if ( $tmp_req['modul'] === '&controller' ) {
 			$request->set_modul($tmp->req['controller']);
-		} elseif ( $tmp_req['modul'] === 'defaultController' ) {
-			$request->set_modul($this->default_controller);
 		}
 
 		return $request;
@@ -145,7 +129,7 @@ class fl_dispatcher {
 	/**
 	 * Stripslashes verallgemeinert (Strings und Arrays)
 	 */
-	protected function arrayStripSlashes(&$var) {
+	public function arrayStripSlashes(&$var) {
 		if ( is_string($var) ) {
 			$var = stripslashes($var);
 		} elseif( is_array($var) ) {
