@@ -99,6 +99,21 @@ class syntax_checker {
 	}
 }
 
+function is_web() {
+	return ( ! ( 
+		defined(PHP_SAPI) and 
+		in_array(PHP_SAPI, array(
+			'apache', 
+			'apache2handler', 
+			'cgi'
+		)) 
+	) )? true: false;
+}
+
+if ( is_web() ) {
+	echo '<pre>';
+}
+
 /**
  * Erzeugung
  */
@@ -141,4 +156,8 @@ $linter->show_errors();
 echo PHP_EOL;
 $linter->show_stats();
 echo PHP_EOL;
+
+if ( is_web() ) { 
+	echo '</pre>';
+}
 ?>
