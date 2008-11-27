@@ -3,13 +3,13 @@
  * Autoload-Funktion fuer Federleicht-Dateien
  *
  * @author Matthias Viehweger
- * @version 0.1
+ * @version 0.2
  * @package federleicht
  * @subpackage base
  */
 function __autoload($class) {
 	if ( file_exists( $file = ABSPATH . str_replace('_', '/', $class) . '.php' ) ) {
-		require_once $file;
+		require $file;
 		return;
 	}
 
@@ -27,10 +27,10 @@ function __autoload($class) {
 
 	foreach ( $paths as $path ) {
 		if ( file_exists($file = ABSPATH.$path.str_replace('_', '/', $class).'.php') ) {
-			require_once $file;
+			require $file;
 			return;
 		} elseif ( file_exists($file = ABSPATH . $path . $class . '.php') ) {
-			require_once $file;
+			require $file;
 			return;
 		}
 	}
