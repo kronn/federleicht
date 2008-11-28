@@ -136,6 +136,8 @@ class fl_controller {
 				var_dump($this->datamodel->export_query_log());
 				echo '</pre>';
 			}
+
+			$this->functions->log('Exception: '. $message->getMessage() );
 		}
 
 		$this->functions->stop();
