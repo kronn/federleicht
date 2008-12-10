@@ -127,6 +127,7 @@ class fl_controller {
 				echo (file_exists(ABSPATH.$resolver))?
 					'URL: <a href="/'.$resolver.'?request='.$url.'">'.$url.'</a>':
 					'URL: ' . $url;
+				echo PHP_EOL;
 				if ( $this->request->has_postdata() ) {
 					var_dump($this->request->post);
 				}
