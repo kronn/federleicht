@@ -100,8 +100,11 @@ class syntax_checker {
 }
 
 function is_web() {
+	if ( ! defined(PHP_SAPI) ) {
+		return false;
+	}
+
 	return ( ! ( 
-		defined(PHP_SAPI) and 
 		in_array(PHP_SAPI, array(
 			'apache', 
 			'apache2handler', 
