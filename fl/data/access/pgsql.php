@@ -129,6 +129,8 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 		foreach ($data as $field=>$content) {
 			if  ( $content === null ) {
 				$sql .= ' '.$field.'= NULL';
+			} elseif ( is_bool($content) ) {
+				$sql .= ' '.$field."='".($content? $this->true_value: $this->false_value)."'";
 			} else {
 				$this->_secureFieldContent($content);
 				$sql .= " ".$field."='".$content."'";
