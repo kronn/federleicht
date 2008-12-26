@@ -184,11 +184,13 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 			return $result;
 		}
 
-		$table = $this->table_prefix . $table;
-		$converted = $result;
+		if ( ! isset($this->type_cache[$table]) ) {
+			$sql = "SELECT column_name AS col, CASE WHEN data_type = 'numeric' THEN 'float' ELSE data_type END AS type FROM information_schema.columns WHERE table_name='{$this->table_prefix}{$table}' AND data_type IN ('boolean', 'integer', 'numeric');";
+			$this->type_cache[$table] = $this->query($sql);
+		}
 
-		$sql = "SELECT column_name AS col, CASE WHEN data_type = 'numeric' THEN 'float' ELSE data_type END AS type FROM information_schema.columns WHERE table_name='{$table}' AND data_type IN ('boolean', 'integer', 'numeric');";
-		$types = $this->query($sql);
+		$converted = $result;
+		$types = $this->type_cache[$table];
 
 		foreach ( $types as $type ) {
 			foreach ( $result as $row_num => $rows ) {
@@ -196,7 +198,7 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_acces
 				$new_type = $type['type'];
 
 				if ( $new_type == 'boolean' ) {
-					$converted[$row_num][$col] = ( $converted[$row_num][$col] == 't' )?
+					$converted[$row_num][$col] = ( $converted[$row_num][$col] == $this->true_value )?
 						(boolean) true:
 						(boolean) false;
 				} else {

@@ -11,7 +11,8 @@ abstract class fl_data_access_database {
 	protected $total_db_time = 0.0;
 
 	public $show_errors = false;
-	public $convert_results = false;
+	public $convert_results = true;
+	protected $type_cache = array();
 
 	/**
 	 * Anzahl der Datensätze mit bestimmter Bedingung zurückgeben
