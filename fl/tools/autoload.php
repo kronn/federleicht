@@ -35,5 +35,5 @@ function __autoload($class) {
 		}
 	}
 
-	throw new Exception('Gesuchte Klassendatei konnte nicht eingebunden werden.');
+	throw new Exception('Gesuchte Klassendatei "'.$class.'" konnte nicht eingebunden werden.');
 }
