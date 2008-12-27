@@ -36,10 +36,7 @@ class fl_view {
 	/**
 	 * Kontruktor der Viewklasse
 	 *
-	 * @todo $data_access hier entfernen (kein DB-Zugriff aus dem View heraus!)
-	 *
 	 * @param array        $data         Daten, die dargestellt werden sollen
-	 * @param data_access  $data_access  Datenzugriffsobjekt
 	 * @param functions $functions    Federleicht-Hilfsobjekt
 	 * @param string       $model_name   Name des in erster Linie verwendeten Models
 	 */
