@@ -10,8 +10,8 @@
  * @subpackage base
  */
 interface data_access {
-	public function create();
+	public function create(array $data);
 	public function retrieve();
-	public function update();
+	public function update(array $data);
 	public function del();
 }

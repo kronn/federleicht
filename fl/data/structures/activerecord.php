@@ -12,7 +12,7 @@
  * @todo active_record als Datenzugriffsklasse (und nicht als Datenstruktur) im richtigen Verzeichnis ablegen und von dort laden lassen.
  * @todo active_record sollte auch das Interface data_access und data_wrapper implementieren, da es sowohl Datenzugriff wie Daten selbst darstellt.
  */
-abstract class fl_data_structures_activerecord implements data_wrapper {
+abstract class fl_data_structures_activerecord implements data_wrapper, data_access {
 	/**
 	 * Instanzvariablen
 	 */
@@ -21,6 +21,8 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	protected $data = null;
 	public $id = null;
 	protected $filter_conditions = '';
+
+	protected $validation_flags = null;
 
 	public $error_messages = array();
 
@@ -92,6 +94,48 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	}
 	/**
 	 * Interface data_wrapper ENDE
+	 */
+
+	/**
+	 * Interface data_access
+	 */
+	public function create(array $data) {
+		$this->set_data($data);
+		$errors = $this->validate_data($this->validation_flags);
+
+		if ( count($errors) == 0 ) {
+			$this->before_create();
+			$this->save();
+			return $this->id;
+
+		} else {
+			$this->error_messages += $errors;
+			return 0;
+		}
+	}
+	public function retrieve() {
+		$this->load();
+		return $this;
+	}
+	public function update(array $data) {
+		$this->set_data($data);
+
+		$errors = $this->validate_data($this->validation_flags);
+
+		if ( count($errors) == 0 ) {
+			$result = $this->save();
+		} else {
+			$this->error_messages += $errors;
+			$result = false;
+		}
+
+		return $result;
+	}
+	public function del() {
+		return $this->delete();
+	}
+	/**
+	 * Interface data_access ENDE
 	 */
 
 	/**
@@ -222,6 +266,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper {
 	protected function after_save() {}
 	protected function before_load() {}
 	protected function after_load() {}
+	protected function before_create() {}
 
 	/**
 	 * Daten vorbereiten
