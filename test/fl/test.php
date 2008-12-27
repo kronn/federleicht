@@ -44,6 +44,7 @@ class fl_test extends PHPUnit_Framework_TestSuite {
 		require_once ABSPATH . 'fl/tools/autoload.php';
 		$interfaces = array(
 			'data_access',
+			'data_source_access',
 			'data_wrapper'
 		);
 		foreach ($interfaces as $interface) {

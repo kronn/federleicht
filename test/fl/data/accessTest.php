@@ -32,7 +32,7 @@ class fl_data_accessTest extends PHPUnit_Framework_TestCase {
 
 	public function testGet_data_source() {
 		$result = $this->object->get_data_source();
-		$this->assertType('data_access', $result);
+		$this->assertType('data_source_access', $result);
 	}
 }
 
