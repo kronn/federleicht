@@ -8,7 +8,7 @@
  * - update
  * - del
  */
-class fl_data_access_null implements data_access {
+class fl_data_access_null implements data_source_access {
 	public $true_value = true;
 	public $false_value = false;
 

@@ -35,11 +35,11 @@ class fl_controller {
 	 * Wenn in keine Action übergeben wurde, wird die defaultAction
 	 * ausgeführt. Diese wird von jedem Controller selbst festgelegt.
 	 *
-	 * @param data_access  $data_access
+	 * @param data_source_access  $data_access
 	 * @param fl_functions $functions
 	 * @param fl_model     $model
 	 */
-	public function __construct(data_access $data_access, $functions, $model) {
+	public function __construct(data_source_access $data_access, $functions, $model) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
 		$this->factory = $functions->factory;

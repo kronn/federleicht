@@ -7,14 +7,12 @@
  * - retrieve
  * - update
  * - del
- * Dies wird durch das Interface data_access ausgedrückt.
- *
- * Weiterhin gibt es:
  * - query
+ * Dies wird durch das Interface data_source_access ausgedrückt.
  *
- * @version 0.2
+ * @version 0.3
  */
-class fl_data_access_pgsql extends fl_data_access_database implements data_access {
+class fl_data_access_pgsql extends fl_data_access_database implements data_source_access {
 	protected $connection;
 	protected $database;
 

@@ -37,9 +37,9 @@ class fl_factory {
 	/**
 	 * Datenzugriff setzen
 	 *
-	 * @param data_access $data_access
+	 * @param data_source_access $data_access
 	 */
-	public function set_data_access(data_access $data_access) {
+	public function set_data_access(data_source_access $data_access) {
 		$this->data_access = $data_access;
 	}
 

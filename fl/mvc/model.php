@@ -27,11 +27,11 @@ class fl_model {
 	 * Das Model enthält das eigentliche Programm. Zugriff auf die Methoden
 	 * erfolgen durch den Controller.
 	 *
-	 * @param data_access  &$data_access  Datenzugriff
-	 * @param factory      &$factory      Objekterzeugungsobjekt
-	 * @param string       &$path         Pfad zu Moduldateien
+	 * @param data_source_access  $data_access  Datenzugriff
+	 * @param factory             $factory      Objekterzeugungsobjekt
+	 * @param string              $path         Pfad zu Moduldateien
 	 */
-	public function __construct(data_access $data_access, &$factory, $path) {
+	public function __construct(data_source_access $data_access, &$factory, $path) {
 		$this->datamodel = $data_access;
 		$this->factory = $factory;
 		$this->modulepath = $path;

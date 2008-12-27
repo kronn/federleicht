@@ -34,10 +34,10 @@ class fl_modul {
 	/**
 	 * Modul-Konstruktor
 	 *
-	 * @param data_access  $data_access
+	 * @param data_source_access  $data_access
 	 * @param functions $functions
 	 */
-	public function __construct(data_access $data_access, $functions) {
+	public function __construct(data_source_access $data_access, $functions) {
 		$this->datamodel = $data_access;
 		$this->functions = $functions;
 		$this->factory = $functions->factory;

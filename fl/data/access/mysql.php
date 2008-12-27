@@ -15,7 +15,7 @@
  *
  * @version 0.2.1
  */
-class fl_data_access_mysql extends fl_data_access_database implements data_access {
+class fl_data_access_mysql extends fl_data_access_database implements data_source_access {
 	protected $connection;
 	public $database;
 
