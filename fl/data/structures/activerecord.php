@@ -106,6 +106,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 		if ( count($errors) == 0 ) {
 			$this->before_create();
 			$this->save();
+			$this->after_create();
 			return $this->id;
 
 		} else {
@@ -267,6 +268,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	protected function before_load() {}
 	protected function after_load() {}
 	protected function before_create() {}
+	protected function after_create() {}
 
 	/**
 	 * Daten vorbereiten
