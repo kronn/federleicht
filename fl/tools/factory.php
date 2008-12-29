@@ -74,7 +74,7 @@ class fl_factory {
 
 		if ( !class_exists($class) ) {
 			// Der Autoloader wird von class_exists in diesem Fall aufgerufen.
-			// Wenn wir also hier sind, wurde die Klassendate nicht gefunden.
+			// Wenn wir also hier sind, wurde die Klassendatei nicht gefunden.
 			throw new LogicException("Klasse '$class' nicht gefunden");
 		}
 
@@ -132,16 +132,11 @@ class fl_factory {
 		list($modul, $class_name) = $this->parse_class_name($class);
 		$this->load_class($modul, $class_name);
 
-		$instance = new $class_name();
-		if ( func_num_args() > 1 ) {
-			$args = func_get_args();
-			array_shift($args);
-			$options = array_values($args);
+		$args = func_get_args();
 
-			$instance->set_options($options);
-		}
-
-		return $instance;
+		array_shift($args);
+		$reflection = new ReflectionClass($class_name);
+		return $reflection->newInstanceArgs($args); 
 	}
 
 	/**
@@ -243,24 +238,11 @@ class fl_factory {
 	public function get_helper($wanted_helper) {
 		$this->load_helper($wanted_helper);
 
-		switch ( func_num_args() ) {
-		case 3:
-			$f1 = func_get_arg(1);
-			$f2 = func_get_arg(2);
-			$helper = new $wanted_helper($f1, $f2);
-			break;
+		$args = func_get_args();
 
-		case 2:
-			$f1 = func_get_arg(1);
-			$helper = new $wanted_helper($f1);
-			break;
-
-		case 1:
-		default:
-			$helper = new $wanted_helper();
-		}
-
-		return $helper;
+		array_shift($args);
+		$reflection = new ReflectionClass($wanted_helper);
+		return $reflection->newInstanceArgs($args); 
 	}
 
 
