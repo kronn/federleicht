@@ -10,8 +10,8 @@ class syntax_checker {
 
 	public function __construct() {
 		$this->register = array();
-		$this->path = ( defined('ABSPATH') )?
-			ABSPATH: 
+		$this->path = ( defined('FL_ABSPATH') )?
+			FL_ABSPATH: 
 			realpath( dirname(__FILE__) . '/../../' );
 
 		echo 'Syntax-Check aller PHP-Dateien'.PHP_EOL;
