@@ -115,7 +115,7 @@ class fl_controller {
 					$args = ( !empty($trace['args']) )?  implode(', ', $trace['args']): '';
 					$num = str_pad($num, $width, ' ', STR_PAD_LEFT);
 
-					echo "#$num: $file({$trace['line']}) : {$trace['function']}($args)".PHP_EOL;
+					echo "#$num: <b>$file</b>({$trace['line']}) : {$trace['function']}($args)".PHP_EOL;
 				}
 				echo '</pre>';
 
