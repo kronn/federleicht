@@ -2,9 +2,9 @@
 /**
  * Absoluten Pfad setzen, wenn noch nicht vorhanden
  */
-if ( !defined('ABSPATH') ) {
+if ( !defined('FL_ABSPATH') ) {
 	$abspath = realpath( dirname(__FILE__) . '/../../' ) . '/';
-	define('ABSPATH', $abspath);
+	define('FL_ABSPATH', $abspath);
 }
 
 if (count($unittests) > 0 and !defined('PHPUnit_MAIN_METHOD')) {
@@ -15,7 +15,7 @@ if (count($unittests) > 0 and !defined('PHPUnit_MAIN_METHOD')) {
  * Vorhandene Tests ausführen
  */
 foreach ( array_merge($testscripts, $unittests) as $test ) {
-	$filename = ABSPATH . 'test/'.$test.'/test.php';
+	$filename = FL_ABSPATH . 'test/'.$test.'/test.php';
 	if ( file_exists($filename) ) {
 		require_once $filename;
 
