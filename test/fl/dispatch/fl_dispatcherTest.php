@@ -4,14 +4,14 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
     define('PHPUnit_MAIN_METHOD', 'fl_dispatcherTest::main');
 }
 
-if ( !defined('ABSPATH') ) {
+if ( !defined('FL_ABSPATH') ) {
 	$abspath = realpath(dirname(__FILE__) . '/../../../');
-	define('ABSPATH', $abspath . '/');
+	define('FL_ABSPATH', $abspath . '/');
 }
 
 require_once 'PHPUnit/Framework.php';
-require_once ABSPATH . 'test/fl/test.php';
-require_once ABSPATH . 'fl/dispatch/dispatcher.php';
+require_once FL_ABSPATH . 'test/fl/test.php';
+require_once FL_ABSPATH . 'fl/dispatch/dispatcher.php';
 
 /**
  * Test class for fl_dispatcher.

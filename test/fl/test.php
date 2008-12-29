@@ -17,47 +17,47 @@ class fl_test extends PHPUnit_Framework_TestSuite {
 		$suite =  new self('Federleicht Framework Tests');
 		self::loadTestEnvironment();
 
-		$suite->addTestFile(ABSPATH . 'test/fl/dispatch/fl_dispatcherTest.php');
-		$suite->addTestFile(ABSPATH . 'test/fl/dispatch/fl_langTest.php');
-		$suite->addTestFile(ABSPATH . 'test/fl/dispatch/fl_routeTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/dispatch/fl_dispatcherTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/dispatch/fl_langTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/dispatch/fl_routeTest.php');
 
-		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_factoryTest.php');
-		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_flashTest.php');
-		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_functionsTest.php');
-		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_inflectorTest.php');
-		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_registryTest.php');
-		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_responderTest.php');
-		$suite->addTestFile(ABSPATH . 'test/fl/tools/fl_converterTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/tools/fl_factoryTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/tools/fl_flashTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/tools/fl_functionsTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/tools/fl_inflectorTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/tools/fl_registryTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/tools/fl_responderTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/tools/fl_converterTest.php');
 
-		// $suite->addTestFile(ABSPATH . 'test/fl/data/structures/activerecordTest.php');
-		$suite->addTestFile(ABSPATH . 'test/fl/data/accessTest.php');
+		// $suite->addTestFile(FL_ABSPATH . 'test/fl/data/structures/activerecordTest.php');
+		$suite->addTestFile(FL_ABSPATH . 'test/fl/data/accessTest.php');
 
 		return $suite;
 	} 
 
 	public static function loadTestEnvironment() { 
-		if ( !defined('ABSPATH') ) {
+		if ( !defined('FL_ABSPATH') ) {
 			$abspath = realpath(dirname(__FILE__) . '/../../');
-			define('ABSPATH', $abspath . '/');
+			define('FL_ABSPATH', $abspath . '/');
 		}
 
-		require_once ABSPATH . 'fl/tools/autoload.php';
+		require_once FL_ABSPATH . 'fl/tools/autoload.php';
 		$interfaces = array(
 			'data_access',
 			'data_source_access',
 			'data_wrapper'
 		);
 		foreach ($interfaces as $interface) {
-			require_once ABSPATH . 'fl/interfaces/'. $interface . '.php';
+			require_once FL_ABSPATH . 'fl/interfaces/'. $interface . '.php';
 		}
 	
 		fl_registry::getInstance()->set('path', array(
-				'lib'=>ABSPATH . 'fl/',
-				'app'=>ABSPATH . 'app/',
-				'module'=>ABSPATH . 'app/modules/',
-				'helper'=>ABSPATH . 'app/helper/',
-				'elements'=>ABSPATH . 'app/elements/',
-				'layouts'=>ABSPATH . 'app/layouts'
+				'lib'=>FL_ABSPATH . 'fl/',
+				'app'=>FL_ABSPATH . 'app/',
+				'module'=>FL_ABSPATH . 'app/modules/',
+				'helper'=>FL_ABSPATH . 'app/helper/',
+				'elements'=>FL_ABSPATH . 'app/elements/',
+				'layouts'=>FL_ABSPATH . 'app/layouts'
 			)
 		);
 

@@ -4,14 +4,14 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 	define('PHPUnit_MAIN_METHOD', 'fl_inflectorTest::main');
 }
 
-if ( !defined('ABSPATH') ) {
+if ( !defined('FL_ABSPATH') ) {
 	$abspath = realpath(dirname(__FILE__) . '/../../../');
-	define('ABSPATH', $abspath . '/');
+	define('FL_ABSPATH', $abspath . '/');
 }
 
 require_once 'PHPUnit/Framework.php';
 
-require_once ABSPATH . 'fl/tools/inflector.php';
+require_once FL_ABSPATH . 'fl/tools/inflector.php';
 
 /**
  * Test class for fl_inflector.
