@@ -40,7 +40,7 @@ class fl_data_structures_image extends fl_data_structures_data {
 		$path = $this->_imagepath;
 		$id = (int) $this->get('id'); 
 
-		$files = glob(ABSPATH . $path . $id . '*');
+		$files = glob(FL_ABSPATH . $path . $id . '*');
 		if ( $files === false OR !isset($files[0]) ) {
 			$file = $path . $this->dummy_image;
 			$id = substr($this->dummy_image, 0, strpos($this->dummy_image, '.'));

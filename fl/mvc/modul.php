@@ -86,7 +86,7 @@ class fl_modul {
 	 */
 	protected function create_view($name, array $data) {
 		// @todo unsauber! verbessern!!!
-		require_once ABSPATH . 'fl/mvc/view.php';
+		require_once FL_ABSPATH . 'fl/mvc/view.php';
 
 		if ( file_exists($this->modulepath . $name . '/view.php') ) {
 			require_once $this->modulepath . $name . '/view.php';

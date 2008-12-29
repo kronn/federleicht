@@ -107,11 +107,11 @@ class fl_controller {
 				echo $message->getMessage();
 			} else {
 				echo '<h2>'.$message->getMessage().'</h2>';
-				echo '<h3>Fehler in '.substr($message->getFile(), strlen(ABSPATH)).'('.$message->getLine().') </h3>';
+				echo '<h3>Fehler in '.substr($message->getFile(), strlen(FL_ABSPATH)).'('.$message->getLine().') </h3>';
 				echo '<pre>';
 				$width = ( ceil(count($message->getTrace())/10) );
 				foreach ( $message->getTrace() as $num => $trace ) {
-					$file = substr($trace['file'], strlen(ABSPATH));
+					$file = substr($trace['file'], strlen(FL_ABSPATH));
 					$args = ( !empty($trace['args']) )?  implode(', ', $trace['args']): '';
 					$num = str_pad($num, $width, ' ', STR_PAD_LEFT);
 
@@ -119,12 +119,12 @@ class fl_controller {
 				}
 				echo '</pre>';
 
-				$has_db_query = file_exists(ABSPATH.'public/php/db_query.php');
+				$has_db_query = file_exists(FL_ABSPATH.'public/php/db_query.php');
 
 				echo '<h3>Anfrage</h3><pre>';
 				$resolver = 'public/php/resolver.php';
 				$url = $this->request->get_current_url();
-				echo (file_exists(ABSPATH.$resolver))?
+				echo (file_exists(FL_ABSPATH.$resolver))?
 					'URL: <a href="/'.$resolver.'?request='.$url.'">'.$url.'</a>':
 					'URL: ' . $url;
 				echo PHP_EOL;

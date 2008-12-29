@@ -8,7 +8,7 @@
  * @subpackage base
  */
 function __autoload($class) {
-	if ( file_exists( $file = ABSPATH . str_replace('_', '/', $class) . '.php' ) ) {
+	if ( file_exists( $file = FL_ABSPATH . str_replace('_', '/', $class) . '.php' ) ) {
 		require $file;
 		return;
 	}
@@ -26,10 +26,10 @@ function __autoload($class) {
 	}
 
 	foreach ( $paths as $path ) {
-		if ( file_exists($file = ABSPATH.$path.str_replace('_', '/', $class).'.php') ) {
+		if ( file_exists($file = FL_ABSPATH.$path.str_replace('_', '/', $class).'.php') ) {
 			require $file;
 			return;
-		} elseif ( file_exists($file = ABSPATH . $path . $class . '.php') ) {
+		} elseif ( file_exists($file = FL_ABSPATH . $path . $class . '.php') ) {
 			require $file;
 			return;
 		}

@@ -44,18 +44,23 @@ class federleicht {
 	 */
 	public function __construct($url='') {
 		if ( !defined('ABSPATH') ) {
-			$abspath = realpath(dirname(__FILE__) . '/../');
-			define('ABSPATH', $abspath . '/');
+			$abspath = realpath(dirname(__FILE__) . '/../') . '/';
+			define('ABSPATH', $abspath);
+		}
+
+		if ( !defined('FL_ABSPATH') ) {
+			$abspath = realpath(dirname(__FILE__) . '/../') . '/';
+			define('FL_ABSPATH', $abspath); 
 		}
 
 		$path = array(
-			'lib'=>ABSPATH . 'fl/',
-			'app'=>ABSPATH . 'app/',
-			'module'=>ABSPATH . 'app/modules/',
-			'layouts'=>ABSPATH . 'app/modules/common/layouts/',
-			'helper'=>ABSPATH . 'app/helper/',
-			'elements'=>ABSPATH . 'app/elements/',
-			'log'=>ABSPATH . 'log/',
+			'lib'=>FL_ABSPATH . 'fl/',
+			'app'=>FL_ABSPATH . 'app/',
+			'module'=>FL_ABSPATH . 'app/modules/',
+			'layouts'=>FL_ABSPATH . 'app/modules/common/layouts/',
+			'helper'=>FL_ABSPATH . 'app/helper/',
+			'elements'=>FL_ABSPATH . 'app/elements/',
+			'log'=>FL_ABSPATH . 'log/',
 		);
 
 		$this->import_classes($path);
@@ -171,7 +176,7 @@ class federleicht {
 	 * @return array
 	 */
 	private function read_config() {
-		$configfiles = glob( ABSPATH . 'config/*.ini');
+		$configfiles = glob( FL_ABSPATH . 'config/*.ini');
 
 		if ( empty($configfiles) ) {
 			die('Keine Konfigurationsdateien gefunden.');
@@ -200,7 +205,7 @@ class federleicht {
 
 		// Wenn keine Datenbankkonfiguration angegeben ist und auch nicht
 		// gesagt wurde, dass keine Datenbank verwendet wird, abbrechen.
-		if ( !in_array(ABSPATH.'config/database.ini', $configfiles) ) {
+		if ( !in_array(FL_ABSPATH.'config/database.ini', $configfiles) ) {
 			die('Keine Datenbankkonfiguration angegeben. 
 				
 				Mit type=null kann auf eine Datenbank verzichtet werden.');
@@ -209,12 +214,12 @@ class federleicht {
 		/**
 		 * Routen einlesen
 		 */
-		require_once ABSPATH . 'config/routes.conf.php';
+		require_once FL_ABSPATH . 'config/routes.conf.php';
 
 		/**
 		 * Inflector-Definitionen einlesen
 		 */
-		require_once ABSPATH. 'config/Inflector.conf.php';
+		require_once FL_ABSPATH. 'config/Inflector.conf.php';
 
 		return (array) $config;
 	}
