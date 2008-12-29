@@ -43,11 +43,6 @@ class federleicht {
 	 * @param string $url
 	 */
 	public function __construct($url='') {
-		if ( !defined('ABSPATH') ) {
-			$abspath = realpath(dirname(__FILE__) . '/../') . '/';
-			define('ABSPATH', $abspath);
-		}
-
 		if ( !defined('FL_ABSPATH') ) {
 			$abspath = realpath(dirname(__FILE__) . '/../') . '/';
 			define('FL_ABSPATH', $abspath); 
