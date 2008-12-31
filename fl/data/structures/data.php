@@ -151,7 +151,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 */
 	protected function _set_field($key, $value) {
 		$this->$key = $value;
-		return ( $this->$key == $value );
+		return ( $this->$key === $value );
 	}
 
 	/**
