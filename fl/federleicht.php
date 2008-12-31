@@ -214,7 +214,7 @@ class federleicht {
 		/**
 		 * Inflector-Definitionen einlesen
 		 */
-		require_once FL_ABSPATH. 'config/Inflector.conf.php';
+		require_once FL_ABSPATH. 'config/inflector.conf.php';
 
 		return (array) $config;
 	}
