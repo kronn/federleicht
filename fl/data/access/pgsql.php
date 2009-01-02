@@ -248,15 +248,19 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 	 * @param string $table
 	 * @return integer
 	 */
-	public function last_insert_id($table) {
-		$index = $this->query($sql = "SELECT column_default FROM information_schema.columns 
-			WHERE table_catalog='{$this->database}' AND table_name='{$this->table_prefix}{$table}' AND column_name='id';");
-		$index_result = $index[0]['column_default'];
-		$index_name = substr(
-			$index_result, 
-			strpos($index_result, "'") + 1 , 
-			strrpos($index_result, "'") - strlen($index_result)
-		);
+	public function last_insert_id($table=null) {
+		if ( $table !== null ) {
+			$index = $this->query($sql = "SELECT column_default FROM information_schema.columns 
+				WHERE table_catalog='{$this->database}' AND table_name='{$this->table_prefix}{$table}' AND column_name='id';");
+			$index_result = $index[0]['column_default'];
+			$index_name = substr(
+				$index_result, 
+				strpos($index_result, "'") + 1 , 
+				strrpos($index_result, "'") - strlen($index_result)
+			);
+		} else {
+			$index_name = '';
+		}
 		
 		/**
 		 * Wenn kein Index gefunden wurde, muss die Funktion lastval verwendet werden.

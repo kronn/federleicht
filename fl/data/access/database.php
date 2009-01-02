@@ -43,10 +43,10 @@ abstract class fl_data_access_database {
 	/**
 	 * Zuletzt einfügte ID zurückgeben
 	 *
-	 * @param string $table
+	 * @param string $table  optional
 	 * @return integer
 	 */
-	abstract public function last_insert_id($table);
+	abstract public function last_insert_id($table=null);
 
 	/**
 	 * Eindeutigen Bezeichner für eine Tabelle zurückgeben

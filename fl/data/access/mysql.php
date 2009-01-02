@@ -231,10 +231,10 @@ SQL;
 	/**
 	 * Zuletzt eingefügte ID zurückgeben
 	 *
-	 * @param string $table
+	 * @param string $table not used
 	 * @return integer
 	 */
-	public function last_insert_id($table) {
+	public function last_insert_id($table=null) {
 		return mysql_insert_id($this->connection);
 	}
 
