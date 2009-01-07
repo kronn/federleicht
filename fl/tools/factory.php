@@ -91,6 +91,19 @@ class fl_factory {
 	}
 
 	/**
+	 * Modul erzeugen zu zurückgeben
+	 *
+	 * @param string $modul
+	 * @param fl_functions $functions
+	 */
+	public function get_modul($modul, fl_functions $functions) {
+		require_once $this->registry->get('path', 'module') . $modul . '/modul.php';
+
+		$modul_name = $modul . '_modul';
+		return new $modul_name($this->get_data_access(), $functions);
+	}
+
+	/**
 	 * Weiteres Model holen
 	 *
 	 * Nach Möglichkeit wird das Model aus der Registry geholt.
