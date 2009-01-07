@@ -116,10 +116,7 @@ class federleicht {
 
 		$modul = $this->registry->get('request', 'modul');
 
-		require_once $this->registry->get('path', 'module') . $modul . '/modul.php';
-
-		$modul_name = $modul . '_modul';
-		$modul_object = new $modul_name($this->datamodel, $this->functions);
+		$modul_object = $this->functions->factory->get_modul($modul, $this->functions);
 		$modul_object->start_execution();
 	}
 
