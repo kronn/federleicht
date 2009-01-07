@@ -90,7 +90,7 @@ class fl_view {
 		}
 
 		ob_start();
-		require_once $path . $layout . '.php';
+		require $path . $layout . '.php';
 		$template = ob_get_contents();
 		ob_end_clean();
 		
@@ -104,7 +104,7 @@ class fl_view {
 		$file = $this->modulepath . $this->cap['controller'] . '/views/' . $this->subview . '.php';
 
 		if ( file_exists($file) ) {
-			require_once $file;
+			require $file;
 		} else {
 			throw new Exception('Datei ' . $file . ' nicht gefunden');
 		}
@@ -132,7 +132,7 @@ class fl_view {
 		}
 
 		if ( file_exists($path . $file . '.php') ) {
-			require_once $path . $file . '.php';
+			require $path . $file . '.php';
 		}
 	}
 
@@ -146,6 +146,38 @@ class fl_view {
 		trigger_error('veraltet: $this->get_element() verwenden.');
 
 		return $this->get_element($this->cap['controller'].'/'.$name);
+	}
+
+	/**
+	 * komplette Seite mit vorherigem Controlleraufruf holen
+	 *
+	 * @param string $url
+	 */
+	protected function get_component($url) {
+		$registry = fl_registry::get_instance();
+		$lang = $registry->get('config', 'lang');
+
+		$dispatcher = new fl_dispatcher(
+			new fl_lang($lang['default'], $lang['all']),
+			$registry->get('modules')
+		);
+
+		foreach( $registry->get('config', 'routes') as $route ) {
+			$dispatcher->add_route( $route );
+		}
+
+		$request = $this->functions->factory->get_structure(
+			'request', 
+			$dispatcher->analyse($url) 
+		);
+
+		$old_request = $registry->get('request');
+		$registry->set('request', $request);
+
+		$modul = $this->functions->factory->get_modul($request['modul'], $this->functions);
+		$modul->start_execution();
+
+		$registry->set('request', $old_request);
 	}
 
 	/**
