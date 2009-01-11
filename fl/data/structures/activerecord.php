@@ -61,6 +61,8 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 
 		if ( !$loaded ) {
 			$this->load();
+		} else {
+			$this->load_field_cache();
 		}
 	}
 
@@ -188,6 +190,14 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	}
 
 	/**
+	 * Field-Cache laden
+	 */
+	protected function load_field_cache() {
+		$result = $this->db->retrieve($this->table, '*', '', '1');
+		$this->field_cache->set_data(array_keys($result[0]));
+	}
+
+	/**
 	 * Daten aus Datenbank laden
 	 */
 	public function load() {
@@ -207,6 +217,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 			$this->field_cache->set_data(array_keys($data));
 		} else {
 			$data = array();
+			$this->load_field_cache();
 		}
 
 		$result = $this->data->set_data($data);
