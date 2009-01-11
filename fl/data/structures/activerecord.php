@@ -7,7 +7,6 @@
  * @package federleicht
  * @subpackage data
  *
- * @todo $fields automatisch aus Datenbank auslesen
  * @todo validator in Basisklasse instanziieren?
  * @todo active_record als Datenzugriffsklasse (und nicht als Datenstruktur) im richtigen Verzeichnis ablegen und von dort laden lassen.
  * @todo active_record sollte auch das Interface data_access und data_wrapper implementieren, da es sowohl Datenzugriff wie Daten selbst darstellt.
@@ -21,6 +20,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	protected $data = null;
 	public $id = null;
 	protected $filter_conditions = '';
+	protected $field_cache = null;
 
 	protected $validation_flags = null;
 
@@ -56,6 +56,8 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 
 		$this->factory = new fl_factory();
 		$this->factory->set_data_access($this->db);
+
+		$this->field_cache = $this->factory->get_structure('data');
 
 		if ( !$loaded ) {
 			$this->load();
@@ -163,6 +165,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 			if ( $value === null ) continue;
 			if ( empty($value) AND $value != 0 ) continue;
 			if ( in_array($key, $this->relation_keys()) ) continue;
+			if ( ! $this->field_cache->is_set($key) ) continue;
 
 			$data[$key] = $value;
 		}
@@ -200,6 +203,8 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 			}
 
 			$data = (array) $result[0];
+
+			$this->field_cache->set_data(array_keys($data));
 		} else {
 			$data = array();
 		}
