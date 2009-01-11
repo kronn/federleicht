@@ -13,6 +13,7 @@
  *
  * @package federleicht
  * @subpackage base
+ * @todo Funktionalität in Factory verschieben
  */
 class fl_data_access {
 	protected $data_source;
