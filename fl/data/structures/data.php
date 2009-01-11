@@ -10,6 +10,7 @@
  */
 class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	protected $_default_value;
+	protected $_fallback_prefix;
 
 	/**
 	 * Konstruktor
@@ -18,6 +19,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 */
 	public function __construct(array $data = array()) {
 		$this->set_data($data);
+		$this->_fallback_prefix = 'get_';
 	}
 
 	/**
@@ -74,7 +76,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 		}
 	}
 	public function is_set($key) {
-		return $this->_isset_field($key);
+		return ( $this->_fallback_defined($key) or $this->_isset_field($key) );
 	}
 	public function remove($key) {
 		return $this->_unset_field($key);
@@ -110,9 +112,8 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 * @return mixed
 	 */
 	protected function _get_field($key) {
-		$fallback_method = 'get_'.$key;
-
-		if ( method_exists( $this, $fallback_method ) ) {
+		if ( $this->_fallback_defined($key) ) {
+			$fallback_method = $this->_fallback_prefix . $key;
 			$value = $this->$fallback_method();
 		} else {
 			$value = $this->_get_value($key);
@@ -175,5 +176,15 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 */
 	protected function _isset_field($key){
 		return isset($this->$key);
+	}
+
+	/**
+	 * Pruefen, ob Funktion definiert ist
+	 *
+	 * @param string $key
+	 * @return boolean
+	 */
+	protected function _fallback_defined($key) {
+		return method_exists( $this, $this->_fallback_prefix . $key);
 	}
 }
