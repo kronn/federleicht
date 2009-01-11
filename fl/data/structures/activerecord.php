@@ -191,10 +191,20 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 
 	/**
 	 * Field-Cache laden
+	 *
+	 * @param array $fields
 	 */
-	protected function load_field_cache() {
-		$result = $this->db->retrieve($this->table, '*', '', '1');
-		$this->field_cache->set_data(array_keys($result[0]));
+	protected function load_field_cache(array $fields = array()) {
+		if ( count($fields) == 0 ) {
+			$result = $this->db->retrieve($this->table, '*', '', '1');
+			$columns = array_keys($result[0]);
+		} else {
+			$columns = array_values($fields);
+		}
+
+		$this->field_cache->set_data(
+			array_combine($columns, $columns)
+		);
 	}
 
 	/**
@@ -213,12 +223,11 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 			}
 
 			$data = (array) $result[0];
-
-			$this->field_cache->set_data(array_keys($data));
 		} else {
 			$data = array();
-			$this->load_field_cache();
 		}
+
+		$this->load_field_cache(array_keys($data));
 
 		$result = $this->data->set_data($data);
 
