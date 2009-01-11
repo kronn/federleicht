@@ -47,7 +47,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	/**
 	 * Wert direkt holen
 	 */
-	protected function value_of($key) {
+	public function value_of($key) {
 		return $this->_get_value($key);
 	}
 	/**

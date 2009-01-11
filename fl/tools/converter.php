@@ -99,4 +99,24 @@ class fl_converter {
 
 		return $array;
 	}
+
+	/**
+	 * number_format rueckgangig machen
+	 *
+	 * @param string $formatted
+	 * @return string $float_suitable
+	 */
+	public static function revert_number_format($formatted) {
+		if ( (float) $formatted === $formatted ) {
+			$float_suitable = (float) $formatted;
+		} else {
+			$float_suitable = (float) str_replace( ',', '.',
+				str_replace( '.', '',
+					$formatted
+				)
+			);
+		}
+
+		return $float_suitable;
+	}
 }

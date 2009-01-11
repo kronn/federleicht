@@ -579,17 +579,11 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	 * @return string $float_suitable
 	 */
 	protected function revert_number_format($formatted) {
-		if ( (float) $formatted === $formatted ) {
-			$float_suitable = (float) $formatted;
+		if ( class_exists('fl_converter') ) {
+			return fl_converter::revert_number_format($formatted);
 		} else {
-			$float_suitable = (float) str_replace( ',', '.',
-				str_replace( '.', '',
-					$formatted
-				)
-			);
+			throw new Exception('Typumwandlungs-Klasse nicht gefunden');
 		}
-
-		return $float_suitable;
 	}
 
 	/**
