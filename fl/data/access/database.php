@@ -73,12 +73,14 @@ abstract class fl_data_access_database {
 		$this->allSQL[] = $sql;
 		$this->query_count++;
 
-		$time = $timer->get_time();
-		$this->total_db_time += $time;
-		fl_registry::get_instance()->get('logger')->log(
-			'DB: '.$sql. ' ('. $timer->format_time($time).'s)',
-			fl_logger::WITHOUT_TIME
-		);
+		if ( fl_registry::get_instance()->is_set('logger') ) {
+			$time = $timer->get_time();
+			$this->total_db_time += $time;
+			fl_registry::get_instance()->get('logger')->log(
+				'DB: '.$sql. ' ('. $timer->format_time($time).'s)',
+				fl_logger::WITHOUT_TIME
+			);
+		}
 	}
 
 	public function export_query_stats() {
