@@ -197,14 +197,16 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	protected function load_field_cache(array $fields = array()) {
 		if ( count($fields) == 0 ) {
 			$result = $this->db->retrieve($this->table, '*', '', '1');
-			$columns = array_keys($result[0]);
+			$columns = array_keys((array) $result[0]);
 		} else {
 			$columns = array_values($fields);
 		}
 
-		$this->field_cache->set_data(
-			array_combine($columns, $columns)
-		);
+		if ( count($columns) > 0 ) {
+			$this->field_cache->set_data(
+				array_combine($columns, $columns)
+			);
+		}
 	}
 
 	/**
