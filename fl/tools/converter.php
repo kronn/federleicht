@@ -107,7 +107,7 @@ class fl_converter {
 	 * @return string $float_suitable
 	 */
 	public static function revert_number_format($formatted) {
-		if ( (float) $formatted === $formatted ) {
+		if ( strpos($formatted, '.') !== false and strpos($formatted, ',') === false ) {
 			$float_suitable = (float) $formatted;
 		} else {
 			$float_suitable = (float) str_replace( ',', '.',
