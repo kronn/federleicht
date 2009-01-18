@@ -112,6 +112,14 @@ class fl_converterTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals($expected, $result);
 	}
+	public function testFloatConversion2() {
+		$input = '9.99';
+		$expected = '9.99';
+
+		$result = fl_converter::revert_number_format($input);
+
+		$this->assertEquals($expected, $result);
+	}
 }
 
 // Call fl_converterTest::main() if this source file is executed directly.
