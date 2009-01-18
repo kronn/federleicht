@@ -152,8 +152,17 @@ class federleicht {
 			'data_wrapper'
 		);
 
+		$exceptions = array(
+			'federleicht',
+			'sql',
+		);
+
 		foreach ($interfaces as $interface) {
 			require_once $path['lib'] . 'interfaces/'. $interface . '.php';
+		}
+
+		foreach ($exceptions as $exception) {
+			require_once $path['lib'] . 'exceptions/'. $exception . '.php';
 		}
 
 		return;

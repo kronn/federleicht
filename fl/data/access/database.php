@@ -14,6 +14,8 @@ abstract class fl_data_access_database {
 	public $convert_results = true;
 	protected $type_cache = array();
 
+	protected $query_details = array();
+
 	/**
 	 * Anzahl der Datensätze mit bestimmter Bedingung zurückgeben
 	 *
@@ -131,22 +133,10 @@ abstract class fl_data_access_database {
 	 * @param string $sql
 	 */
 	protected function error($error, $sql) {
-		if ( $this->show_errors OR 
-			( error_reporting() > 0 AND ini_get('display_errors') == 1 ) ) {
-				/*
-			$factory = new fl_factory();
-			$err = $factory->get_helper('var_analyze', 'data-access', 'Fehler');
-			$err->sql($sql, 'Datenbankabfrage, die zu Fehler gefuehrt hat');
-				 */
-
-			/**
-			 * Um mehr Informationen mit xDebug erhalten zu koennen, 
-			 * das Datenbankobjekt in den lokalen Scope holen
-			 */
-			$database_object = $this;
-		}
-
-		throw new Exception($error);
+		$error = new SqlException($error, $sql);
+		$error->setTable($this->query_details['table']);
+		$error->setData($this->query_details['data']);
+		throw $error;
 	}
 
 	public function __toString() {

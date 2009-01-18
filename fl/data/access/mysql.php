@@ -41,6 +41,11 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 	 * @return string Ergebnis der Datenbankoperation
 	 */
 	public function create($table, array $data, $type='INSERT') {
+		$this->query_details = array(
+			'table' => $table,
+			'data' => $data
+		);
+
 		$data_length = count($data);
 		$i = 0;
 
@@ -87,6 +92,11 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 	 * @return array Assoziatives Array mit den Daten.
 	 */
 	public function retrieve($table, $field='*', $condition='', $order='', $limit='') {
+		$this->query_details = array(
+			'table' => $table,
+			'data' => $field
+		);
+
 		if ( $limit == '') {
 			$sql_limit = FALSE;
 		} elseif ( strpos($limit, ',') === FALSE ) {
@@ -123,6 +133,11 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 	 * @return string Ergebnis der Datenbankoperation
 	 */
 	public function update($table, array $data, $id, $id_field='id', $all=FALSE) {
+		$this->query_details = array(
+			'table' => $table,
+			'data' => $data
+		);
+
 		$data_length = count($data);
 		$i = 0;
 
@@ -157,6 +172,11 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 	 * @return boolean Ergebnis der Datenbankoperation
 	 */
 	public function del($table, $id) {
+		$this->query_details = array(
+			'table' => $table,
+			'data' => $id
+		);
+
 		if ( !is_numeric($id) ) {
 			return FALSE;
 		}
