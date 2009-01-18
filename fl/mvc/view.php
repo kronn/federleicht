@@ -74,9 +74,16 @@ class fl_view {
 			$path = $this->modulepath . $this->cap['controller'] . '/layouts/';
 		} else {
 			list($prefix, $layout) = explode('/', $layout, 2);
-			if ( $prefix == 'common' ) {
+			switch( $prefix ) {
+			case 'common':
 				$path = $this->layoutpath;
-			} else {
+				break;
+
+			case 'builtin':
+				$path = fl_registry::get_instance()->get('path', 'lib') . 'builtin/layouts/';
+				break;
+
+			default :
 				$path = $this->modulepath . $prefix . '/layouts/';
 			}
 		}
@@ -128,7 +135,19 @@ class fl_view {
 			$file = $name;
 		} else {
 			list($modul, $file) = explode('/', $name, 2);
-			$path = $this->modulepath . '/' . $modul . '/elements/';
+			switch( $modul ) {
+			case 'common':
+				$path = $this->elementpath;
+				break;
+
+			case 'builtin':
+				$path = fl_registry::get_instance()->get('path', 'lib') . 'builtin/elements/';
+				break;
+
+			default :
+				$path = $this->modulepath . '/' . $modul . '/elements/';
+				break;
+			}
 		}
 
 		if ( file_exists($path . $file . '.php') ) {

@@ -103,42 +103,18 @@ class fl_controller {
 	 */
 	public function alternate($message = null) {
 		if ( $message instanceof Exception ) {
-			if ( error_reporting() == 0 ) {
-				echo $message->getMessage();
-			} else {
-				echo '<h2>'.$message->getMessage().'</h2>';
-				echo '<h3>Fehler in '.substr($message->getFile(), strlen(FL_ABSPATH)).'('.$message->getLine().') </h3>';
-				echo '<pre>';
-				$width = ( ceil(count($message->getTrace())/10) );
-				foreach ( $message->getTrace() as $num => $trace ) {
-					$file = substr($trace['file'], strlen(FL_ABSPATH));
-					$args = ( !empty($trace['args']) )?  implode(', ', $trace['args']): '';
-					$num = str_pad($num, $width, ' ', STR_PAD_LEFT);
-
-					echo "#$num: <b>$file</b>({$trace['line']}) : {$trace['function']}($args)".PHP_EOL;
-				}
-				echo '</pre>';
-
-				$has_db_query = file_exists(FL_ABSPATH.'public/php/db_query.php');
-
-				echo '<h3>Anfrage</h3><pre>';
-				$resolver = 'public/php/resolver.php';
-				$url = $this->request->get_current_url();
-				echo (file_exists(FL_ABSPATH.$resolver))?
-					'URL: <a href="/'.$resolver.'?request='.$url.'">'.$url.'</a>':
-					'URL: ' . $url;
-				echo PHP_EOL;
-				if ( $this->request->has_postdata() ) {
-					var_dump($this->request->post);
-				}
-				echo '</pre>';
-
-				echo '<h3>Datenbankabfragen</h3><pre>';
-				var_dump($this->datamodel->export_query_log());
-				echo '</pre>';
-			}
-
 			$this->functions->log('Exception: '. $message->getMessage() );
+
+			if ( error_reporting() > 0 ) {
+				$this->data['exception'] = $message;
+				$this->data['request'] = $this->request;
+				$this->data['db'] = $this->datamodel;
+				$this->layout = 'builtin/error';
+				return;
+
+			} else {
+				echo $message->getMessage();
+			}
 		}
 
 		$this->functions->stop();
