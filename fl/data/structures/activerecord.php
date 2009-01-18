@@ -163,11 +163,11 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 		foreach ( $this->data as $key => $value ) {
 			// Die ID ändert sich nicht, wird also auch nicht gespeichert.
 			if ( $key === 'id' ) continue;
+			if ( ! $this->field_cache->is_set($key) ) continue;
 			// leere Werte werde nicht gespeichert, außer der 0
 			if ( $value === null ) continue;
 			if ( empty($value) AND $value != 0 ) continue;
 			if ( in_array($key, $this->relation_keys()) ) continue;
-			if ( ! $this->field_cache->is_set($key) ) continue;
 
 			$data[$key] = $value;
 		}
