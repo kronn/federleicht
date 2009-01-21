@@ -26,4 +26,8 @@ class fl_timer {
 	public function format_time($time) {
 		return substr(round($time, 5), 0, 7);
 	}
+
+	public function __toString() {
+		return 'Timer: ' . $this->format_time($this->get_time());
+	}
 }
