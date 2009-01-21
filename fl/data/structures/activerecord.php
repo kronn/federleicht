@@ -196,8 +196,14 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	 */
 	protected function load_field_cache(array $fields = array()) {
 		if ( count($fields) == 0 ) {
-			$result = $this->db->retrieve($this->table, '*', '', '1');
+			$result = $this->db->retrieve($this->table, '*', '', '', '1');
 			$columns = array_keys((array) $result[0]);
+
+			if ( fl_registry::get_instance()->is_set('logger') ) {
+				fl_registry::get_instance()->get('logger')->log(
+					'AR: Fieldcache für "'.$this->table.'" musste manuell geladen werden. ('.$this.')'
+				);
+			}
 		} else {
 			$columns = array_values($fields);
 		}
@@ -314,7 +320,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	 *      class     für den Klassen-Identifier
 	 *                (modul/klasse)
 	 *      key_name  für den Namen zu verwenden Tabellen-Fremdschlüssel
-	 *                (Spaltenname aus der fremden Tabelle)
+	 *                (Spaltenname in der fremden Tabelle)
 	 *      key       für den Namen des Wertes auf den sich der Fremdschlüssel bezieht
 	 *                (Spaltenname aus der ursprünglichen Tabelle)
 	 *      data      für immer zu übergebende Daten 
@@ -354,7 +360,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 				),
 				'standards' => array(
 					'class'=>get_class($this).'/%s',
-					'key_name'=>'%s_id',
+					'key_name'=>'id',
 					'key'=>'%s_id'
 				)
 			),
