@@ -9,6 +9,7 @@
 <?php } ?>
 
 		<h3>Fehler in <?php echo substr($exception->getFile(), strlen(FL_ABSPATH)); ?>(<?php echo $exception->getLine(); ?>)</h3>
+		<h2><?php echo get_class($exception); ?></h2>
 		<pre>
 <?php 
 $width = ( ceil(count($exception->getTrace())/10) );
