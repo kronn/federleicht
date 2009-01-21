@@ -206,7 +206,7 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 
 		if ( ! isset($this->type_cache[$table]) ) {
 			$sql = "SELECT column_name AS col, CASE WHEN data_type = 'numeric' THEN 'float' ELSE data_type END AS type FROM information_schema.columns WHERE table_name='{$this->table_prefix}{$table}' AND data_type IN ('boolean', 'integer', 'numeric');";
-			$this->type_cache[$table] = $this->query($sql);
+			$this->type_cache[$table] = $this->query($sql, false);
 		}
 
 		$converted = $result;
