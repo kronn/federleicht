@@ -71,13 +71,17 @@ abstract class fl_data_access_database {
 	 * Datenbankabfragen loggen
 	 */
 	protected function log_query($sql, fl_timer $timer) {
-		$this->lastSQL = $sql;
-		$this->allSQL[] = $sql;
+		$time = $timer->get_time();
+		$this->total_db_time += $time;
+
 		$this->query_count++;
 
+		if ( $sql == '' ) return;
+
+		$this->lastSQL = $sql;
+		$this->allSQL[] = $sql;
+
 		if ( fl_registry::get_instance()->is_set('logger') ) {
-			$time = $timer->get_time();
-			$this->total_db_time += $time;
 			fl_registry::get_instance()->get('logger')->log(
 				'DB: '.$sql. ' ('. $timer->format_time($time).'s)',
 				fl_logger::WITHOUT_TIME
@@ -100,9 +104,10 @@ abstract class fl_data_access_database {
 	 * SQL-Anfrage an Datenbank senden
 	 *
 	 * @param mixed $sql
+	 * @param boolean $log_query
 	 * @return mixed
 	 */
-	public function query($sql) {
+	public function query($sql, $log_query = true) {
 		if ( is_array($sql) ) {
 			foreach ( $sql as $nr => $query ) {
 				$output[$nr] = $this->query( $query );
@@ -113,6 +118,7 @@ abstract class fl_data_access_database {
 			$timer->start();
 
 			$output = $this->_query_db( $sql );
+			if ( ! $log_query ) $sql = '';
 
 			$timer->stop();
 			$this->log_query($sql, $timer);
