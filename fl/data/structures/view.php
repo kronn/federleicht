@@ -29,6 +29,10 @@ class fl_data_structures_view extends fl_data_structures_data {
 	
 		if ( is_array($data) OR is_object($data) ) return $data;
 
+		if ( $type === true ) {
+			$type = 'string';
+		}
+
 		settype($data, $type);
 
 		if ( $type == 'string' AND !$this->_raw_output ) {
