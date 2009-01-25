@@ -9,7 +9,6 @@
 
 		</pre>
 
-
 <?php } ?>
 
 		<h3>Fehler in <?php echo substr($exception->getFile(), strlen(FL_ABSPATH)); ?>(<?php echo $exception->getLine(); ?>)</h3>

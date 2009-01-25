@@ -8,5 +8,7 @@
 <?php $this->get_element('builtin/request'); ?>
 
 <?php $this->get_element('builtin/database'); ?>
+
+<?php $this->get_element('builtin/svnversion'); ?>
 	</body>
 </html>
