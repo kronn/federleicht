@@ -4,7 +4,11 @@
 
 <?php if ( $exception instanceof FederleichtException ) { ?>
 		<h3>Details</h3>
-		<?php echo $exception->getDetails(); ?>
+		<pre>
+<?php echo $exception->getDetails(); ?>
+
+		</pre>
+
 
 <?php } ?>
 
