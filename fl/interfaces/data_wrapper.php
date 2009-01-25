@@ -9,7 +9,11 @@
  */
 interface data_wrapper {
 	public function set($key, $value);
-	public function get($key);
+	/**
+	 * @param string $key
+	 * @param mixed  $options  Zugriffsoptionen der implementierenden Klasse, z.B. ob auf den Wert direkt oder per Methode zugegriffen werden soll.
+	 */
+	public function get($key, $options = null);
 	public function say($key);
 
 	public function set_data(array $data);

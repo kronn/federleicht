@@ -56,9 +56,9 @@ class fl_responder implements data_wrapper, Iterator {
 		$response = $this->current();
 		$response->set($key, $value);
 	}
-	public function get($key) {
+	public function get($key, $options = null) {
 		$response = $this->current();
-		return $response->get($key);
+		return $response->get($key, $options);
 	}
 	public function say($key) {
 		$response = $this->current();

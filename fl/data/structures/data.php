@@ -63,8 +63,14 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	public function set($key, $value) {
 		return $this->_set_field($key, $value);
 	}
-	public function get($key) {
-		return $this->_get_field($key);
+	public function get($key, $value_preferred = null) {
+		$value_preferred = ( $value_preferred !== null ) ? true: false;
+
+		if ( $value_preferred ) {
+			return $this->_prefer_value($key);
+		} else {
+			return $this->_prefer_method($key);
+		}
 	}
 	public function say($key) {
 		echo $this->get($key);
@@ -76,7 +82,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 		}
 	}
 	public function is_set($key) {
-		return ( $this->_fallback_defined($key) or $this->_isset_field($key) );
+		return ( $this->_method_defined($key) or $this->_isset_field($key) );
 	}
 	public function remove($key) {
 		return $this->_unset_field($key);
@@ -111,12 +117,23 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 * @param string $key
 	 * @return mixed
 	 */
-	protected function _get_field($key) {
-		if ( $this->_fallback_defined($key) ) {
+	protected function _prefer_method($key) {
+		if ( $this->_method_defined($key) ) {
 			$fallback_method = $this->_fallback_prefix . $key;
 			$value = $this->$fallback_method();
 		} else {
 			$value = $this->_get_value($key);
+		}
+
+		return $value;
+	}
+
+	protected function _prefer_value($key) {
+		if ( $this->_isset_field($key) or !$this->_method_defined($key) ) {
+			$value = $this->_get_value($key);
+		} else {
+			$fallback_method = $this->_fallback_prefix . $key;
+			$value = $this->$fallback_method();
 		}
 
 		return $value;
@@ -184,7 +201,7 @@ class fl_data_structures_data implements ArrayAccess, data_wrapper {
 	 * @param string $key
 	 * @return boolean
 	 */
-	protected function _fallback_defined($key) {
+	protected function _method_defined($key) {
 		return method_exists( $this, $this->_fallback_prefix . $key);
 	}
 }

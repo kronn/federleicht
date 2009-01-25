@@ -84,8 +84,8 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	public function say($key) {
 		return $this->data->say($key);
 	}
-	public function get($key) {
-		return $this->data->get($key);
+	public function get($key, $options = null) {
+		return $this->data->get($key, $options);
 	}
 	public function set_data(array $data) {
 		$this->data->set_data($data);
