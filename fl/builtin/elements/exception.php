@@ -16,8 +16,17 @@
 		<pre>
 <?php 
 $width = ( ceil(count($exception->getTrace())/10) );
+$arrays = array();
 foreach ( $exception->getTrace() as $num => $trace ) {
 	$file = substr($trace['file'], strlen(FL_ABSPATH));
+	foreach( $trace['args'] as $key => $arg ) {
+		if ( is_array($arg) ) {
+			$array_export = var_export($arg, true);
+			$array_index = $num . '-' . $key;
+			$arrays[] = array( 'index' => $array_index, 'array' => $array_export );
+			$trace['args'][$key] = '<span title="'.$array_export.'">Array #'.$array_index.'</span>';
+		}
+	}
 	$args = ( !empty($trace['args']) )?  implode(', ', $trace['args']): '';
 	$num = str_pad($num, $width, ' ', STR_PAD_LEFT);
 
@@ -25,5 +34,14 @@ foreach ( $exception->getTrace() as $num => $trace ) {
 }
 ?>
 		</pre>
+
+<h3>Array-Parameter</h3>
+<?php if ( count($arrays) > 0 ) { ?>
+	<pre>
+<?php foreach($arrays as $array) {
+	echo $array['index'] . ' => ' . $array['array'] . PHP_EOL;
+} ?>
+	</pre>
+<?php } ?>
 
 
