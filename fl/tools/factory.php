@@ -194,6 +194,8 @@ class fl_factory {
 			$class_name = $this->inflector->singular($class_name);
 		}
 
+		$id = (integer) $id;
+
 		$identifier = "{$class_name}_{$id}";
 
 		if ( !$this->registry->is_set('loaded_record_'.$identifier) ) {
@@ -222,6 +224,10 @@ class fl_factory {
 				$data_structure,
 				$loaded
 			);
+
+			// i don't want to save an ar_object in 
+			// the registry/identity map without a database id 
+			if ( $id == 0 ) return $instance; 
 
 			$this->registry->set('loaded_record_'.$identifier, $instance);
 		}
