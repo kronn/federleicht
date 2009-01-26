@@ -54,12 +54,12 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 
 		$values = array();
 		foreach( array_values($data) as $value ) {
-			$values[] = $this->_secureFieldContent($value);
+			$values[] = $this->prepare_value_for_db($value);
 		}
 
 		$sql  = 'INSERT INTO '. $this->_tableName($table);
 		$sql .= ' ( ' . implode(', ', $rows) . ' ) ';
-		$sql .= " VALUES ( '". implode("', '", $values) . "' );";
+		$sql .= " VALUES ( ". implode(", ", $values) . " );";
 
 		return ( $this->query($sql) )?
 			$this->last_insert_id($table):
@@ -140,14 +140,7 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 
 		$sql = "UPDATE ".$this->table_prefix.$table." SET".PHP_EOL;
 		foreach ($data as $field=>$content) {
-			if  ( $content === null ) {
-				$sql .= ' '.$field.'= NULL';
-			} elseif ( is_bool($content) ) {
-				$sql .= ' '.$field."='".($content? $this->true_value: $this->false_value)."'";
-			} else {
-				$this->_secureFieldContent($content);
-				$sql .= " ".$field."='".$content."'";
-			}
+			$sql .= " $field = {$this->prepare_value_for_db($content)}";
 
 			if ( ( $data_length - 1 ) > $i++ )
 				$sql .= ",";
@@ -403,6 +396,19 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 			$this->error('Array wurde uebergeben, kann aber nicht gespeichert werden.', $varvalue );
 		}
 		return $var = pg_escape_string($var);
+	}
+
+	protected function prepare_value_for_db($value) {
+		if  ( $value === null ) {
+			$db_value = 'NULL';
+		} elseif ( is_bool($value) ) {
+			$db_value = "'".($value? $this->true_value: $this->false_value)."'";
+		} elseif ( is_numeric($value) ) {
+			$db_value = $this->_secureFieldContent($value);
+		} else {
+			$db_value = "'". $this->_secureFieldContent($value) . "'";
+		}
+		return $db_value;
 	}
 }
 ?>
