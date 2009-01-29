@@ -51,10 +51,12 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 		);
 
 		$rows = array_keys($data);
+		$types = $this->get_table_information($table);
 
 		$values = array();
-		foreach( array_values($data) as $value ) {
-			$values[] = $this->prepare_value_for_db($value);
+
+		foreach( $data as $key => $value ) {
+			$values[] = $this->prepare_value_for_db($value, $types[$key]);
 		}
 
 		$sql  = 'INSERT INTO '. $this->_tableName($table);
@@ -132,15 +134,16 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 	public function update($table, array $data, $id, $id_field='id', $all=FALSE) {
 		$this->query_details = array(
 			'table' => $table,
-			'data' => $field
+			'data' => $data
 		);
 
+		$types = $this->get_table_information($table);
 		$data_length = count($data);
 		$i = 0;
 
 		$sql = "UPDATE ".$this->table_prefix.$table." SET".PHP_EOL;
 		foreach ($data as $field=>$content) {
-			$sql .= " $field = {$this->prepare_value_for_db($content)}";
+			$sql .= " $field = {$this->prepare_value_for_db($content, $types[$field])}";
 
 			if ( ( $data_length - 1 ) > $i++ )
 				$sql .= ",";
@@ -175,7 +178,7 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 			return FALSE;
 		}
 
-		$sql = "DELETE FROM $this->table_prefix.$table WHERE id=$id;";
+		$sql = "DELETE FROM $this->table_prefix$table WHERE id=$id;";
 
 		$result = $this->query($sql);
 		return $result;
@@ -197,18 +200,13 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 			return $result;
 		}
 
-		if ( ! isset($this->type_cache[$table]) ) {
-			$sql = "SELECT column_name AS col, CASE WHEN data_type = 'numeric' THEN 'float' ELSE data_type END AS type FROM information_schema.columns WHERE table_name='{$this->table_prefix}{$table}' AND data_type IN ('boolean', 'integer', 'numeric');";
-			$this->type_cache[$table] = $this->query($sql, false);
-		}
-
 		$converted = $result;
-		$types = $this->type_cache[$table];
+		$types = $this->get_table_information($table);
 
 		foreach ( $types as $type ) {
 			foreach ( $result as $row_num => $rows ) {
-				$col = $type['col'];
-				$new_type = $type['type'];
+				$col = $type['column_name'];
+				$new_type = $type['php_type'];
 
 				if ( $new_type == 'boolean' ) {
 					$converted[$row_num][$col] = ( $converted[$row_num][$col] == $this->true_value )?
@@ -221,6 +219,40 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 		}
 
 		return $converted;
+	}
+
+	/**
+	 * Metadaten einer Tabelle zurückgeben
+	 *
+	 * @param string $table  Tabellenname
+	 * @return array
+	 */
+	public function get_table_information($table) {
+		if ( ! isset($this->table_info[$table]) ) {
+			$sql = <<<SQL
+SELECT 
+	column_name, data_type, 
+	CASE 
+		WHEN data_type = 'numeric' THEN 'float' 
+		WHEN data_type IN ('boolean', 'integer') THEN data_type
+		ELSE 'string'
+	END AS php_type,
+	CASE
+		WHEN is_nullable = 'YES' THEN 1
+		ELSE 0
+	END AS null_allowed
+FROM information_schema.columns 
+WHERE table_name='{$this->table_prefix}{$table}'
+SQL;
+			$table_info = array();
+			foreach( $this->query($sql, false) as $col ) {
+				$table_info[$col['column_name']] = $col;
+			}
+
+			$this->table_info[$table] = $table_info;
+		}
+
+		return $this->table_info[$table];
 	}
 
 	/**
@@ -398,16 +430,19 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 		return $var = pg_escape_string($var);
 	}
 
-	protected function prepare_value_for_db($value) {
-		if  ( $value === null ) {
+	protected function prepare_value_for_db($value, $info = null) {
+		if ( $value === null ) {
 			$db_value = 'NULL';
 		} elseif ( is_bool($value) ) {
 			$db_value = "'".($value? $this->true_value: $this->false_value)."'";
 		} elseif ( is_numeric($value) ) {
 			$db_value = $this->_secureFieldContent($value);
+		} elseif ( empty($value) and is_array($info) and $info['null_allowed'] ) {
+				$db_value = 'NULL';
 		} else {
 			$db_value = "'". $this->_secureFieldContent($value) . "'";
 		}
+
 		return $db_value;
 	}
 }

@@ -204,10 +204,7 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 		$table = $this->get_table_name($table);
 		$converted = $result;
 
-		$sql = <<<SQL
-SHOW COLUMNS FROM {$table};
-SQL;
-		$types = $this->query($sql);
+		$types = $this->get_table_information($table);
 
 		foreach ( $result as $row_num => $rows ) {
 			foreach ( $types as $type ) {
@@ -222,6 +219,9 @@ SQL;
 		return $converted;
 	}
 
+	public function get_table_information($table) {
+		return $this->query("SHOW COLUMNS FROM {$table}", false);
+	}
 	/**
 	 * Tabelle leeren
 	 *

@@ -48,11 +48,9 @@ class fl_inflector {
 
 		$lowercased_word = strtolower($word); 
 
-		foreach ($uncountable as $_uncountable){ 
-			if(substr($lowercased_word,(-1*strlen($_uncountable))) == $_uncountable){ 
-				return $word; 
-			} 
-		} 
+		if ( in_array($lowercased_word, $uncountable) ) {
+			return $word;
+		}
 
 		foreach ($irregular as $_singular=> $_plural){
 			if (preg_match('/('.$_singular.')$/i', $word, $arr)) { 
@@ -82,10 +80,8 @@ class fl_inflector {
 
 		$lowercased_word = strtolower($word);
 
-		foreach ($uncountable as $_uncountable){
-			if(substr($lowercased_word,(-1*strlen($_uncountable))) == $_uncountable){
-				return $word;
-			}
+		if ( in_array($lowercased_word, $uncountable) ) {
+			return $word;
 		}
 
 		foreach ($irregular as $_singular=> $_plural){
@@ -117,7 +113,7 @@ class fl_inflector {
 					return $has_singular_form;
 				} elseif ( stripos($plural, $word) !== false ) {
 					$this->msg[] = $word . ' is irregular and plural';
-					return false;
+					return $has_plural_form;
 				}
 			}
 

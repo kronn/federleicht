@@ -9,7 +9,6 @@
  *
  * @todo validator in Basisklasse instanziieren?
  * @todo active_record als Datenzugriffsklasse (und nicht als Datenstruktur) im richtigen Verzeichnis ablegen und von dort laden lassen.
- * @todo active_record sollte auch das Interface data_access und data_wrapper implementieren, da es sowohl Datenzugriff wie Daten selbst darstellt.
  */
 abstract class fl_data_structures_activerecord implements data_wrapper, data_access {
 	/**
@@ -49,7 +48,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	 */
 	public function __construct(data_source_access $db, $table, $id, data_wrapper $data, $loaded=false) {
 		$this->db = $db;
-		$this->table = ( $this->table !== '' ) ? $this->table : $table;
+		$this->table = self::get_table(get_class($this), $table);
 		$this->id = $id;
 
 		$this->data = $data;
@@ -59,7 +58,7 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 
 		$this->field_cache = $this->factory->get_structure('data');
 
-		if ( !$loaded ) {
+		if ( !$loaded and $id > 0 ) {
 			$this->load();
 		} else {
 			$this->load_field_cache();
@@ -69,8 +68,18 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	/**
 	 * verwendete Tabelle zurückgeben
 	 */
-	public function get_table() {
-		return $this->table;
+	public static function get_table($class_name, $table, $prefix = true) {
+		$r = new ReflectionClass($class_name);
+		$props = $r->getStaticProperties();
+		$table_name = isset($props['table_name'])?
+			$props['table_name']:
+			$table;
+
+		$table_without_prefix = ( $prefix !== true and strpos($table_name, $prefix) !== false )?
+			substr($table_name, 0, strlen($prefix)): 
+			$table_name;
+
+		return $table_without_prefix;
 	}
 
 	/**
@@ -192,8 +201,10 @@ abstract class fl_data_structures_activerecord implements data_wrapper, data_acc
 	 */
 	protected function load_field_cache(array $fields = array()) {
 		if ( count($fields) == 0 ) {
-			$result = $this->db->retrieve($this->table, '*', '', '', '1');
-			$columns = array_keys((array) $result[0]);
+			$result = $this->db->get_table_information($this->table);
+			foreach( $result as $column ) {
+				$columns[] = $column['column_name'];
+			}
 
 			if ( fl_registry::get_instance()->is_set('logger') ) {
 				fl_registry::get_instance()->get('logger')->log(

@@ -21,6 +21,7 @@ class fl_factory {
 	 * Klassenkonstanten
 	 */
 	const ONLY_MODULES = 'only_modules';
+	const AR_CLASSNAME = 'ar_classname';
 
 	/**
 	 * Konstruktor
@@ -188,23 +189,18 @@ class fl_factory {
 	 * @return fl_data_structures_activerecord
 	 */
 	public function get_ar_class($class, $id = 0, array $data = array()) {
-		list($modul, $class_name) = $this->parse_class_name($class, self::ONLY_MODULES);
-
-		if (! $this->inflector->is_singular($class_name)) {
-			$class_name = $this->inflector->singular($class_name);
-		}
-
+		$class = (string) $class;
 		$id = (integer) $id;
+
+		list($modul, $class_name) = $this->parse_class_name($class, self::AR_CLASSNAME);
 
 		$identifier = "{$class_name}_{$id}";
 
 		if ( !$this->registry->is_set('loaded_record_'.$identifier) ) {
-
-			// $this->load_structure('activerecord');
 			$this->load_class($modul, $class_name);
 
 			$data = (array) $data;
-			if (!empty($data)) {
+			if (!empty($data) and $id != 0) {
 				$loaded = true;
 			} else {
 				$loaded = false;
@@ -369,20 +365,26 @@ class fl_factory {
 	 * Klassenidentifikator parsen
 	 *
 	 * @param string  $class
-	 * @param mixed $only_modules  sollte fl_factory::ONLY_MODULES sein
+	 * @param mixed $restrictions  sollte fl_factory::ONLY_MODULES oder fl_factory::AR_CLASSNAME sein
 	 * @return array
 	 */
-	public function parse_class_name($class, $only_modules = null) {
+	public function parse_class_name($class, $restrictions = null) {
 		$common = 'common';
 		$builtin = 'builtin';
 
 		if ( strpos($class, '/') === false) {
-			if ( $only_modules == self::ONLY_MODULES ) {
+			if ( in_array($restrictions, array(self::ONLY_MODULES, self::AR_CLASSNAME) ) ) {
 				throw new InvalidArgumentException('Klassenname muss in der Form modul/class angegeben werden.');
 			}
 			$result = array($common, $class);
 		} else {
-			$result = explode('/', $class, 2);
+			list($modul, $class) = explode('/', $class, 2);
+			if ( $restrictions == self::AR_CLASSNAME ) {
+				if (! $this->inflector->is_singular($class)) {
+					$class = $this->inflector->singular($class);
+				}
+			}
+			$result = array($modul, $class);
 		}
 
 		return $result;

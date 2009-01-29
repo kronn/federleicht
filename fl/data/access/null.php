@@ -39,6 +39,10 @@ class fl_data_access_null implements data_source_access {
 		return 0;
 	}
 
+	public function get_table_information($table) {
+		return array();
+	}
+
 	protected function _query_db($sql) {
 		return true;
 	}

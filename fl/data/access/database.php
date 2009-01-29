@@ -12,7 +12,7 @@ abstract class fl_data_access_database {
 
 	public $show_errors = false;
 	public $convert_results = true;
-	protected $type_cache = array();
+	protected $table_info = array();
 
 	protected $query_details = array();
 
@@ -66,6 +66,14 @@ abstract class fl_data_access_database {
 	 * @return array
 	 */
 	abstract public function convert_result($table, array $result);
+
+	/**
+	 * Metadaten einer Tabelle zurückgeben
+	 *
+	 * @param string $table  Tabellenname
+	 * @return array
+	 */
+	abstract public function get_table_information($table);
 
 	/**
 	 * Datenbankabfragen loggen

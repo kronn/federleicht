@@ -14,7 +14,7 @@ class fl_data_loader_activerecord_hasone extends fl_data_loader_activerecord imp
 	 */
 	public function execute() {
 		if ( $this->key_name != 'id' ) {
-			$data_table = $this->factory->get_ar_class($this->class_identifier)->get_table();
+			$data_table = $this->find_data_table();
 
 			$one_result = $this->factory->get_data_access()->retrieve(
 				$data_table, '*', "$this->key_name = '$this->key_value'"
