@@ -57,7 +57,8 @@ class fl_test extends PHPUnit_Framework_TestSuite {
 				'module'=>FL_ABSPATH . 'app/modules/',
 				'helper'=>FL_ABSPATH . 'app/helper/',
 				'elements'=>FL_ABSPATH . 'app/elements/',
-				'layouts'=>FL_ABSPATH . 'app/layouts'
+				'layouts'=>FL_ABSPATH . 'app/modules/common/layouts/',
+				'log'=>FL_ABSPATH . 'log/'
 			)
 		);
 

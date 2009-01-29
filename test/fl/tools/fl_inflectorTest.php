@@ -108,6 +108,15 @@ class fl_inflectorTest extends PHPUnit_Framework_TestCase {
 	public function testStatistik() {
 		$this->assertTrue($this->object->is_singular('statistik'));
 	}
+	public function testAlben() {
+		$this->assertFalse($this->object->is_singular('alben'));
+		$this->assertTrue($this->object->is_singular('album'));
+	}
+	public function testAlbenTitel() {
+		$this->assertFalse($this->object->is_singular('alben_titel'));
+		$this->assertTrue($this->object->is_singular('album_titel'));
+		$this->assertEquals('alben_titel', $this->object->plural('album_titel'), $this->object);
+	}
 }
 
 // Call fl_inflectorTest::main() if this source file is executed directly.
