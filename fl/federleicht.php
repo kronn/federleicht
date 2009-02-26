@@ -10,7 +10,7 @@
  *
  * Die Klasse federleicht enthält die vorbereitenden Funktionen für den
  * Anwendungsablauf. Außerdem hält es Referenzen auf die Datenzugriffs-
- * klasse und die Funktionenklasse, die an die meisten nachfolgenden 
+ * klasse und die Funktionenklasse, die an die meisten nachfolgenden
  * Objekte weitergegeben wird.
  *
  * öffentliche Schnittstelle:
@@ -45,7 +45,7 @@ class federleicht {
 	public function __construct($url='') {
 		if ( !defined('FL_ABSPATH') ) {
 			$abspath = realpath(dirname(__FILE__) . '/../') . '/';
-			define('FL_ABSPATH', $abspath); 
+			define('FL_ABSPATH', $abspath);
 		}
 
 		$path = array(
@@ -107,10 +107,10 @@ class federleicht {
 		}
 
 		$request = $this->functions->factory->get_structure(
-			'request', 
+			'request',
 			$dispatcher->analyse(
 				$this->registry->get('url')
-			) 
+			)
 		);
 		$this->registry->set('request', $request);
 
@@ -130,9 +130,9 @@ class federleicht {
 		#ini_set('session.gc_maxlifetime', 2400);
 		#ini_set('session.use_only_cookies', '1');
 		#ini_set('session.cookie_httponly', true);
-		
+
 		// Session stored in Cookies
-		#$this->functions->needs('cookiesession'); 
+		#$this->functions->needs('cookiesession');
 
 		// Session starten
 		session_start();
@@ -170,8 +170,8 @@ class federleicht {
 
 	/**
 	 * Konfiguration einlesen
-	 * 
-	 * Die Konfigurationsdateien werden eingelesen und deren 
+	 *
+	 * Die Konfigurationsdateien werden eingelesen und deren
 	 * Inhalt als Array zurückgegeben.
 	 *
 	 * @return array
@@ -207,8 +207,8 @@ class federleicht {
 		// Wenn keine Datenbankkonfiguration angegeben ist und auch nicht
 		// gesagt wurde, dass keine Datenbank verwendet wird, abbrechen.
 		if ( !in_array(FL_ABSPATH.'config/database.ini', $configfiles) ) {
-			die('Keine Datenbankkonfiguration angegeben. 
-				
+			die('Keine Datenbankkonfiguration angegeben.
+
 				Mit type=null kann auf eine Datenbank verzichtet werden.');
 		}
 
