@@ -60,7 +60,12 @@ class fl_view {
 		$this->headers = $registry->get('config', 'headers');
 
 		$model = $this->factory->get_model($model_name);
-		$this->translator = $model->translator;
+
+		if ( isset($model->translator) ) {
+			$this->translator = $model->translator;
+		} else {
+			$this->translator = null;
+		}
 	}
 
 	/**
