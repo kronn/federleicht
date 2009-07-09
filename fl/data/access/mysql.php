@@ -282,8 +282,8 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 		  die("PHP-Erweiterung 'mysql' nicht geladen");
 		}
 
-		$this->connection = @mysql_connect( $host, $user, $pass) 
-			OR die("Keine Verbindung zur Datenbank m&ouml;glich. Fehlermeldung: ".mysql_error($this->connection));
+		$this->connection = @mysql_connect( $host, $user, $pass)
+			OR die("Keine Verbindung zur Datenbank m&ouml;glich. Fehlermeldung: ".mysql_error());
 		$this->database = $db;
 
 		mysql_query('SET NAMES "utf8"', $this->connection);
