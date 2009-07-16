@@ -121,7 +121,7 @@ class fl_modul {
 		$this->prepare();
 
 		$action = $this->cap['action'];
-		$params = $this->cap['param'];
+		$params = isset( $this->cap['param'] ) ? $this->cap['param'] : '';
 
 		// Standardablauf ausführen
 		$this->controller = $this->create_controller($modul_name);
