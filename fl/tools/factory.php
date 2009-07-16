@@ -308,13 +308,28 @@ class fl_factory {
 	 * @return boolean
 	 */
 	public function load_helper($wanted) {
-		if ( !in_array( $wanted, $this->registry->get('helpers') ) ) {
-			throw new OutOfRangeException("Helperklasse {$wanted} nicht gefunden");
+		$prefixes = array(
+			$this->registry->get('path', 'lib').'builtin/helper/',
+			$this->registry->get('path', 'helper')
+		);
+
+		foreach( $prefixes as $prefix ) {
+			$clean_prefix = substr($prefix, strlen(FL_ABSPATH));
+			if ( !in_array( $clean_prefix . $wanted, $this->registry->get('helpers') ) ) {
+				throw new FederleichtException(
+					"Helper {$clean_prefix}{$wanted} nicht gefunden",
+					var_export($this->registry->get('helpers'), true)
+				);
+				continue;
+			}
+
+			include_once $prefix . $wanted . '.php';
+
+			return TRUE;
 		}
 
-		include_once $this->registry->get('path', 'helper') . $wanted . '.php';
-
-		return TRUE;
+		// Wenn man hierhin gelangt, wurde die Helperklasse nicht gefunden.
+		throw new OutOfRangeException("Helperklasse {$wanted} nicht gefunden");
 	}
 
 	/**
@@ -422,13 +437,19 @@ class fl_factory {
 	 * @return array
 	 */
 	protected function search_helpers() {
-		$helpers = glob( $this->registry->get('path', 'helper') . '*.php');
+		$app_helper_path = $this->registry->get('path', 'helper');
+		$app_helpers = (array) glob( $app_helper_path . '*.php');
+
+		$framework_helper_path = $this->registry->get('path', 'lib') . 'builtin/helper/';
+		$framework_helpers = (array) glob( $framework_helper_path . '*.php');
+
 		$installed_helpers = array();
 
-		if ( !is_array($helpers) ) return $installed_helpers;
+		$helpers = array_merge($app_helpers, $framework_helpers);
 
 		foreach ($helpers as $helper) {
-			$installed_helpers[] = preg_replace('#'.addslashes($this->registry->get('path', 'helper')).'([-_a-z0-9]+)\.php#','$1',$helper);
+			$helper = substr($helper, strlen(FL_ABSPATH));
+			$installed_helpers[] = preg_replace('#([-_a-z0-9]+)\.php#','$1',$helper);
 		}
 
 		return $installed_helpers;
