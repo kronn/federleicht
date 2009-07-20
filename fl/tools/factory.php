@@ -316,10 +316,6 @@ class fl_factory {
 		foreach( $prefixes as $prefix ) {
 			$clean_prefix = substr($prefix, strlen(FL_ABSPATH));
 			if ( !in_array( $clean_prefix . $wanted, $this->registry->get('helpers') ) ) {
-				throw new FederleichtException(
-					"Helper {$clean_prefix}{$wanted} nicht gefunden",
-					var_export($this->registry->get('helpers'), true)
-				);
 				continue;
 			}
 

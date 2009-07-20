@@ -132,7 +132,7 @@ class fl_modul {
 			if ( !isset($action) OR !method_exists($this->controller, $action) ) {
 				$action = 'defaultAction';
 			}
-			$this->controller->$action($params);
+			$this->call_action($action, $params);
 
 			/**
 			 * Übergangsweise
@@ -192,6 +192,15 @@ class fl_modul {
 		return;
 	}
 	
+	/**
+	 * Aufruf der Aktion
+	 *
+	 * Kann ggf. überschrieben werden, um weitere oder andere Parameter zu ermöglichen
+	 */
+	protected function call_action($action, $params) {
+		$this->controller->$action($params);
+	}
+
 	/**
 	 * Ausgabe der Daten
 	 */
