@@ -51,10 +51,10 @@ class federleicht {
 		$path = array(
 			'lib'=>FL_ABSPATH . 'fl/',
 			'app'=>FL_ABSPATH . 'app/',
-			'module'=>FL_ABSPATH . 'app/modules/',
-			'layouts'=>FL_ABSPATH . 'app/modules/common/layouts/',
-			'helper'=>FL_ABSPATH . 'app/modules/common/helper/',
-			'elements'=>FL_ABSPATH . 'app/modules/common/elements/',
+			'module'=>FL_ABSPATH . 'app/', // deprecated
+			'layouts'=>FL_ABSPATH . 'app/common/layouts/',
+			'helper'=>FL_ABSPATH . 'app/common/helper/',
+			'elements'=>FL_ABSPATH . 'app/common/elements/',
 			'log'=>FL_ABSPATH . 'log/',
 		);
 
