@@ -53,8 +53,8 @@ class federleicht {
 			'app'=>FL_ABSPATH . 'app/',
 			'module'=>FL_ABSPATH . 'app/modules/',
 			'layouts'=>FL_ABSPATH . 'app/modules/common/layouts/',
-			'helper'=>FL_ABSPATH . 'app/helper/',
-			'elements'=>FL_ABSPATH . 'app/elements/',
+			'helper'=>FL_ABSPATH . 'app/modules/common/helper/',
+			'elements'=>FL_ABSPATH . 'app/modules/common/elements/',
 			'log'=>FL_ABSPATH . 'log/',
 		);
 
