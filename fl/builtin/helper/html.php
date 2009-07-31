@@ -66,7 +66,7 @@ class html {
 	 */
 	public function form_tag($action, $id='', $target='', $method='post', $charset='UTF-8') {
 		$action = ( $action[0] == '/' )? $action: '/'.$action;
-		$id = ( $id != '' )? ' id="'.$id.'" name="'.$id.'" ': '';
+		$id = ( $id != '' )? ' id="fl_form_'.$id.'" name="'.$id.'" ': '';
 		$target = ( $target != '' )? ' target="'.$target.'" ': '';
 
 		$html = '<form action="'.$action.'" method="'.$method.'" '. $id . $target .'accept-charset="'.$charset.'">';
@@ -120,9 +120,9 @@ class html {
 
 		$html = '';
 
-		if ( $label != '') $html .= $this->get_label($field, $label);
+		if ( $label != '') $html .= $this->get_label('fl_select_'.$field, $label);
 
-		$html .= '<select name="fl['.$field.']" id="'.$field.'" size="1" class="dropdown">'."\n";
+		$html .= '<select name="fl['.$field.']" id="fl_select_'.$field.'" size="1" class="dropdown">'."\n";
 
 		foreach( $data as $entry ) {
 			$id   = $this->get_value('id', $entry);
@@ -209,7 +209,7 @@ class html {
 			$value = $this->get_value('1', $option);
 
 			$selected = ( $this->get_value($field, $this->data) == $option[0] )? ' checked="checked"': '';
-			$html .= "\n\t\t\t".'<'.$tag.'><input name="fl['.$field.']" id="'.$field.'-'.$option[0].'" type="radio" class="radio" value="'.$option[0].'"'.$selected.' />' .$this->get_label($field.'-'.$option[0], $value) . '</'.$tag.'>';
+			$html .= "\n\t\t\t".'<'.$tag.'><input name="fl['.$field.']" id="fl_radio_'.$field.'-'.$option[0].'" type="radio" class="radio" value="'.$option[0].'"'.$selected.' />' .$this->get_label('fl_radio_'.$field.'-'.$option[0], $value) . '</'.$tag.'>';
 		}
 
 		return $html;
@@ -251,7 +251,7 @@ class html {
 
 		$html = '';
 		if ( $label != '' AND !is_numeric($label) ) {
-			$html .= $this->get_label($field, $label);
+			$html .= $this->get_label('fl_input_'.$field, $label);
 		}
 
 		$name = ( strpos($options, 'type="file"') === false )?
@@ -260,7 +260,7 @@ class html {
 
 		$value = str_replace("'", '"', $this->get_value($field, $this->data));
 
-		$html .= '<input name="'.$name.'" id="'.$field.'" '.$options.' value=\''.$value.'\' />';
+		$html .= '<input name="'.$name.'" id="fl_input_'.$field.'" '.$options.' value=\''.$value.'\' />';
 
 		$this->output($html);
 	}
@@ -320,7 +320,7 @@ class html {
 	 * @param string $value
 	 */
 	public function get_hidden($field, $value='') {
-		$html = '<input name="fl['.$field.']" id="'.$field.'" type="hidden" value="'.$value.'" />';
+		$html = '<input name="fl['.$field.']" id="fl_hidden_'.$field.'" type="hidden" value="'.$value.'" />';
 		$this->output($html);
 	}
 
@@ -334,7 +334,7 @@ class html {
 	public function get_button($name, $label='', $type='submit') {
 		$label = ( $label === '' )? $name: $label;
 
-		$html = '<input id="'.$name.'" class="'.$type.'" type="'.$type.'" value="'.$label.'" />';
+		$html = '<input id="fl_button_'.$name.'" class="'.$type.'" type="'.$type.'" value="'.$label.'" />';
 		$this->output($html);
 	}
 
@@ -353,7 +353,7 @@ class html {
 			' checked="checked"': 
 			'';
 
-		$html .= '<input name="fl['.$field.']" id="'.$field.'" class="checkbox" type="checkbox" value="'.$field.'"'.$checked .' /> ';
+		$html .= '<input name="fl['.$field.']" id="fl_checkbox_'.$field.'" class="checkbox" type="checkbox" value="'.$field.'"'.$checked .' /> ';
 
 		if ( $label != '' AND !is_numeric($label) ) {
 			$html .= '<label for="'.$field.'" class="checkbox">'.$label.'</label>';
@@ -380,9 +380,9 @@ class html {
 
 		$value = $this->get_value($field, $this->data);
 
-		if ( $label != '' ) $html .= $this->get_label($field, $label);
+		if ( $label != '' ) $html .= $this->get_label('fl_textarea_'.$field, $label);
 
-		$html .= '<textarea name="fl['.$field.']" id="'.$field.'" rows="'.$rows.'" cols="'.$cols.'">'.$value.'</textarea>';
+		$html .= '<textarea name="fl['.$field.']" id="fl_textarea_'.$field.'" rows="'.$rows.'" cols="'.$cols.'">'.$value.'</textarea>';
 
 		$this->output($html);
 	}
