@@ -208,10 +208,9 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 
 		foreach ( $result as $row_num => $rows ) {
 			foreach ( $types as $type ) {
-				$col = $type['Field'];
-				$new_type = substr($type['Type'], 0, strpos($type['Type'], '('));
-				if ( !in_array($new_type, array('boolean', 'bool', 'integer', 'int', 'float', 'double', 'array', 'object', 'null')) ) 
-					continue;
+				$col = $type['column_name'];
+				$new_type = substr($type['php_type'], 0, strpos($type['php_type'], '('));
+				if ( !in_array($new_type, array( 'boolean', 'bool', 'integer', 'int', 'float', 'double', 'array', 'object', 'null')) ) continue;
 				$converted[$row_num][$col] = settype($converted[$row_num][$col], $new_type);
 			}
 		}
@@ -219,9 +218,23 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 		return $converted;
 	}
 
+	/**
+	 * Spaltennamen holen
+	 *
+	 * @param string $table Tabellenname
+	 * @return array
+	 */
 	public function get_table_information($table) {
-		return $this->query("SHOW COLUMNS FROM {$table}", false);
+		$table_information = array();
+		foreach($this->query("SHOW COLUMNS FROM {$this->get_table_name($table)}", false) as $key => $value) {
+			$table_information[$key] = array(
+				'column_name' => $value['Field'],
+				'php_type' => $value['Type']
+			);
+		}
+		return $table_information;
 	}
+
 	/**
 	 * Tabelle leeren
 	 *
