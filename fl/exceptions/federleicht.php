@@ -8,6 +8,10 @@ class FederleichtException extends Exception {
 	}
 
 	public function getDetails() {
-		return $this->details;
+		if ( is_array($this->details) ) {
+			return var_export($this->details, true);
+		} else {
+			return $this->details;
+		}
 	}
 }
