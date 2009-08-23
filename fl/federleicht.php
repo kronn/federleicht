@@ -113,6 +113,7 @@ class federleicht {
 			)
 		);
 		$this->registry->set('request', $request);
+		$this->functions->log( "URL => ". fl_converter::array_to_string($request->get('request')) );
 
 		$modul = $this->registry->get('request', 'modul');
 
