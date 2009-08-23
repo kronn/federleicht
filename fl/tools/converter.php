@@ -69,6 +69,18 @@ class fl_converter {
 	}
 
 	/**
+	 * assoziatives Array zu String machen
+	 *
+	 * @param array $data
+	 * @return string
+	 */
+	public static function array_to_string(array $data) {
+		return self::dropdown_array_to_string(
+			self::array_to_dropdown_array($data)
+		);
+	}
+
+	/**
 	 * Dropdown-Array zu String machen
 	 *
 	 * @param array $data
