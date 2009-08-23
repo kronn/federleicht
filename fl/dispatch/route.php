@@ -12,6 +12,7 @@
  */
 class fl_route {
 	protected $route = '';
+	protected $separator = '/';
 	protected $regex = '';
 	protected $modul = '';
 	protected $defaults = array();
@@ -21,13 +22,17 @@ class fl_route {
 	protected $default_regex = array();
 	protected $partial_regex = array();
 
+	protected $ignore_keys = array();
+
 	/**
 	 * Konstruktor
 	 *
 	 * @param string $route
+	 * @param string $separator
 	 */
-	public function __construct($route) {
+	public function __construct($route, $separator = '/') {
 		$this->route = (string) $route;
+		$this->separator = (string) $separator;
 
 		$this->default_regex['normal_item']='[-_0-9a-z\.]+';
 		$this->default_regex['last_item']='[-_/0-9a-zA-Z%\.]+';
@@ -47,10 +52,11 @@ class fl_route {
 	 * @param string $defaults
 	 * @param int    $priority
 	 * @param array  $partial_regex
+	 * @param string $separator
 	 * @return fl_route
 	 */
-	public static function get_instance($route, $defaults, $priority, array $partial_regex=array()) {
-		$route_object = new self($route);
+	public static function get_instance($route, $defaults, $priority, array $partial_regex=array(), $separator = '/') {
+		$route_object = new self($route, $separator);
 		
 		$defaults = is_string($defaults)? 
 			fl_converter::string_to_array($defaults): 
@@ -74,7 +80,7 @@ class fl_route {
 	 * @return $string
 	 */
 	protected function compile($route) {
-		$elements = explode('/', $route);
+		$elements = explode($this->separator, $route);
 		$group_count = 0;
 
 		$beginning = '@^/';
@@ -121,7 +127,7 @@ class fl_route {
 			$route_regex .= $transformed_route;
 
 			if ( !$is_last ) {
-				$route_regex .= '(/)?';
+				$route_regex .= "({$this->separator})?";
 				$group_count++;
 			}
 		}
@@ -144,7 +150,11 @@ class fl_route {
 		$parsed_url = parse_url('http://'.$host.'/'.ltrim($url,'/'));
 		$url_path = $parsed_url['path'];
 
-		$result = preg_match($this->regex, $url_path, $treffer);
+		$result = preg_match(
+			$this->regex,
+			$url_path,
+			$treffer
+		);
 
 		$request = $this->defaults;
 		$request['query'] = (isset($parsed_url['query']))? $parsed_url['query']:'';
@@ -208,14 +218,20 @@ class fl_route {
 	/**
 	 * Teilregeln für einzelne Routenbestandteile setzen
 	 *
-	 * Nach dem setzen der Regeln wird die Route neu kompiliert.
-	 * 
+	 * Nach dem setzen der Regeln wird die Route neu kompiliert. Wenn dieser
+	 * Bestandteil bei der Routenerzeugung ignoriert werden soll, kann der
+	 * dritte Parameter auf "true" gesetzt werden.
+	 *
 	 * @param string $key
 	 * @param string $regex
+	 * @param boolean $ignore
 	 */
-	public function set_partial_regex($key, $regex) {
+	public function set_partial_regex($key, $regex, $ignore = false) {
 		$this->partial_regex[$key] = $regex;
 		$this->regex = $this->compile($this->route);
+		if ( $ignore ) {
+			$this->ignore_keys[] = $key;
+		}
 	}
 
 	/**
@@ -234,6 +250,15 @@ class fl_route {
 	 */
 	public function get_request() {
 		return $this->request;
+	}
+
+	/**
+	 * Trennzeichen für URLs holen
+	 *
+	 * @return string
+	 */
+	public function get_separator() {
+		return $this->separator;
 	}
 
 	/**
@@ -288,7 +313,7 @@ class fl_route {
 	 * @return string
 	 */
 	public function make_url(array $parts) {
-		$elements = explode('/', $this->route);
+		$elements = explode($this->separator, $this->route);
 
 		$url = '';
 
@@ -303,13 +328,13 @@ class fl_route {
 
 			if ( empty($value) ) continue;
 
-			$url .= '/';
+			$url .= $this->separator;
 
 			if ( strpos($value, ':') === 0 ) {
 				$name = substr($value, 1);
 
-				$part = $parts[$name]; 
-				if ( !empty( $part ) ) { 
+				$part = $parts[$name];
+				if ( !empty($part) && !(in_array($name, $this->ignore_keys)) ) {
 					$url .= $part;
 				} else {
 					$url .= $this->defaults[$name];
@@ -320,8 +345,8 @@ class fl_route {
 			}
 		}
 
-		$url = preg_replace('@[/]{2,}$@', '/', $url); // gegen leere Felder am Ende
-		$url = preg_replace('@^[/]@', '', $url); // gegen leere Felder am Anfang
+		$url = preg_replace("@[{$this->separator}]{2,}$@", '/', $url); // gegen leere Felder am Ende
+		$url = preg_replace("@^[{$this->separator}]@", '', $url); // gegen leere Felder am Anfang
 
 		return $url;
 	}

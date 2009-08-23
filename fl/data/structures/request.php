@@ -41,4 +41,7 @@ class fl_data_structures_request extends fl_data_structures_data {
 	public function get_current_url() {
 		return $this->route->get_current_url();
 	}
+	public function get_separator() {
+		return $this->route->get_separator();
+	}
 }
