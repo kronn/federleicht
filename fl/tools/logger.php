@@ -26,6 +26,10 @@ class fl_logger {
 	}
 
 	protected function write_to_log($msg) {
-		return error_log($msg . PHP_EOL, 3, $this->logfile);
+		if( strpos($_SERVER['HTTP_HOST'], '.dev') !== false ) {
+			return error_log($msg . PHP_EOL, 3, $this->logfile);
+		} else {
+			return true;
+		}
 	}
 }
