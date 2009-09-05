@@ -230,10 +230,10 @@ class fl_data_access_pgsql extends fl_data_access_database implements data_sourc
 	public function get_table_information($table) {
 		if ( ! isset($this->table_info[$table]) ) {
 			$sql = <<<SQL
-SELECT 
-	column_name, data_type, 
-	CASE 
-		WHEN data_type = 'numeric' THEN 'float' 
+SELECT
+	column_name, data_type,
+	CASE
+		WHEN data_type = 'numeric' THEN 'float'
 		WHEN data_type IN ('boolean', 'integer') THEN data_type
 		ELSE 'string'
 	END AS php_type,
@@ -241,7 +241,7 @@ SELECT
 		WHEN is_nullable = 'YES' THEN 1
 		ELSE 0
 	END AS null_allowed
-FROM information_schema.columns 
+FROM information_schema.columns
 WHERE table_name='{$this->table_prefix}{$table}'
 SQL;
 			$table_info = array();

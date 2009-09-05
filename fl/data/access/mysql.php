@@ -229,7 +229,8 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 		foreach($this->query("SHOW COLUMNS FROM {$this->get_table_name($table)}", false) as $key => $value) {
 			$table_information[$key] = array(
 				'column_name' => $value['Field'],
-				'php_type' => $value['Type']
+				'php_type' => $value['Type'],
+				'input_type' => $this->input_type_of($value['Type']),
 			);
 		}
 		return $table_information;
@@ -357,6 +358,32 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 			$this->error('Array sollte gespeichert werden.', $varvalue );
 		}
 		$var = mysql_real_escape_string($var, $this->connection);
+	}
+
+	/**
+	 * Passenden Input-Type ausgeben
+	 */
+	private function input_type_of($db_type) {
+		$input_type = '';
+
+		switch( $db_type ) {
+		case 'timestamp':
+			$input_type = 'label';
+			break;
+
+		case 'tinyint(1)':
+			$input_type = 'checkbox';
+			break;
+
+		case 'text':
+			$input_type = "textarea";
+			break;
+
+		default:
+			$input_type = "input";
+		}
+
+		return $input_type;
 	}
 }
 ?>
