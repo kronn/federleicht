@@ -68,6 +68,7 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 		$sql = $type . " INTO ".$this->get_table_name($table)." SET ";
 		foreach ($data as $field=>$content) {
 			$this->_secureFieldContent($content);
+			$this->_quoteFieldName($field);
 
 			$sql .= " ".$field."='".$content."'";
 			if ( ( $data_length - 1 ) > $i++ )
@@ -143,6 +144,8 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 
 		$sql = "UPDATE ".$this->get_table_name($table)." SET".PHP_EOL;
 		foreach ($data as $field=>$content) {
+			$this->_quoteFieldName($field);
+
 			if  ( $content === null ) {
 				$sql .= ' '.$field.'= NULL';
 			} else {
@@ -351,13 +354,24 @@ class fl_data_access_mysql extends fl_data_access_database implements data_sourc
 	 * Dies sind nur grundlegende Schutzmaßnahmen
 	 *
 	 * @param mixed &$var
+	 * @return string
 	 */
 	private function _secureFieldContent(&$var){
 		if ( is_array($var) ) {
 			$varvalue = var_export($var, TRUE);
 			$this->error('Array sollte gespeichert werden.', $varvalue );
 		}
-		$var = mysql_real_escape_string($var, $this->connection);
+		return $var = mysql_real_escape_string($var, $this->connection);
+	}
+
+	/**
+	 * problematische Feldnamen mit Datenbank-spezifischen Quotes versehen
+	 *
+	 * @param string &$var
+	 * @return string
+	 */
+	private function _quoteFieldName(&$var) {
+		return $var = in_array($var, array('key')) ? "`$var`" : $var;
 	}
 
 	/**
