@@ -60,14 +60,14 @@ class federleicht {
 
 		$this->import_classes($path);
 
-		$this->registry = fl_registry::getInstance();
-		$this->registry->set('url', (string) $url);
-		$this->registry->set('path', $path);
-
-		$config = $this->read_config();
-		$this->registry->set('config', $config);
+		$this->registry = fl_registry::get_instance();
+		$this->registry->set( 'url', (string) $url );
+		$this->registry->set( 'path', $path );
 
 		$this->functions = new fl_functions();
+
+		$this->registry->set( 'config', $this->read_config() );
+
 		$classes = $this->functions->factory->search_application_classes();
 
 		$this->registry->set('modules', $classes['modules']);
@@ -178,15 +178,11 @@ class federleicht {
 	 * @return array
 	 */
 	private function read_config() {
-		$configfiles = glob( FL_ABSPATH . 'config/*.ini');
-
-		if ( empty($configfiles) ) {
-			die('Keine Konfigurationsdateien gefunden.');
-		}
-
 		$config = array();
 
-		foreach($configfiles as $file) {
+		$configfiles = glob( FL_ABSPATH . 'config/*.ini');
+
+		foreach( (array) $configfiles as $file) {
 			$config += parse_ini_file($file, true);
 		}
 
@@ -210,18 +206,16 @@ class federleicht {
 		if ( !in_array(FL_ABSPATH.'config/database.ini', $configfiles) ) {
 			die('Keine Datenbankkonfiguration angegeben.
 
+				Es sollte eine database.ini.example als Vorlage vorhanden sein.
 				Mit type=null kann auf eine Datenbank verzichtet werden.');
 		}
 
 		/**
-		 * Routen einlesen
+		 * PHP-Konfigurationsdateien einlesen
 		 */
-		require_once FL_ABSPATH . 'config/routes.conf.php';
-
-		/**
-		 * Inflector-Definitionen einlesen
-		 */
-		require_once FL_ABSPATH. 'config/inflector.conf.php';
+		foreach( (array) glob(FL_ABSPATH . 'config/*.conf.php') as $file) {
+			require_once $file;
+		}
 
 		return (array) $config;
 	}
