@@ -331,10 +331,11 @@ class html {
 	 * @param string $label optional: Beschriftung
 	 * @param string $type  optional: von "submit" abweichender Typ
 	 */
-	public function get_button($name, $label='', $type='submit') {
+	public function get_button($name, $label='', $type='submit', $include_name = false) {
 		$label = ( $label === '' )? $name: $label;
+		$html_name = ( $include_name ) ? "name=\"fl[$name]\" " : '';
 
-		$html = '<input id="fl_button_'.$name.'" class="'.$type.'" type="'.$type.'" value="'.$label.'" />';
+		$html = '<input id="fl_button_'.$name.'"'.$html_name.'class="'.$type.'" type="'.$type.'" value="'.$label.'" />';
 		$this->output($html);
 	}
 
@@ -356,7 +357,7 @@ class html {
 		$html .= '<input name="fl['.$field.']" id="fl_checkbox_'.$field.'" class="checkbox" type="checkbox" value="'.$field.'"'.$checked .' /> ';
 
 		if ( $label != '' AND !is_numeric($label) ) {
-			$html .= '<label for="'.$field.'" class="checkbox">'.$label.'</label>';
+			$html .= '<label for="fl_checkbox_'.$field.'" class="checkbox">'.$label.'</label>';
 		}
 
 		$this->output($html);
