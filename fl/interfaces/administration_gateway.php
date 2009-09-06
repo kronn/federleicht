@@ -6,7 +6,7 @@
  *
  * @package federleicht
  * @subpackage integration
- * @version 0.1
+ * @version 0.2
  */
 interface administration_gateway {
 	public function writeable_fields();
@@ -18,4 +18,7 @@ interface administration_gateway {
 	public function update_entry($id, array $data);
 	public function create_entry(array $data);
 	public function delete_entry($id);
+
+	public function get_actions();
+	public function get_empty_entry();
 }
