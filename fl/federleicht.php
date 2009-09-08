@@ -63,11 +63,9 @@ class federleicht {
 		$this->registry = fl_registry::get_instance();
 		$this->registry->set( 'url', (string) $url );
 		$this->registry->set( 'path', $path );
-
-		$this->functions = new fl_functions();
-
 		$this->registry->set( 'config', $this->read_config() );
 
+		$this->functions = new fl_functions();
 		$classes = $this->functions->factory->search_application_classes();
 
 		$this->registry->set('modules', $classes['modules']);
