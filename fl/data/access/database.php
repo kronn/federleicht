@@ -78,20 +78,21 @@ abstract class fl_data_access_database {
 	/**
 	 * Datenbankabfragen loggen
 	 */
-	protected function log_query($sql, fl_timer $timer) {
+	protected function log_query($sql, fl_timer $timer, $name = '') {
 		$time = $timer->get_time();
 		$this->total_db_time += $time;
 
 		$this->query_count++;
 
 		if ( $sql == '' ) return;
+		$name = ( $name != '' ) ? '"'.$name.'": ' : $name;
 
 		$this->lastSQL = $sql;
 		$this->allSQL[] = $sql;
 
 		if ( fl_registry::get_instance()->is_set('logger') ) {
 			fl_registry::get_instance()->get('logger')->log(
-				'DB: '.$sql. ' ('. $timer->format_time($time).'s)',
+				'DB: '.$name.$sql. ' ('. $timer->format_time($time).'s)',
 				fl_logger::WITHOUT_TIME
 			);
 		}
@@ -113,12 +114,13 @@ abstract class fl_data_access_database {
 	 *
 	 * @param mixed $sql
 	 * @param boolean $log_query
+	 * @param string $name
 	 * @return mixed
 	 */
-	public function query($sql, $log_query = true) {
+	public function query($sql, $log_query = true, $name = '') {
 		if ( is_array($sql) ) {
 			foreach ( $sql as $nr => $query ) {
-				$output[$nr] = $this->query( $query );
+				$output[$nr] = $this->query( $query, $log_query, $name );
 			}
 
 		} else {
@@ -129,7 +131,7 @@ abstract class fl_data_access_database {
 			if ( ! $log_query ) $sql = '';
 
 			$timer->stop();
-			$this->log_query($sql, $timer);
+			$this->log_query($sql, $timer, $name );
 			unset($timer);
 		}
 		return $output;
