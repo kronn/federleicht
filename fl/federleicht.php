@@ -112,6 +112,12 @@ class federleicht {
 		);
 		$this->registry->set('request', $request);
 		$this->functions->log( "URL => ". fl_converter::array_to_string($request->get('request')) );
+		if ( $request->has_postdata() ) {
+			$this->functions->log( "POST => ". fl_converter::array_to_string($request->get('post')) );
+		} elseif ( $request->get('all_post') != array()	) {
+			$this->functions->log( "Data has been posted, but not through the standard Framework-Channels. Dumping it all.");
+			$this->functions->log( "POST => ". var_export($request->get('all_post'), true) );
+		}
 
 		$modul = $this->registry->get('request', 'modul');
 

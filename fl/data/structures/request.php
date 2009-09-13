@@ -32,7 +32,7 @@ class fl_data_structures_request extends fl_data_structures_data {
 	 * @return boolean
 	 */
 	public function has_postdata() {
-		return ( $this->get('post') !== null )? true: false;
+		return ( $this->get('post') )? true: false;
 	}
 
 	public function get_modul() {
