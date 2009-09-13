@@ -229,7 +229,7 @@ class federleicht {
 		if ( $this->datamodel instanceof fl_data_access_database ) {
 			$db_stats = $this->datamodel->export_query_stats();
 			$this->functions->log(
-				'DB: '.$db_stats['count'].' Queries, '.$this->format_time($db_stats['time']).'s, ' .
+				'Summary: DB: '.$db_stats['count'].' Queries, '.$this->format_time($db_stats['time']).'s, ' .
 				'Total time: '.$this->format_time($this->execution_time).'s = '.
 				substr(round(1/($this->execution_time + 0.0000001), 5),0,4)
 				.' Requests per Second.',
