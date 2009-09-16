@@ -10,6 +10,7 @@ class html {
 	protected $data = array();
 	protected $eol = PHP_EOL;
 	protected $output_xhtml = true;
+	protected $var_name = 'fl';
 
 	/**
 	 * Konstruktor
@@ -43,6 +44,15 @@ class html {
 	}
 
 	/**
+	 * Variablennamen setzen
+	 *
+	 * @param string $var_name
+	 */
+	public function set_var_name($var_name = 'fl') {
+		$this->var_name = (string) $var_name;
+	}
+
+	/**
 	 * HTML ausgeben
 	 *
 	 * @param string $html
@@ -66,7 +76,7 @@ class html {
 	 */
 	public function form_tag($action, $id='', $target='', $method='post', $charset='UTF-8') {
 		$action = ( $action[0] == '/' )? $action: '/'.$action;
-		$id = ( $id != '' )? ' id="fl_form_'.$id.'" name="'.$id.'" ': '';
+		$id = ( $id != '' )? ' id="'.$this->var_name.'_form_'.$id.'" name="'.$id.'" ': '';
 		$target = ( $target != '' )? ' target="'.$target.'" ': '';
 
 		$html = '<form action="'.$action.'" method="'.$method.'" '. $id . $target .'accept-charset="'.$charset.'">';
@@ -120,9 +130,9 @@ class html {
 
 		$html = '';
 
-		if ( $label != '') $html .= $this->get_label('fl_select_'.$field, $label);
+		if ( $label != '') $html .= $this->get_label($this->var_name.'_select_'.$field, $label);
 
-		$html .= '<select name="fl['.$field.']" id="fl_select_'.$field.'" size="1" class="dropdown">'."\n";
+		$html .= '<select name="'.$this->var_name.'['.$field.']" id="'.$this->var_name.'_select_'.$field.'" size="1" class="dropdown">'."\n";
 
 		foreach( $data as $entry ) {
 			$id   = $this->get_value('id', $entry);
@@ -209,7 +219,7 @@ class html {
 			$value = $this->get_value('1', $option);
 
 			$selected = ( $this->get_value($field, $this->data) == $option[0] )? ' checked="checked"': '';
-			$html .= "\n\t\t\t".'<'.$tag.'><input name="fl['.$field.']" id="fl_radio_'.$field.'-'.$option[0].'" type="radio" class="radio" value="'.$option[0].'"'.$selected.' />' .$this->get_label('fl_radio_'.$field.'-'.$option[0], $value) . '</'.$tag.'>';
+			$html .= "\n\t\t\t".'<'.$tag.'><input name="'.$this->var_name.'['.$field.']" id="'.$this->var_name.'_radio_'.$field.'-'.$option[0].'" type="radio" class="radio" value="'.$option[0].'"'.$selected.' />' .$this->get_label($this->var_name.'_radio_'.$field.'-'.$option[0], $value) . '</'.$tag.'>';
 		}
 
 		return $html;
@@ -251,16 +261,16 @@ class html {
 
 		$html = '';
 		if ( $label != '' AND !is_numeric($label) ) {
-			$html .= $this->get_label('fl_input_'.$field, $label);
+			$html .= $this->get_label($this->var_name.'_input_'.$field, $label);
 		}
 
 		$name = ( strpos($options, 'type="file"') === false )?
-			'fl['.$field.']':
+			$this->var_name.'['.$field.']':
 			$field;
 
 		$value = str_replace("'", '"', $this->get_value($field, $this->data));
 
-		$html .= '<input name="'.$name.'" id="fl_input_'.$field.'" '.$options.' value=\''.$value.'\' />';
+		$html .= '<input name="'.$name.'" id="'.$this->var_name.'_input_'.$field.'" '.$options.' value="'.$value.'" />';
 
 		$this->output($html);
 	}
@@ -303,9 +313,9 @@ class html {
 		if ( is_string($attr) ) $attr = fl_converter::string_to_array($attr);
 
 		foreach ( $attr as $key => $value ) {
-			if ( $key == 'name' and strpos($value, 'fl[') === false ) {
+			if ( $key == 'name' and strpos($value, $this->var_name.'[') === false ) {
 				$pos = strpos($value, '[');
-				$value = 'fl['.substr($value, 0, $pos).']'.substr($value, $pos);
+				$value = $this->var_name.'['.substr($value, 0, $pos).']'.substr($value, $pos);
 			}
 			$attributes .= $key.'="'.$value.'" ';
 		}
@@ -320,7 +330,7 @@ class html {
 	 * @param string $value
 	 */
 	public function get_hidden($field, $value='') {
-		$html = '<input name="fl['.$field.']" id="fl_hidden_'.$field.'" type="hidden" value="'.$value.'" />';
+		$html = '<input name="'.$this->var_name.'['.$field.']" id="'.$this->var_name.'_hidden_'.$field.'" type="hidden" value="'.$value.'" />';
 		$this->output($html);
 	}
 
@@ -335,7 +345,7 @@ class html {
 		$label = ( $label === '' )? $name: $label;
 		$html_name = ( $include_name ) ? "name=\"fl[$name]\" " : '';
 
-		$html = '<input id="fl_button_'.$name.'"'.$html_name.'class="'.$type.'" type="'.$type.'" value="'.$label.'" />';
+		$html = '<input id="'.$this->var_name.'_button_'.$name.'"'.$html_name.'class="'.$type.'" type="'.$type.'" value="'.$label.'" />';
 		$this->output($html);
 	}
 
@@ -354,10 +364,10 @@ class html {
 			' checked="checked"': 
 			'';
 
-		$html .= '<input name="fl['.$field.']" id="fl_checkbox_'.$field.'" class="checkbox" type="checkbox" value="'.$field.'"'.$checked .' /> ';
+		$html .= '<input name="'.$this->var_name.'['.$field.']" id="'.$this->var_name.'_checkbox_'.$field.'" class="checkbox" type="checkbox" value="'.$field.'"'.$checked .' /> ';
 
 		if ( $label != '' AND !is_numeric($label) ) {
-			$html .= '<label for="fl_checkbox_'.$field.'" class="checkbox">'.$label.'</label>';
+			$html .= '<label for="'.$this->var_name.'_checkbox_'.$field.'" class="checkbox">'.$label.'</label>';
 		}
 
 		$this->output($html);
@@ -381,9 +391,9 @@ class html {
 
 		$value = $this->get_value($field, $this->data);
 
-		if ( $label != '' ) $html .= $this->get_label('fl_textarea_'.$field, $label);
+		if ( $label != '' ) $html .= $this->get_label($this->var_name.'_textarea_'.$field, $label);
 
-		$html .= '<textarea name="fl['.$field.']" id="fl_textarea_'.$field.'" rows="'.$rows.'" cols="'.$cols.'">'.$value.'</textarea>';
+		$html .= '<textarea name="'.$this->var_name.'['.$field.']" id="'.$this->var_name.'_textarea_'.$field.'" rows="'.$rows.'" cols="'.$cols.'">'.$value.'</textarea>';
 
 		$this->output($html);
 	}

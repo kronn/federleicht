@@ -3,10 +3,10 @@
  * email
  *
  * A small class to handle mail-creation an -sending
- * It supports text and html-mails (and both) and 
+ * It supports text and html-mails (and both) and
  * can handle attachments.
  *
- * email::parse_template can process mail-templates and 
+ * email::parse_template can process mail-templates and
  * substitude templatetags with given data.
  *
  * @author Matthias Viehweger <matthias.viehweger@kronn.de>
@@ -17,28 +17,28 @@ class email {
 	/**
 	 * variables
 	 */
-	var $text = FALSE;
-	var $html = FALSE;
-	var $attachments = FALSE;
-	var $default_charset = 'UTF-8';
+	protected $text = false;
+	protected $html = false;
+	protected $attachments = false;
+	protected $default_charset = 'UTF-8';
 
-	var $config;
+	protected $config;
 
 	/**
 	 * storage for error-messages
 	 */
-	var $error;
+	protected $error;
 
 	/**
 	 * data-parts of e-mail
 	 */
-	var $message_header;
-	var $message_body;
+	protected $message_header;
+	protected $message_body;
 
 	/**
 	 * contructor
 	 */
-	function email() {
+	public function __construct() {
 		ini_set('track_errors', '1');
 	}
 
@@ -50,7 +50,7 @@ class email {
 	 * @param string $topic
 	 * @param string $replyto [optional]
 	 */
-	function set_config($to, $from, $topic, $replyto='') {
+	public function set_config($to, $from, $topic, $replyto='') {
 		$this->config = array(
 			'to'=>$to,
 			'from'=>$from,
@@ -63,7 +63,7 @@ class email {
 	/**
 	 * get last error-message
 	 */
-	function get_error() {
+	public function get_error() {
 		return array_pop($this->error);
 	}
 
@@ -72,12 +72,12 @@ class email {
 	 *
 	 * @return boolean
 	 */
-	function must_be_mime() {
-		$must_be_mime = FALSE;
+	public function must_be_mime() {
+		$must_be_mime = false;
 
-		if ( $this->html != FALSE 
-			OR $this->attachments != FALSE) {
-			$must_be_mime = TRUE;
+		if ( $this->html != false
+			OR $this->attachments != false) {
+			$must_be_mime = true;
 		}
 
 		return $must_be_mime;
@@ -89,7 +89,7 @@ class email {
 	 * @param string $txt
 	 * @param string $charset
 	 */
-	function set_text($txt, $charset = null) {
+	public function set_text($txt, $charset = null) {
 		if ( $charset === null ) {
 			$charset = $this->default_charset;
 		}
@@ -106,7 +106,7 @@ class email {
 	 * @param string $html
 	 * @param string $charset
 	 */
-	function set_html($html, $charset = null) {
+	public function set_html($html, $charset = null) {
 		if ( $charset === null ) {
 			$charset = $this->default_charset;
 		}
@@ -124,14 +124,14 @@ class email {
 	 * @param string  $mime     [optional]
 	 * @return boolean
 	 */
-	function add_attachment($filename, $mime='') {
+	public function add_attachment($filename, $mime='') {
 		if ( empty($filename) ) {
 			$this->error[] = 'No Filename provided';
-			return FALSE;
+			return false;
 		}
 		if ( !is_file($filename) ) {
 			$this->error[] = $filename . ' not found.';
-			return FALSE;
+			return false;
 		}
 
 		if ( $mime == '') {
@@ -140,7 +140,7 @@ class email {
 				$mime = mime_content_type($filename);
 			} else {
 				$this->error[] = 'No mime-type provided and unable to guess it.';
-				return FALSE;
+				return false;
 			}
 		}
 
@@ -150,28 +150,28 @@ class email {
 			'mime'=>$mime
 		);
 
-		if ( $this->attachments === FALSE ) {
+		if ( $this->attachments === false ) {
 			$this->attachments = array();
 		}
 
 		$this->attachments[] = $file;
 
-		return TRUE;
+		return true;
 	}
 
 	/**
 	 * unset vars
 	 */
-	function clean_vars() {
-		$this->text = FALSE;
-		$this->html = FALSE;
-		$this->attachments = FALSE;
+	public function clean_vars() {
+		$this->text = false;
+		$this->html = false;
+		$this->attachments = false;
 	}
 
 	/**
 	 * parse template
 	 *
-	 * The template is filled with data. For every key in the 
+	 * The template is filled with data. For every key in the
 	 * data-array, a substitution is attempted.
 	 *
 	 * {NAME} will be replaced with $data['name']
@@ -185,7 +185,7 @@ class email {
 	 * @return string
 	 * @todo put into template class
 	 */
-	function parse_template($template, $data) {
+	public function parse_template($template, $data) {
 		$content = $template;
 
 		// substitute templatetags
@@ -221,7 +221,7 @@ class email {
 	 *   - save body in message_body
 	 *   - clean temporary variables
 	 */
-	function compose_message() {
+	public function compose_message() {
 		$headers = array();
 		$body = '';
 
@@ -232,7 +232,7 @@ class email {
 			$headers[] = 'MIME-Version: 1.0';
 			$boundary = md5(uniqid(date('d.m.Y \u\m H:i')));
 
-			if ( $this->attachments != FALSE ) {
+			if ( $this->attachments != false ) {
 				//tell e-mail client this e-mail contains more than one part
 				$headers[] = 'Content-Type: multipart/mixed; boundary="main'.$boundary.'"';
 				$headers[] = '--main'.$boundary;
@@ -258,7 +258,7 @@ class email {
 			//end of message
 			$body .= PHP_EOL.'--sub'.$boundary."--".PHP_EOL.PHP_EOL.'.';
 
-			if ($this->attachments != FALSE ) {
+			if ($this->attachments != false ) {
 				//attachments of message
 				$files = $this->attachments;
 
@@ -280,25 +280,25 @@ class email {
 		$this->message_body = $body;
 		$this->message_header = implode(PHP_EOL, $headers);
 
-		#$this->clean_vars();
+		$this->clean_vars();
 	}
 
 	/**
 	 * send mail
 	 */
-	function send_mail() {
-		if ( empty($this->message_body) 
-			OR empty($this->message_header) 
-			OR empty($this->config) 
+	public function send_mail() {
+		if ( empty($this->message_body)
+			OR empty($this->message_header)
+			OR empty($this->config)
 		) {
 			$this->error[] = 'Incomplete Data.';
-			return FALSE;
+			return false;
 		}
 
 		$mailed = @mail(
-				$this->config['to'], 
-				$this->config['topic'], 
-				$this->message_body, 
+				$this->config['to'],
+				$this->config['topic'],
+				$this->message_body,
 				$this->message_header
 			) OR $this->error[] = $php_errormsg;
 
@@ -320,7 +320,7 @@ class email {
 	 *                       - topic
 	 *                       - to
 	 */
-	function compose_and_send($data, $config) {
+	public function compose_and_send($data, $config) {
 		$this->set_config(
 			$config['to'],
 			$config['from'],
