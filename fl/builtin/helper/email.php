@@ -122,9 +122,10 @@ class email {
 	 *
 	 * @param string  $filename
 	 * @param string  $mime     [optional]
+	 * @param string  $nice_name [optional]
 	 * @return boolean
 	 */
-	public function add_attachment($filename, $mime='') {
+	public function add_attachment($filename, $mime='', $nice_name = 'attachment') {
 		if ( empty($filename) ) {
 			$this->error[] = 'No Filename provided';
 			return false;
@@ -147,6 +148,7 @@ class email {
 		// saving the data
 		$file = array(
 			'name'=>$filename,
+			'nice_name'=>$nice_name,
 			'mime'=>$mime
 		);
 
@@ -256,7 +258,7 @@ class email {
 			$body .= chunk_split(base64_encode($this->html->content));
 
 			//end of message
-			$body .= PHP_EOL.'--sub'.$boundary."--".PHP_EOL.PHP_EOL.'.';
+			$body .= PHP_EOL.'--sub'.$boundary."--".PHP_EOL.PHP_EOL.'.'.PHP_EOL.PHP_EOL;
 
 			if ($this->attachments != false ) {
 				//attachments of message
@@ -264,9 +266,9 @@ class email {
 
 				foreach ( $files as $file ) {
 					$body .= "\r\n--main".$boundary.PHP_EOL.
-						"Content-Type: " . $file['mime']. PHP_EOL .
+						"Content-Type: {$file['mime']};name=\"{$file['nice_name']}\"".PHP_EOL .
 						"Content-Transfer-Encoding: base64".PHP_EOL .
-						"Content-Disposition:attachment".PHP_EOL.PHP_EOL;
+						"Content-Disposition:attachment;name=\"{$file['nice_name']}\"".PHP_EOL.PHP_EOL;
 					$body .= chunk_split(base64_encode( file_get_contents($file['name']) ));
 				}
 				$body .= '--main'.$boundary."--".PHP_EOL.PHP_EOL.'.';

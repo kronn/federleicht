@@ -242,7 +242,11 @@ class fl_view {
 	 * Wrapper fuer Datenobjekt
 	 */
 	protected function get($field, $type='string', $source=NULL, $raw=FALSE, $default='') {
-		if ( $source instanceof data_structure) {
+		if ( is_array($source) ) {
+			$source = $this->factory->get_structure('data', $source);
+		}
+
+		if ( $source instanceof data_wrapper ) {
 			return $source->get($field, $type, $raw, $default);
 		}
 

@@ -82,6 +82,13 @@ class html {
 		$html = '<form action="'.$action.'" method="'.$method.'" '. $id . $target .'accept-charset="'.$charset.'">';
 		$this->output($html);
 	}
+	public function upload_form($action, $id="", $charset='UTF-8') {
+		$action = ( $action[0] == '/' )? $action: '/'.$action;
+		$id = ( $id != '' )? ' id="'.$this->var_name.'_form_'.$id.'" name="'.$id.'" ': '';
+
+		$html = '<form action="'.$action.'" method="post" '. $id .' enctype="multipart/form-data" accept-charset="'.$charset.'">';
+		$this->output($html);
+	}
 	/**
 	 * Formulartag schließen
 	 */
@@ -259,18 +266,18 @@ class html {
 			$options = 'type="text" title="'.ucwords($field).'" class="text"';
 		}
 
+		if ( strpos($options, 'type="file"') !== false ) {
+			return $this->get_filefield($field, $label);
+		}
+
 		$html = '';
 		if ( $label != '' AND !is_numeric($label) ) {
 			$html .= $this->get_label($this->var_name.'_input_'.$field, $label);
 		}
 
-		$name = ( strpos($options, 'type="file"') === false )?
-			$this->var_name.'['.$field.']':
-			$field;
-
 		$value = str_replace("'", '"', $this->get_value($field, $this->data));
 
-		$html .= '<input name="'.$name.'" id="'.$this->var_name.'_input_'.$field.'" '.$options.' value="'.$value.'" />';
+		$html .= '<input name="'.$this->var_name.'['.$field.']" id="'.$this->var_name.'_input_'.$field.'" '.$options.' value="'.$value.'" />';
 
 		$this->output($html);
 	}
@@ -394,6 +401,22 @@ class html {
 		if ( $label != '' ) $html .= $this->get_label($this->var_name.'_textarea_'.$field, $label);
 
 		$html .= '<textarea name="'.$this->var_name.'['.$field.']" id="'.$this->var_name.'_textarea_'.$field.'" rows="'.$rows.'" cols="'.$cols.'">'.$value.'</textarea>';
+
+		$this->output($html);
+	}
+
+	/**
+	 * Ein Dateiuploadfeld erzeugen
+	 *
+	 * @param string $field
+	 * @param string $label
+	 */
+	public function get_filefield($field, $label = '') {
+		$html = '';
+
+		if ( $label != '' ) $html .= $this->get_label($this->var_name.'_file_'.$field, $label);
+
+		$html .= '<input type="file" class="file" id="'.$this->var_name.'_file_'.$field.'" title="'.ucwords($field).'" name="fl_filedata['.$field.']" />';
 
 		$this->output($html);
 	}

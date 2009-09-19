@@ -237,6 +237,26 @@ HTML;
 
 		return $postdata;
 	}
+	/**
+	 * FILES-Daten holen
+	 *
+	 * Die FILES-Daten werden ausgewertet und passend zurückgegeben.
+	 *
+	 * @return array
+	 */
+	protected function get_filedata() {
+		$files = array();
+
+		if ( isset($_FILES['fl_filedata']) ) {
+			foreach( $_FILES['fl_filedata'] as $key => $file ) {
+				foreach( $file as $file_id => $value ) {
+					$files[$file_id][$key] = $value;
+				}
+			}
+		}
+
+		return $files;
+	}
 
 	/**
 	 * Parameter auswerten
