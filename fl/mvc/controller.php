@@ -15,6 +15,7 @@ class fl_controller {
 
 	protected $layout = 'default';
 	protected $view;
+	protected $site_title = '';
 
 	protected $responder;
 
@@ -54,6 +55,15 @@ class fl_controller {
 		$this->responder = $this->factory->create('responder', $this->factory);
 
 		$this->view = $this->cap['action'];
+		$this->set_site_title();
+	}
+
+	protected function set_site_title() {
+		if ( method_exists($this->model, 'get_site_title') ) {
+			$this->site_title = $this->model->get_site_title();
+		} elseif ( defined('SITE_TITLE') ) {
+			$this->site_title = SITE_TITLE;
+		}
 	}
 
 	/**
@@ -68,7 +78,8 @@ class fl_controller {
 				'http_header'=>array(),
 				'data'=>$this->data,
 				'layout'=>$this->layout,
-				'subview'=>$this->view
+				'subview'=>$this->view,
+				'site_title'=>$this->site_title
 			)
 		);
 

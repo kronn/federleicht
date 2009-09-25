@@ -139,9 +139,9 @@ class fl_modul {
 			 */
 					$response = $this->controller->get_response();
 
-					$this->registry->set('subview', $response->get('subview'));
-
 					$this->view = $this->create_view($modul_name, $response->get('data'));
+					$this->view->set('subview', $response->get('subview'));
+					$this->view->set('site_title', $response->get('site_title'));
 					$this->contents = $this->view->render_layout($response->get('layout'));
 					$this->output_contents();
 			/**
@@ -174,9 +174,9 @@ class fl_modul {
 
 			$response = $this->controller->get_response();
 
-			$this->registry->set('subview', $response->get('subview'));
-
 			$this->view = $this->create_view($modul_name, $response->get('data'));
+			$this->view->set('subview', $response->get('subview'));
+			$this->view->set('site_title', $response->get('site_title'));
 			$this->contents = $this->view->render_layout($response->get('layout'));
 			$this->output_contents();
 		}

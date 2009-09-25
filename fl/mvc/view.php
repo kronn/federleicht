@@ -13,6 +13,7 @@ class fl_view {
 	 */
 	protected $layout = 'default';
 	protected $subview = '';
+	protected $site_title;
 
 	/**
 	 * extern eingebundene Objekte und Variablen
@@ -50,8 +51,6 @@ class fl_view {
 		$this->cap = $registry->get('request', 'request');
 		$this->route = $registry->get('request', 'route');
 
-		$this->subview = $registry->get('subview');
-
 		$this->modulepath = $registry->get('path', 'module');
 		$this->apppath = $registry->get('path', 'app');
 		$this->elementpath = $registry->get('path', 'elements');
@@ -65,6 +64,26 @@ class fl_view {
 			$this->translator = $model->translator;
 		} else {
 			$this->translator = null;
+		}
+	}
+
+	/**
+	 * interne Variable setzen
+	 *
+	 * @param string $key
+	 * @param mixed  $value
+	 * @return mixed
+	 */
+	public function set($key, $value) {
+		$allowed = array(
+			'site_title',
+			'subview'
+		);
+		if( in_array($key, $allowed) ) {
+			$this->$key = $value;
+			return $this->$key;
+		} else {
+			return false;
 		}
 	}
 
@@ -228,14 +247,7 @@ class fl_view {
 	 * @return string
 	 */
 	protected function get_site_title() {
-		if ( !defined('SEITENTITEL') ) {
-			$title = '';
-		} else {
-			$title = SEITENTITEL;
-		}
-
-		echo $title;
-		return;
+		echo $this->site_title;
 	}
 
 	/**
