@@ -155,7 +155,7 @@ class fl_modul {
 				/**
 				 * Der folgende Code muss von view übernommen und
 				 * mit $view->execute($response) ausgeführt werden
-				 
+
 					$data = $response->get('data');
 					$layout = $response->get('layout');
 
