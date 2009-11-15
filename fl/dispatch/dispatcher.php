@@ -22,7 +22,11 @@ class fl_dispatcher {
 	/**
 	 * Array mit der liste der installierten Module
 	 */
-	public $modules = array();
+  public $modules = array();
+  /**
+   * Suchmaschinenauswertung
+   */
+  protected $searchengines;
 
 	/**
 	 * Dispatcher
@@ -33,7 +37,8 @@ class fl_dispatcher {
 	public function __construct(fl_lang $lang, array $modules) {
 		$this->clean_superglobals();
 		$this->lang = $lang;
-		$this->modules = $modules;
+    $this->modules = $modules;
+    $this->searchengines = new fl_searchengines();
 	}
 
 	/**
@@ -110,7 +115,13 @@ class fl_dispatcher {
 
 		if ( $tmp_req['modul'] === '&controller' ) {
 			$request->set_modul($tmp->req['controller']);
-		}
+    }
+
+    $this->searchengines->analyze();
+    $request->set_searches(
+      $this->searchengines->searchwords,
+      $this->searchengines->searchphrase
+    );
 
 		return $request;
 	}
