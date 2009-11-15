@@ -241,7 +241,11 @@ class fl_route {
 	 */
 	public function set_modul($modul) {
 		$this->modul = (string) $modul;
-	}
+  }
+  public function set_searches( $words, $phrase ) {
+    $this->request['searchwords'] = $words;
+    $this->request['searchphrase'] = $words;
+  }
 
 	/**
 	 * Request-Daten holen

@@ -44,9 +44,4 @@ class fl_data_structures_request extends fl_data_structures_data {
 	public function get_separator() {
 		return $this->route->get_separator();
 	}
-
-  public function set_searches( $words, $phrases ) {
-    $this->set('searchwords', $words);
-    $this->set('searchphrase', $phrase);
-  }
 }
