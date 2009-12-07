@@ -179,7 +179,6 @@ class fl_controller {
 	 *
 	 * @param string  $target
 	 * @param boolean $external
-	 * @todo externes Template fuer Weiterleitungsfehler verwenden, anstatt hier direkt HTML auszugeben
 	 */
 	protected function redirect($target='', $external = false) {
 		$target = ltrim($target, '/');
@@ -195,30 +194,21 @@ class fl_controller {
 
 		#if ( headers_sent($file, $line) AND strlen(ob_get_contents()) > 0) {
 		if ( headers_sent($file, $line) ) {
-			if ( error_reporting() > 0 ) {
-				$backtrace = debug_backtrace();
-				$html = <<<HTML
-<h2>HTTP-Header wurden bereits gesandt</h2>
-<p>Die Ausgabe startete hier:</p>
-<pre>
-Datei: {$file}
-Zeile: {$line}
-</pre>
-<p>Weitere Informationen</p>
-<pre>
-Anfrage: {$_SERVER['REQUEST_URI']}
-Zieladresse: {$zieladresse}
-Backtrace: 
-{$backtrace}
-</pre>
-HTML;
-				echo $html;
-			}
-
-			ob_flush();
-			$this->functions->stop(
-				'Redirect: <a href="'.$zieladresse.'">'.$zieladresse.'</a>'
-			);
+      if ( error_reporting() > 0 ) {
+        throw new RedirectException(
+          'HTTP-Header wurden bereits gesandt',
+          array(
+            'file' => $file,
+            'line' => $line,
+            'zieladresse' => $zieladresse
+          )
+        );
+      } else {
+        ob_flush();
+        $this->functions->stop(
+          'Redirect: <a href="'.$zieladresse.'">'.$zieladresse.'</a>'
+        );
+      }
 		} else {
 			$this->functions->log('Redirect: '.$zieladresse, fl_logger::WITHOUT_TIME);
 			header('Location: '.$zieladresse);

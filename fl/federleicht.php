@@ -154,12 +154,13 @@ class federleicht {
 		$interfaces = array(
 			'data_access',
 			'data_source_access',
-			'data_wrapper'
+			'data_wrapper',
 		);
 
 		$exceptions = array(
 			'federleicht',
 			'sql',
+      'redirect',
 		);
 
 		foreach ($interfaces as $interface) {

@@ -11,6 +11,24 @@
 
 <?php } ?>
 
+<?php if ( $exception instanceof RedirectException ) { ?>
+    <?php $details = $exception->getPlainDetails(); ?>
+    <h3>Details</h3>
+    <p>Die Ausgabe startete hier:</p>
+<pre>
+Datei: <?php echo $details['file'].PHP_EOL; ?>
+Zeile: <?php echo $details['line']; ?>
+</pre>
+    <p>Weitere Informationen</p>
+<pre>
+Anfrage: <?php echo $_SERVER['REQUEST_URI'].PHP_EOL; ?>
+Zieladresse: <?php echo $details['zieladresse']; ?>
+</pre>
+
+     <p><?php echo 'Redirect: <a href="'.$zieladresse.'">'.$zieladresse.'</a>' ?></p>
+
+<?php } ?>
+
 		<h3>Fehler in <?php echo substr($exception->getFile(), strlen(FL_ABSPATH)); ?>(<?php echo $exception->getLine(); ?>)</h3>
 		<h2><?php echo get_class($exception); ?></h2>
 		<pre>
