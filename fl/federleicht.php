@@ -46,7 +46,7 @@ class federleicht {
 		if ( !defined('FL_ABSPATH') ) {
 			$abspath = realpath(dirname(__FILE__) . '/../') . '/';
 			define('FL_ABSPATH', $abspath);
-		}
+    }
 
 		$path = array(
 			'lib'=>FL_ABSPATH . 'fl/',
@@ -56,7 +56,7 @@ class federleicht {
 			'helper'=>FL_ABSPATH . 'app/common/helper/',
 			'elements'=>FL_ABSPATH . 'app/common/elements/',
 			'log'=>FL_ABSPATH . 'log/',
-		);
+    );
 
 		$this->import_classes($path);
 
@@ -203,7 +203,16 @@ class federleicht {
 		// Sprachenliste in Array umwandeln
 		if ( isset( $config['lang'] ) ) {
 			$config['lang']['all'] = explode( ',', $config['lang']['all'] );
-		}
+    }
+
+    if ( isset( $config['timezone'] ) ) {
+      $timezone = $config['timezone'];
+    } elseif ( defined('TIMEZONE') ) {
+      $timezone = TIMEZONE;
+    } else {
+      $timezone = 'Europe/Berlin';
+    }
+    date_default_timezone_set($timezone);
 
 		// Wenn keine Datenbankkonfiguration angegeben ist und auch nicht
 		// gesagt wurde, dass keine Datenbank verwendet wird, abbrechen.
