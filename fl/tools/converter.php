@@ -87,8 +87,8 @@ class fl_converter {
 	 * @return string
 	 */
 	public static function dropdown_array_to_string(array $data) {
-    foreach( $data as $value) {
-			$string[] = $value['id'].'='.self::export_value($value['name']);
+		foreach( $data as $value) {
+			$string[] = $value['id'].'='.$value['name'];
 		}
 
 		$string = implode(',', $string);
@@ -110,24 +110,7 @@ class fl_converter {
 		}
 
 		return $array;
-  }
-
-  public static function export_value($value) {
-    $export_string = '';
-    if ( is_array($value) ) {
-      $export_array = array();
-      foreach( $value as $key => $content ) {
-        if ( is_array($content) ) {
-          $content = self::export_value($content);
-        }
-        $export_array[] = "[$key]=>$content";
-      }
-      $export_string = implode(', ', $export_array);
-    } else {
-      $export_string = (string) $value;
-    }
-    return $export_string;
-  }
+	}
 
 	/**
 	 * number_format rueckgangig machen
