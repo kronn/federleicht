@@ -1,9 +1,9 @@
-<?php 
+<?php
 /**
  * Routen
- * 
+ *
  * Routen dienen der Zuordnung einer Adresszeile
- * zu einem Modul. 
+ * zu einem Modul.
  *
  * @package federleicht
  * @subpackage base
@@ -57,9 +57,9 @@ class fl_route {
 	 */
 	public static function get_instance($route, $defaults, $priority, array $partial_regex=array(), $separator = '/') {
 		$route_object = new self($route, $separator);
-		
-		$defaults = is_string($defaults)? 
-			fl_converter::string_to_array($defaults): 
+
+		$defaults = is_string($defaults)?
+			fl_converter::string_to_array($defaults):
 			$defaults;
 		$route_object->set_defaults($defaults);
 
@@ -75,8 +75,8 @@ class fl_route {
 
 	/**
 	 * Route zu regulärem Asudruck umwandeln
-	 * 
-	 * @param string $route 
+	 *
+	 * @param string $route
 	 * @return $string
 	 */
 	protected function compile($route) {
@@ -104,7 +104,7 @@ class fl_route {
 				$transformed_route = '(?P<'.$name.'>';
 
 				$regex = $this->get_partial_regex($name, $is_last);
-				if ( !empty( $regex ) ) { 
+				if ( !empty( $regex ) ) {
 					$transformed_route .= $regex;
 				} elseif ( $is_last ) {
 					$transformed_route .= $this->default_regex['last_item'];
@@ -282,7 +282,7 @@ class fl_route {
 	 * @return string
 	 */
 	public function get_partial_regex($key, $is_last = false) {
-		if ( isset( $this->partial_regex[$key] ) ) { 
+		if ( isset( $this->partial_regex[$key] ) ) {
 			$regex = $this->partial_regex[$key];
 		} elseif ( $is_last ) {
 			$regex = $this->default_regex['last_item'];
@@ -296,7 +296,7 @@ class fl_route {
 	/**
 	 * Sprachschlüssel holen
 	 *
-	 * Entweder ist der Sprachschlüssel mit $this->set_language_key 
+	 * Entweder ist der Sprachschlüssel mit $this->set_language_key
 	 * gesetzt worden, oder es wird der letzte Eintrag der Default-
 	 * Werte verwendet.
 	 *
