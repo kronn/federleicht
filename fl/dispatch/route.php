@@ -374,7 +374,7 @@ class fl_route {
 	 * @param fl_route $b
 	 * @return integer
 	 */
-	public function compare_routes(fl_route $a, fl_route $b) {
+	public static function compare_routes(fl_route $a, fl_route $b) {
 		$ap = $a->get_priority();
 		$bp = $b->get_priority();
 
